@@ -2,11 +2,12 @@ from mtdnetwork.component.time_generator import exponential_variates
 import logging
 import simpy
 from mtdnetwork.component.mtd_scheme import MTDScheme
+from mtdnetwork.statistic.evaluation import Evaluation
 
 
 class MTDOperation:
 
-    def __init__(self, env, end_event, network, attack_operation, scheme, proceed_time=0,
+    def __init__(self, env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None):
         """
 
@@ -16,11 +17,14 @@ class MTDOperation:
         :param scheme:alternatively, simultaneously, randomly
         :param proceed_time:the time to proceed MTD simulation
         :param custom_strategies:specific MTD priority strategy for alternative scheme or single scheme
+        :param mtd_trigger_interval:the interval to trigger MTD operations
+        :param adversary: the adversary 
         """
         self.env = env
         self.end_event = end_event
         self.network = network
         self.attack_operation = attack_operation
+        self.adversary = adversary
 
         self._mtd_scheme = MTDScheme(network=network, scheme=scheme, mtd_trigger_interval=mtd_trigger_interval,
                                      custom_strategies=custom_strategies)
@@ -51,6 +55,20 @@ class MTDOperation:
                     compromised_hosts=self.attack_operation.get_adversary().get_compromised_hosts()):
                 self.end_event.succeed()
                 return
+            
+            # test - getting some stats out of the network everytime an MTD is triggered
+            mtd_stats = self.network.get_mtd_stats().dict()
+            attack_stats = self.adversary.get_statistics()
+            evaluation = Evaluation(self.network, self.adversary)
+            mtd_freq = evaluation.mtd_execution_frequency()
+            compromised_num = evaluation.compromised_num()
+
+            logging.info(f"STATS BEFORE MTD OPERATION")
+            logging.info(f"MTD Stats: {mtd_stats}")
+            logging.info(f"Attack Stats: {attack_stats}")
+            logging.info(f"MTD Frequency: {mtd_freq}")
+            logging.info(f"Compromised Number: {compromised_num}")
+
 
             # register an MTD
             if not self.network.get_mtd_queue():
@@ -85,7 +103,7 @@ class MTDOperation:
             if self.network.is_compromised(
                     compromised_hosts=self.attack_operation.get_adversary().get_compromised_hosts()):
                 return
-
+            
             suspension_queue = self.network.get_suspended_mtd()
             if suspension_queue:
                 # triggering the suspended MTDs by priority

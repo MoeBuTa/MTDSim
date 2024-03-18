@@ -19,8 +19,11 @@ class Evaluation:
     def compromised_num(self, record=None):
         if record is None:
             record = self._attack_record
-        compromised_hosts = record[record['compromise_host_uuid'] != 'None']['compromise_host_uuid'].unique()
-        return len(compromised_hosts)
+        if 'compromise_host_uuid' in record.columns:
+            compromised_hosts = record[record['compromise_host_uuid'] != 'None']['compromise_host_uuid'].unique()
+            return len(compromised_hosts)
+        else:
+            return 0
 
     # def mean_time_to_compromise_10_timestamp(self):
     #     record = self._attack_record

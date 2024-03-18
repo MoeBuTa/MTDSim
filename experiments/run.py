@@ -267,7 +267,7 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
     if scheme != 'None':
         mtd_operation = MTDOperation(env=env, end_event=end_event, network=time_network, scheme=scheme,
                                      attack_operation=attack_operation, proceed_time=0,
-                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies)
+                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
         mtd_operation.proceed_mtd()
 
     # save snapshot by time
