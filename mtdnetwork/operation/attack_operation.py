@@ -20,6 +20,7 @@ class AttackOperation:
         self._attack_process = None
         self._interrupted_mtd = None
         self._proceed_time = proceed_time
+        self.logging = False
 
     def proceed_attack(self):
         if self.adversary.get_curr_process() == 'SCAN_HOST':
@@ -43,13 +44,15 @@ class AttackOperation:
         """
         start_time = self.env.now + self._proceed_time
         try:
-            logging.info("Adversary: Start %s at %.1fs." % (self.adversary.get_curr_process(), start_time))
+            if self.logging:
+                logging.info("Adversary: Start %s at %.1fs." % (self.adversary.get_curr_process(), start_time))
             yield self.env.timeout(time)
         except simpy.Interrupt:
             self.env.process(self._handle_interrupt(start_time, self.adversary.get_curr_process()))
             return
         finish_time = self.env.now + self._proceed_time
-        logging.info("Adversary: Processed %s at %.1fs." % (self.adversary.get_curr_process(), finish_time))
+        if self.logging:
+            logging.info("Adversary: Processed %s at %.1fs." % (self.adversary.get_curr_process(), finish_time))
         self.adversary.get_attack_stats().append_attack_operation_record(self.adversary.get_curr_process(), start_time,
                                                                          finish_time, self.adversary)
         attack_action()
@@ -124,11 +127,13 @@ class AttackOperation:
             self._interrupted_mtd = None
             adversary.set_curr_host_id(-1)
             adversary.set_curr_host(None)
-            logging.info('Adversary: Restarting with SCAN_HOST at %.1fs!' % (self.env.now + self._proceed_time))
+            if self.logging:
+                logging.info('Adversary: Restarting with SCAN_HOST at %.1fs!' % (self.env.now + self._proceed_time))
             self._scan_host()
         elif self._interrupted_mtd.get_resource_type() == 'application':
             self._interrupted_mtd = None
-            logging.info('Adversary: Restarting with SCAN_PORT at %.1fs!' % (self.env.now + self._proceed_time))
+            if self.logging:
+                logging.info('Adversary: Restarting with SCAN_PORT at %.1fs!' % (self.env.now + self._proceed_time))
             self._scan_port()
 
     def _execute_scan_host(self):
@@ -175,7 +180,8 @@ class AttackOperation:
             self._enum_host()
         else:
             # terminate the whole process
-            logging.info("Adversary: Cannot discover new hosts!")
+            if self.logging:
+                logging.info("Adversary: Cannot discover new hosts!")
             return
 
     def _execute_enum_host(self):
@@ -247,7 +253,8 @@ class AttackOperation:
             exploit_time = exponential_variates(vuln.exploit_time(host=adversary.get_curr_host()), 0.5)
             start_time = self.env.now + self._proceed_time
             try:
-                logging.info(
+                if self.logging:
+                    logging.info(
                     "Adversary: Start %s %s on host %s at %.1fs." % (self.adversary.get_curr_process(), vuln.id,
                                                                      self.adversary.get_curr_host_id(), start_time))
                 yield self.env.timeout(exploit_time)
@@ -255,7 +262,8 @@ class AttackOperation:
                 self.env.process(self._handle_interrupt(start_time, self.adversary.get_curr_process()))
                 return
             finish_time = self.env.now + self._proceed_time
-            logging.info(
+            if self.logging:
+                logging.info(
                 "Adversary: Processed %s %s on host %s at %.1fs." % (self.adversary.get_curr_process(), vuln.id,
                                                                      self.adversary.get_curr_host_id(), finish_time))
             self.adversary.get_attack_stats().append_attack_operation_record(self.adversary.get_curr_process(),
@@ -332,7 +340,8 @@ class AttackOperation:
         if adversary.get_curr_host_id() not in adversary.get_compromised_hosts():
             adversary.get_compromised_hosts().append(adversary.get_curr_host_id())
             adversary.get_attack_stats().update_compromise_host(adversary.curr_host)
-            logging.info(
+            if self.logging:
+                logging.info(
                 "Adversary: Host %i has been compromised at %.1fs!" % (
                     adversary.get_curr_host_id(), now + proceed_time))
             adversary.get_network().update_reachable_compromise(
@@ -345,7 +354,8 @@ class AttackOperation:
                 adversary.get_compromised_users() + adversary.get_curr_host().get_compromised_users()))
             if adversary.get_network().is_compromised(adversary.get_compromised_hosts()):
                 # terminate the whole process
-                self.end_event.succeed()
+                if not self.end_event.triggered:  # Check if the event has not been triggered yet
+                    self.end_event.succeed()
                 return
 
             # If target network, set adversary as done once adversary has compromised target node

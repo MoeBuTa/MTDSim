@@ -103,8 +103,8 @@ class Vulnerability:
         self.exploit_attempt += 1
         if random.random() < self.complexity:
             self.exploited = True
-            if self.has_os_dependency:
-                self.logger.info("OS DEPENDENT VULNERABILITY EXPLOITED!")
+            # if self.has_os_dependency:
+                # self.logger.info("OS DEPENDENT VULNERABILITY EXPLOITED!")
             return self.impact
         return 0.0
 

@@ -71,6 +71,9 @@ class Evaluation:
             comp_nums[comp_ratio] = host_num * comp_ratio
 
         for comp_ratio, comp_num in comp_nums.items():
+            if 'cumulative_compromised_hosts' not in record.columns:
+                return []
+
             if max(record['cumulative_compromised_hosts']) < comp_num:
                 break
             sub_record = record[record['cumulative_compromised_hosts'] <= comp_num]
