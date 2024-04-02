@@ -60,24 +60,39 @@ class MTDOperation:
             # test - getting some stats out of the network everytime an MTD is triggered
             # timenetwork.py
             # mtd_stats = self.network.get_mtd_stats().dict()
+            exposed_endpoints = len(self.network.get_exposed_endpoints())
+            attack_path_exposure = self.network.attack_path_exposure()
             # advesary.py
+            num_vulns = len(self.adversary.get_curr_vulns())
             # attack_stats = self.adversary.get_statistics()
-            # compromised_hosts = self.adversary.get_compromised_hosts()
-            current_attack = self.adversary.get_curr_process()
+            # compromised_hosts = len(self.adversary.get_compromised_hosts())
+            # current_attack = self.adversary.get_curr_process()
             # evaluation.py
             evaluation = Evaluation(self.network, self.adversary)
             mtd_freq = evaluation.mtd_execution_frequency()
             compromised_num = evaluation.compromised_num()
+            # scan_port = len(evaluation.compromise_record_by_attack_action('SCAN_PORT'))
+            # exploit_vlun = len(evaluation.compromise_record_by_attack_action('EXPLOIT_VULN'))
+            # brute_force = len(evaluation.compromise_record_by_attack_action('BRUTE_FORCE'))
+
             # evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
 
-            logging.info(f"STATS BEFORE MTD OPERATION")
             # logging.info(f"MTD Stats: {mtd_stats}")
-            logging.info(f"Current Attack: {current_attack}")
+            #logging.info(f"Current Attack: {current_attack}")
             # logging.info(f"Attack Stats: {attack_stats}")
-            # logging.info(f"Compromised Hosts: {compromised_hosts}")
+            # logging.info(f"Number of Compromised Hosts: {compromised_hosts}")
+            # logging.info(f"Evaluation Results: {evaluation_results}")
+            logging.info(f"STATS BEFORE MTD OPERATION")
             logging.info(f"MTD Frequency: {mtd_freq}")
             logging.info(f"Compromised Number: {compromised_num}")
-            # logging.info(f"Evaluation Results: {evaluation_results}")
+            logging.info(f"Host Compromise ration: {compromised_num/len(self.network.get_hosts())}")
+            # logging.info(f"Scan Port Compromise Ratio: {scan_port/compromised_num}")
+            # logging.info(f"Exploit Vuln Compromise Ratio: {exploit_vlun/compromised_num}")
+            # logging.info(f"Brute Force Compromise Ratio: {brute_force/compromised_num}")
+            logging.info(f"Number of Vulns: {num_vulns}")
+            logging.info(f"Num Exposed Endpoints: {exposed_endpoints}")
+            logging.info(f"Attack Path Exposure Score: {attack_path_exposure}")
+
 
 
             # register an MTD
