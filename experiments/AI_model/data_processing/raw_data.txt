@@ -1,1206 +1,418 @@
 STATS BEFORE MTD OPERATION
-Current Attack: SCAN_HOST
 MTD Frequency: 0
 Compromised Number: 0
-MTD: OSDiversity triggered 0.0s
+Host Compromise Ratio: 0.0
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2848988095238095
+MTD: CompleteTopologyShuffle triggered 0.0s
+MTD: Interrupted SCAN_PORT at 120.2s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.012225960750730595
+MTD Frequency: 0.0083195409750281
 Compromised Number: 0
-MTD: OSDiversity triggered 200.0s
+Host Compromise Ratio: 0.0
+Number of Vulns: 10
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.31685912698412705
+MTD: IPShuffle triggered 200.4s
+MTD: Interrupted EXPLOIT_VULN at 310.9s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.007140820533481116
-Compromised Number: 1
-MTD: IPShuffle triggered 401.4s
-MTD: Interrupted EXPLOIT_VULN at 511.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005860724571896601
-Compromised Number: 1
-MTD: ServiceDiversity triggered 601.8s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005952440874468518
-Compromised Number: 1
-MTD: IPShuffle triggered 802.7s
-MTD: Interrupted EXPLOIT_VULN at 912.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005476823989291766
-Compromised Number: 1
-MTD: IPShuffle triggered 1003.1s
-MTD: Interrupted ENUM_HOST at 1113.2s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005390004868268435
+MTD Frequency: 0.006432235768077052
 Compromised Number: 2
-MTD: IPShuffle triggered 1203.1s
-MTD: Interrupted SCAN_PORT at 1313.3s!
+Host Compromise Ratio: 0.01
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.3154761904761905
+MTD: CompleteTopologyShuffle triggered 401.0s
+MTD: Interrupted EXPLOIT_VULN at 521.6s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005330113864043195
+MTD Frequency: 0.00575108508779549
 Compromised Number: 2
-MTD: CompleteTopologyShuffle triggered 1403.2s
-MTD: Interrupted EXPLOIT_VULN at 1523.2s!
+Host Compromise Ratio: 0.01
+Number of Vulns: 29
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2932123015873016
+MTD: ServiceDiversity triggered 602.4s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.00525193947464008
+MTD Frequency: 0.005938355729047378
 Compromised Number: 2
-MTD: CompleteTopologyShuffle triggered 1603.3s
-MTD: Interrupted EXPLOIT_VULN at 1725.3s!
+Host Compromise Ratio: 0.01
+Number of Vulns: 18
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.298763888888889
+MTD: OSDiversity triggered 802.5s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005216436741754246
-Compromised Number: 2
-MTD: OSDiversity triggered 1805.4s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005303283745678384
+MTD Frequency: 0.005663331942704331
 Compromised Number: 3
-MTD: ServiceDiversity triggered 2005.6s
+Host Compromise Ratio: 0.015
+Number of Vulns: 13
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.296656746031746
+MTD: CompleteTopologyShuffle triggered 1002.7s
+MTD: Interrupted EXPLOIT_VULN at 1123.3s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005293888587911933
+MTD Frequency: 0.0053411692702010054
 Compromised Number: 4
-MTD: OSDiversity triggered 2207.0s
+Host Compromise Ratio: 0.02
+Number of Vulns: 22
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2837559523809525
+MTD: ServiceDiversity triggered 1202.8s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005245666656758261
+MTD Frequency: 0.005498386771900743
 Compromised Number: 4
-MTD: OSDiversity triggered 2408.8s
+Host Compromise Ratio: 0.02
+Number of Vulns: 26
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2852539682539683
+MTD: OSDiversity triggered 1402.9s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005222174541066145
+MTD Frequency: 0.005392989320620574
 Compromised Number: 4
-MTD: CompleteTopologyShuffle triggered 2609.3s
-MTD: Interrupted EXPLOIT_VULN at 2729.6s!
+Host Compromise Ratio: 0.02
+Number of Vulns: 17
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2824702380952381
+MTD: CompleteTopologyShuffle triggered 1603.3s
+MTD: Interrupted SCAN_PORT at 1723.4s!
 STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005128980129057626
+MTD Frequency: 0.005222189864228948
 Compromised Number: 5
-MTD: OSDiversity triggered 2810.8s
+Host Compromise Ratio: 0.025
+Number of Vulns: 10
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2777916666666669
+MTD: OSDiversity triggered 1804.1s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0051879909663949605
+MTD Frequency: 0.005305749983643124
+Compromised Number: 5
+Host Compromise Ratio: 0.025
+Number of Vulns: 15
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.26790674603174613
+MTD: OSDiversity triggered 2004.3s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.0052775897612298735
 Compromised Number: 6
-MTD: ServiceDiversity triggered 3011.6s
+Host Compromise Ratio: 0.03
+Number of Vulns: 23
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2565674603174603
+MTD: OSDiversity triggered 2204.7s
 STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.00519114552259594
-Compromised Number: 7
-MTD: OSDiversity triggered 3211.7s
+MTD Frequency: 0.0052522230017484515
+Compromised Number: 6
+Host Compromise Ratio: 0.03
+Number of Vulns: 23
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2623174603174604
+MTD: OSDiversity triggered 2404.8s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005163719419492502
-Compromised Number: 7
-MTD: CompleteTopologyShuffle triggered 3412.0s
-MTD: Interrupted SCAN_NEIGHBOR at 3532.4s!
+MTD Frequency: 0.005229980485436195
+Compromised Number: 6
+Host Compromise Ratio: 0.03
+Number of Vulns: 21
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.26869642857142856
+MTD: IPShuffle triggered 2604.9s
+MTD: Interrupted EXPLOIT_VULN at 2715.1s!
 STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005095638739999005
-Compromised Number: 9
-MTD: IPShuffle triggered 3612.5s
-MTD: Interrupted EXPLOIT_VULN at 3722.7s!
+MTD Frequency: 0.005156372127628188
+Compromised Number: 8
+Host Compromise Ratio: 0.04
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.26803571428571427
+MTD: IPShuffle triggered 2805.8s
+MTD: Interrupted EXPLOIT_VULN at 2915.9s!
 STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00510381385954098
-Compromised Number: 11
-MTD: IPShuffle triggered 3813.1s
-MTD: Interrupted EXPLOIT_VULN at 3923.1s!
+MTD Frequency: 0.0051441339005197885
+Compromised Number: 8
+Host Compromise Ratio: 0.04
+Number of Vulns: 19
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.260561507936508
+MTD: OSDiversity triggered 3006.1s
 STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005098033197944222
-Compromised Number: 11
-MTD: CompleteTopologyShuffle triggered 4013.2s
-MTD: Interrupted EXPLOIT_VULN at 4134.7s!
+MTD Frequency: 0.005184399837719792
+Compromised Number: 8
+Host Compromise Ratio: 0.04
+Number of Vulns: 27
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.24657341269841276
+MTD: OSDiversity triggered 3206.1s
 STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050790053140403
-Compromised Number: 14
-MTD: ServiceDiversity triggered 4213.7s
+MTD Frequency: 0.005173184331589338
+Compromised Number: 10
+Host Compromise Ratio: 0.05
+Number of Vulns: 5
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2628769841269841
+MTD: OSDiversity triggered 3406.8s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005135318113045391
+MTD Frequency: 0.005162239660064027
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.25693055555555555
+MTD: OSDiversity triggered 3607.0s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.0051528334952432465
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 1
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.26702380952380955
+MTD: ServiceDiversity triggered 3807.3s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005156344172422754
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 35
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.25064087301587296
+MTD: OSDiversity triggered 4007.8s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005136754131500002
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 36
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2524543650793651
+MTD: OSDiversity triggered 4207.8s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.0051304383758835285
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 29
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.26686706349206346
+MTD: OSDiversity triggered 4408.0s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005124508540806289
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 24
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.23848611111111112
+MTD: ServiceDiversity triggered 4608.1s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005130291279349327
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 37
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.24502380952380953
+MTD: ServiceDiversity triggered 4808.3s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005124423438791094
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 25
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2558492063492064
+MTD: ServiceDiversity triggered 5009.0s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005117802254862343
+Compromised Number: 12
+Host Compromise Ratio: 0.06
+Number of Vulns: 24
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.24022420634920638
+MTD: CompleteTopologyShuffle triggered 5209.3s
+MTD: Interrupted EXPLOIT_VULN at 5329.4s!
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.0050662354327426174
+Compromised Number: 13
+Host Compromise Ratio: 0.065
+Number of Vulns: 11
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2221845238095238
+MTD: CompleteTopologyShuffle triggered 5409.6s
+MTD: Interrupted EXPLOIT_VULN at 5529.7s!
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005063528136585074
 Compromised Number: 15
-MTD: CompleteTopologyShuffle triggered 4413.9s
-MTD: Interrupted SCAN_PORT at 4534.3s!
+Host Compromise Ratio: 0.075
+Number of Vulns: 1
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.21965079365079357
+MTD: ServiceDiversity triggered 5610.0s
 STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005072473606269869
-Compromised Number: 18
-MTD: CompleteTopologyShuffle triggered 4614.8s
-MTD: Interrupted EXPLOIT_VULN at 4735.4s!
+MTD Frequency: 0.005105371625390317
+Compromised Number: 16
+Host Compromise Ratio: 0.08
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2061706349206349
+MTD: ServiceDiversity triggered 5810.3s
 STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005068256812083716
-Compromised Number: 20
-MTD: ServiceDiversity triggered 4815.3s
+MTD Frequency: 0.005101771100285042
+Compromised Number: 16
+Host Compromise Ratio: 0.08
+Number of Vulns: 12
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2089861111111111
+MTD: ServiceDiversity triggered 6011.7s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.00511698843353622
+MTD Frequency: 0.005097043799805658
+Compromised Number: 19
+Host Compromise Ratio: 0.095
+Number of Vulns: 9
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.19589880952380953
+MTD: IPShuffle triggered 6211.8s
+MTD: Interrupted EXPLOIT_VULN at 6322.1s!
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005061612906347347
+Compromised Number: 21
+Host Compromise Ratio: 0.105
+Number of Vulns: 4
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.18356547619047614
+MTD: ServiceDiversity triggered 6412.5s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.0050904718059524455
 Compromised Number: 22
-MTD: OSDiversity triggered 5015.5s
+Host Compromise Ratio: 0.11
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.19958333333333328
+MTD: ServiceDiversity triggered 6613.4s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005102312797118402
-Compromised Number: 22
-MTD: ServiceDiversity triggered 5215.8s
+MTD Frequency: 0.005087254838641314
+Compromised Number: 23
+Host Compromise Ratio: 0.115
+Number of Vulns: 10
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.23095833333333338
+MTD: OSDiversity triggered 6814.7s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005108006471537314
-Compromised Number: 22
-MTD: CompleteTopologyShuffle triggered 5416.0s
-MTD: Interrupted EXPLOIT_VULN at 5536.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050572144704303336
-Compromised Number: 24
-MTD: CompleteTopologyShuffle triggered 5616.2s
-MTD: Interrupted EXPLOIT_VULN at 5736.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050550415945120756
-Compromised Number: 24
-MTD: ServiceDiversity triggered 5816.4s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005096040168150919
+MTD Frequency: 0.005076028419129324
 Compromised Number: 26
-MTD: CompleteTopologyShuffle triggered 6017.0s
-MTD: Interrupted EXPLOIT_VULN at 6137.1s!
+Host Compromise Ratio: 0.13
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.18784523809523812
+MTD: ServiceDiversity triggered 7014.8s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050512263760964585
-Compromised Number: 26
-MTD: OSDiversity triggered 6217.5s
+MTD Frequency: 0.0050812411134609934
+Compromised Number: 27
+Host Compromise Ratio: 0.135
+Number of Vulns: 17
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.21599999999999997
+MTD: CompleteTopologyShuffle triggered 7214.9s
+MTD: Interrupted SCAN_PORT at 7335.5s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005080894533327184
-Compromised Number: 26
-MTD: IPShuffle triggered 6417.9s
-MTD: Interrupted ENUM_HOST at 6528.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005055185097913433
+MTD Frequency: 0.005043980127981797
 Compromised Number: 28
-MTD: CompleteTopologyShuffle triggered 6617.9s
-MTD: Interrupted SCAN_PORT at 6738.0s!
+Host Compromise Ratio: 0.14
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.20600000000000002
+MTD: OSDiversity triggered 7415.3s
 STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050460327496656115
-Compromised Number: 31
-MTD: OSDiversity triggered 6817.9s
+MTD Frequency: 0.0050698110313766795
+Compromised Number: 28
+Host Compromise Ratio: 0.14
+Number of Vulns: 12
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.18869047619047616
+MTD: CompleteTopologyShuffle triggered 7616.3s
+MTD: Interrupted SCAN_NEIGHBOR at 7736.7s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050734023929152345
+MTD Frequency: 0.005040899458332608
 Compromised Number: 32
-MTD: IPShuffle triggered 7018.1s
-MTD: Interrupted EXPLOIT_VULN at 7128.1s!
+Host Compromise Ratio: 0.16
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.1776686507936508
+MTD: IPShuffle triggered 7817.6s
+MTD: Interrupted EXPLOIT_VULN at 7927.8s!
 STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005050411978399763
-Compromised Number: 34
-MTD: OSDiversity triggered 7218.4s
+MTD Frequency: 0.005045523895558129
+Compromised Number: 33
+Host Compromise Ratio: 0.165
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.1786686507936508
+MTD: CompleteTopologyShuffle triggered 8017.7s
+MTD: Interrupted BRUTE_FORCE at 8137.9s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005069351757129848
+MTD Frequency: 0.00503817558510317
+Compromised Number: 33
+Host Compromise Ratio: 0.165
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.18200198412698412
+MTD: CompleteTopologyShuffle triggered 8218.7s
+MTD: Interrupted EXPLOIT_VULN at 8339.2s!
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005036428434693994
+Compromised Number: 35
+Host Compromise Ratio: 0.175
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.30434782608695654
+MTD: ServiceDiversity triggered 8419.3s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005065148632964938
 Compromised Number: 36
-MTD: ServiceDiversity triggered 7418.5s
+Host Compromise Ratio: 0.18
+Number of Vulns: 10
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.391304347826087
+MTD: IPShuffle triggered 8619.9s
+MTD: Interrupted SCAN_PORT at 8730.1s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005073991673684271
+MTD Frequency: 0.005040035604125921
 Compromised Number: 38
-MTD: OSDiversity triggered 7618.6s
+Host Compromise Ratio: 0.19
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.391304347826087
+MTD: ServiceDiversity triggered 8820.3s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005065596084405312
-Compromised Number: 42
-MTD: OSDiversity triggered 7819.8s
+MTD Frequency: 0.005061341821103832
+Compromised Number: 41
+Host Compromise Ratio: 0.205
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.43478260869565216
+MTD: OSDiversity triggered 9021.2s
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.00506324204677469
-Compromised Number: 44
-MTD: CompleteTopologyShuffle triggered 8020.0s
-MTD: Interrupted EXPLOIT_VULN at 8141.4s!
+MTD Frequency: 0.005053134555182676
+Compromised Number: 41
+Host Compromise Ratio: 0.205
+Number of Vulns: 14
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.41304347826086957
+MTD: IPShuffle triggered 9222.3s
+MTD: Interrupted SCAN_PORT at 9332.4s!
 STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005035958671912604
+MTD Frequency: 0.00503624348622249
+Compromised Number: 43
+Host Compromise Ratio: 0.215
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.41304347826086957
+MTD: ServiceDiversity triggered 9422.9s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.005056047794893632
 Compromised Number: 45
-MTD: OSDiversity triggered 8220.1s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005060071313986631
-Compromised Number: 46
-MTD: OSDiversity triggered 8421.4s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.00505787874115809
-Compromised Number: 49
-MTD: CompleteTopologyShuffle triggered 8621.5s
-MTD: Interrupted SCAN_PORT at 8741.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00503328469087784
-Compromised Number: 52
-MTD: OSDiversity triggered 8821.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005053476943244559
-Compromised Number: 54
-MTD: ServiceDiversity triggered 9022.2s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050592196698513265
-Compromised Number: 56
-MTD: ServiceDiversity triggered 9222.3s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005057867720019737
-Compromised Number: 59
-MTD: CompleteTopologyShuffle triggered 9422.3s
-MTD: Interrupted EXPLOIT_VULN at 9542.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005029938080136465
-Compromised Number: 63
-MTD: CompleteTopologyShuffle triggered 9622.5s
-MTD: Interrupted ENUM_HOST at 9742.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005029417165650571
-Compromised Number: 65
-MTD: ServiceDiversity triggered 9823.2s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005053635220945898
-Compromised Number: 68
-MTD: CompleteTopologyShuffle triggered 10023.6s
-MTD: Interrupted SCAN_PORT at 10144.4s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005027427348659002
-Compromised Number: 71
-MTD: CompleteTopologyShuffle triggered 10225.5s
-MTD: Interrupted ENUM_HOST at 10347.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005025543221794593
-Compromised Number: 72
-MTD: CompleteTopologyShuffle triggered 10426.0s
-MTD: Interrupted ENUM_HOST at 10546.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005025243671055053
-Compromised Number: 74
-MTD: CompleteTopologyShuffle triggered 10626.7s
-MTD: Interrupted ENUM_HOST at 10746.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050247732636714915
-Compromised Number: 75
-MTD: IPShuffle triggered 10827.2s
-MTD: Interrupted ENUM_HOST at 10938.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005028187158057474
-Compromised Number: 77
-MTD: ServiceDiversity triggered 11027.5s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005046175239750815
-Compromised Number: 78
-MTD: IPShuffle triggered 11228.1s
-MTD: Interrupted ENUM_HOST at 11338.2s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005027250976576453
-Compromised Number: 80
-MTD: CompleteTopologyShuffle triggered 11428.2s
-MTD: Interrupted SCAN_PORT at 11548.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005022110772090815
-Compromised Number: 82
-MTD: IPShuffle triggered 11628.6s
-MTD: Interrupted SCAN_PORT at 11738.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005026092002665703
-Compromised Number: 83
-MTD: ServiceDiversity triggered 11828.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00504180374249098
-Compromised Number: 84
-MTD: CompleteTopologyShuffle triggered 12029.4s
-MTD: Interrupted ENUM_HOST at 12149.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005020707696066801
-Compromised Number: 86
-MTD: IPShuffle triggered 12229.7s
-MTD: Interrupted SCAN_PORT at 12340.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005024279707233974
-Compromised Number: 87
-MTD: CompleteTopologyShuffle triggered 12429.9s
-MTD: Interrupted ENUM_HOST at 12550.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050198763156784594
-Compromised Number: 88
-MTD: OSDiversity triggered 12630.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005035189974951936
-Compromised Number: 91
-MTD: ServiceDiversity triggered 12830.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005038561763661653
-Compromised Number: 93
-MTD: ServiceDiversity triggered 13031.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005037525417394461
-Compromised Number: 97
-MTD: CompleteTopologyShuffle triggered 13232.7s
-MTD: Interrupted SCAN_PORT at 13353.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005017583846872868
-Compromised Number: 101
-MTD: OSDiversity triggered 13432.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005031959830544516
-Compromised Number: 101
-MTD: IPShuffle triggered 13633.2s
-MTD: Interrupted ENUM_HOST at 13743.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.00502056392664372
-Compromised Number: 103
-MTD: CompleteTopologyShuffle triggered 13833.5s
-MTD: Interrupted ENUM_HOST at 13953.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005016638819556896
-Compromised Number: 105
-MTD: ServiceDiversity triggered 14034.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050330701671570405
-Compromised Number: 106
-MTD: IPShuffle triggered 14234.2s
-MTD: Interrupted ENUM_HOST at 14344.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_NEIGHBOR
-MTD Frequency: 0.005019314095076436
-Compromised Number: 108
-MTD: OSDiversity triggered 14434.2s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00502926783469301
-Compromised Number: 109
-MTD: ServiceDiversity triggered 14634.9s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005032217187012046
-Compromised Number: 111
-MTD: ServiceDiversity triggered 14835.3s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005031712179942424
-Compromised Number: 112
-MTD: OSDiversity triggered 15035.6s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005027896357226071
-Compromised Number: 114
-MTD: CompleteTopologyShuffle triggered 15235.8s
-MTD: Interrupted ENUM_HOST at 15355.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005014346007895654
-Compromised Number: 117
-MTD: CompleteTopologyShuffle triggered 15436.9s
-MTD: Interrupted SCAN_PORT at 15557.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005013796902219185
-Compromised Number: 119
-MTD: ServiceDiversity triggered 15637.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005029553222797453
-Compromised Number: 120
-MTD: IPShuffle triggered 15837.1s
-MTD: Interrupted BRUTE_FORCE at 15948.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005016208272636703
-Compromised Number: 120
-MTD: ServiceDiversity triggered 16037.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005028642097333735
-Compromised Number: 122
-MTD: CompleteTopologyShuffle triggered 16237.4s
-MTD: Interrupted ENUM_HOST at 16358.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005012794370270225
-Compromised Number: 124
-MTD: ServiceDiversity triggered 16438.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005027677848642715
-Compromised Number: 125
-MTD: ServiceDiversity triggered 16638.9s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005027154315442251
-Compromised Number: 127
-MTD: OSDiversity triggered 16839.0s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005023397335603046
-Compromised Number: 131
-MTD: CompleteTopologyShuffle triggered 17040.5s
-MTD: Interrupted ENUM_HOST at 17162.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005011048320205552
-Compromised Number: 134
-MTD: IPShuffle triggered 17241.9s
-MTD: Interrupted ENUM_HOST at 17351.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050138473055669685
-Compromised Number: 136
-MTD: IPShuffle triggered 17442.1s
-MTD: Interrupted ENUM_HOST at 17552.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050135875183040255
-Compromised Number: 137
-MTD: IPShuffle triggered 17642.1s
-MTD: Interrupted SCAN_PORT at 17752.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005013336476299495
-Compromised Number: 139
-MTD: CompleteTopologyShuffle triggered 17842.7s
-MTD: Interrupted ENUM_HOST at 17962.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005010324290588615
-Compromised Number: 140
-MTD: CompleteTopologyShuffle triggered 18042.7s
-MTD: Interrupted ENUM_HOST at 18162.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005010261090308017
-Compromised Number: 142
-MTD: ServiceDiversity triggered 18243.9s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_NEIGHBOR
-MTD Frequency: 0.005023507340390377
-Compromised Number: 144
-MTD: CompleteTopologyShuffle triggered 18444.3s
-MTD: Interrupted SCAN_PORT at 18564.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005009570797610633
-Compromised Number: 145
-MTD: IPShuffle triggered 18644.8s
-MTD: Interrupted ENUM_HOST at 18754.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00501201869144697
-Compromised Number: 148
-MTD: CompleteTopologyShuffle triggered 18844.8s
-MTD: Interrupted ENUM_HOST at 18965.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00500922883332921
-Compromised Number: 150
-MTD: IPShuffle triggered 19044.9s
-MTD: Interrupted SCAN_PORT at 19155.4s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050116478575642255
-Compromised Number: 150
-MTD: OSDiversity triggered 19245.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005019304426578543
-Compromised Number: 152
-MTD: ServiceDiversity triggered 19445.6s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005021458375351716
-Compromised Number: 152
-MTD: IPShuffle triggered 19646.4s
-MTD: Interrupted ENUM_HOST at 19756.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005010947741361303
-Compromised Number: 153
-MTD: IPShuffle triggered 19846.8s
-MTD: Interrupted ENUM_HOST at 19957.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005010744106081784
-Compromised Number: 155
-MTD: ServiceDiversity triggered 20047.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005020622500539774
-Compromised Number: 157
-MTD: CompleteTopologyShuffle triggered 20247.1s
-MTD: Interrupted SCAN_PORT at 20367.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050079233046349545
-Compromised Number: 158
-MTD: IPShuffle triggered 20447.1s
-MTD: Interrupted SCAN_PORT at 20558.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005010207254563133
-Compromised Number: 158
-MTD: OSDiversity triggered 20648.5s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005017144374774603
-Compromised Number: 160
-MTD: ServiceDiversity triggered 20849.2s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005018950969377754
-Compromised Number: 161
-MTD: ServiceDiversity triggered 21049.5s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005019060827158032
-Compromised Number: 161
-MTD: IPShuffle triggered 21250.0s
-MTD: Interrupted ENUM_HOST at 21361.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00500912785214843
-Compromised Number: 163
-MTD: ServiceDiversity triggered 21450.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050184990628990515
-Compromised Number: 164
-MTD: ServiceDiversity triggered 21651.5s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.00501804142726382
-Compromised Number: 167
-MTD: ServiceDiversity triggered 21851.6s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005017878588826038
-Compromised Number: 169
-MTD: IPShuffle triggered 22051.6s
-MTD: Interrupted ENUM_HOST at 22162.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005008508368998734
-Compromised Number: 170
-MTD: ServiceDiversity triggered 22251.8s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005017399915392928
-Compromised Number: 171
-MTD: OSDiversity triggered 22451.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005015105652560043
-Compromised Number: 173
-MTD: IPShuffle triggered 22653.9s
-MTD: Interrupted SCAN_PORT at 22764.4s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005007821636678307
-Compromised Number: 173
-MTD: IPShuffle triggered 22854.6s
-MTD: Interrupted SCAN_PORT at 22964.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005007692557636867
-Compromised Number: 173
-MTD: OSDiversity triggered 23055.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005014052707684204
-Compromised Number: 174
-MTD: IPShuffle triggered 23255.1s
-MTD: Interrupted SCAN_PORT at 23365.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005007469373970654
-Compromised Number: 176
-MTD: OSDiversity triggered 23455.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050136031405935795
-Compromised Number: 180
-MTD: OSDiversity triggered 23656.3s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050133417784387424
-Compromised Number: 183
-MTD: OSDiversity triggered 23856.7s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005013150871980542
-Compromised Number: 186
-MTD: OSDiversity triggered 24056.8s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005013082454104549
-Compromised Number: 190
-MTD: CompleteTopologyShuffle triggered 24257.5s
-MTD: Interrupted BRUTE_FORCE at 24378.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005004414262406316
-Compromised Number: 192
-MTD: IPShuffle triggered 24457.9s
-MTD: Interrupted ENUM_HOST at 24568.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005006496993025364
-Compromised Number: 194
-MTD: ServiceDiversity triggered 24657.9s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.005014552143296507
-Compromised Number: 194
-MTD: IPShuffle triggered 24857.9s
-MTD: Interrupted ENUM_HOST at 24968.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005006394824418305
-Compromised Number: 197
-MTD: ServiceDiversity triggered 25058.1s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050142376161224035
-Compromised Number: 202
-MTD: CompleteTopologyShuffle triggered 25258.4s
-MTD: Interrupted SCAN_NEIGHBOR at 25379.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005004030670536029
-Compromised Number: 205
-MTD: OSDiversity triggered 25458.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005011995518912045
-Compromised Number: 208
-MTD: OSDiversity triggered 25659.2s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005011705976106378
-Compromised Number: 213
-MTD: IPShuffle triggered 25859.5s
-MTD: Interrupted ENUM_HOST at 25970.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005005748495396471
-Compromised Number: 217
-MTD: ServiceDiversity triggered 26059.5s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005013461813535207
-Compromised Number: 220
-MTD: IPShuffle triggered 26259.8s
-MTD: Interrupted ENUM_HOST at 26371.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005005323973213326
-Compromised Number: 221
-MTD: CompleteTopologyShuffle triggered 26460.6s
-MTD: Interrupted ENUM_HOST at 26580.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005003616996164775
-Compromised Number: 222
-MTD: ServiceDiversity triggered 26660.9s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005012779862626011
-Compromised Number: 225
-MTD: IPShuffle triggered 26861.4s
-MTD: Interrupted ENUM_HOST at 26973.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005004978647526814
-Compromised Number: 228
-MTD: OSDiversity triggered 27062.7s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005010387231761953
-Compromised Number: 231
-MTD: OSDiversity triggered 27262.9s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_NEIGHBOR
-MTD Frequency: 0.00501031559399751
-Compromised Number: 235
-MTD: IPShuffle triggered 27463.0s
-MTD: Interrupted SCAN_PORT at 27575.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005004506555226914
-Compromised Number: 238
-MTD: ServiceDiversity triggered 27664.7s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_NEIGHBOR
-MTD Frequency: 0.005011777431956031
-Compromised Number: 240
-MTD: IPShuffle triggered 27865.6s
-MTD: Interrupted SCAN_PORT at 27976.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005004147544261649
-Compromised Number: 243
-MTD: ServiceDiversity triggered 28065.6s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005011342013572858
-Compromised Number: 244
-MTD: ServiceDiversity triggered 28266.2s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005011243737996108
-Compromised Number: 249
-MTD: OSDiversity triggered 28466.8s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005009294106317113
-Compromised Number: 253
-MTD: OSDiversity triggered 28668.2s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050087148651768035
-Compromised Number: 258
-MTD: IPShuffle triggered 28868.2s
-MTD: Interrupted SCAN_PORT at 28978.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005003693959487621
-Compromised Number: 262
-MTD: CompleteTopologyShuffle triggered 29068.4s
-MTD: Interrupted ENUM_HOST at 29188.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005001954809864543
-Compromised Number: 265
-MTD: ServiceDiversity triggered 29270.3s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005010093618896383
-Compromised Number: 266
-MTD: IPShuffle triggered 29470.4s
-MTD: Interrupted ENUM_HOST at 29580.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005003300502668882
-Compromised Number: 268
-MTD: CompleteTopologyShuffle triggered 29670.7s
-MTD: Interrupted ENUM_HOST at 29791.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050015148655349105
-Compromised Number: 268
-MTD: ServiceDiversity triggered 29871.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005009823955173205
-Compromised Number: 270
-MTD: ServiceDiversity triggered 30071.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005009661631721157
-Compromised Number: 271
-MTD: ServiceDiversity triggered 30271.9s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005009336558333837
-Compromised Number: 272
-MTD: ServiceDiversity triggered 30473.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005009275906101776
-Compromised Number: 273
-MTD: ServiceDiversity triggered 30673.5s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005009153231255944
-Compromised Number: 275
-MTD: CompleteTopologyShuffle triggered 30873.6s
-MTD: Interrupted SCAN_PORT at 30993.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050010090438663505
-Compromised Number: 276
-MTD: IPShuffle triggered 31074.3s
-MTD: Interrupted SCAN_PORT at 31184.4s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005002504197485892
-Compromised Number: 277
-MTD: OSDiversity triggered 31275.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005006982110896824
-Compromised Number: 277
-MTD: OSDiversity triggered 31475.6s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_NEIGHBOR
-MTD Frequency: 0.005006818893084358
-Compromised Number: 279
-MTD: IPShuffle triggered 31676.4s
-MTD: Interrupted SCAN_PORT at 31786.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005002085461721044
-Compromised Number: 280
-MTD: IPShuffle triggered 31877.3s
-MTD: Interrupted ENUM_HOST at 31987.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005001979337469313
-Compromised Number: 282
-MTD: CompleteTopologyShuffle triggered 32077.9s
-MTD: Interrupted ENUM_HOST at 32198.1s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005000290572376796
-Compromised Number: 284
-MTD: OSDiversity triggered 32278.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005006465612366577
-Compromised Number: 285
-MTD: IPShuffle triggered 32478.1s
-MTD: Interrupted SCAN_PORT at 32588.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005001743237955233
-Compromised Number: 286
-MTD: ServiceDiversity triggered 32678.2s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005007886483399017
-Compromised Number: 288
-MTD: ServiceDiversity triggered 32878.9s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005007551662429297
-Compromised Number: 288
-MTD: IPShuffle triggered 33079.7s
-MTD: Interrupted SCAN_PORT at 33190.4s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005001449855902427
-Compromised Number: 289
-MTD: ServiceDiversity triggered 33280.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005007488562124156
-Compromised Number: 289
-MTD: CompleteTopologyShuffle triggered 33480.3s
-MTD: Interrupted BRUTE_FORCE at 33600.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00499992578510043
-Compromised Number: 290
-MTD: OSDiversity triggered 33680.7s
-STATS BEFORE MTD OPERATION
-Current Attack: BRUTE_FORCE
-MTD Frequency: 0.005005749572356056
-Compromised Number: 291
-MTD: OSDiversity triggered 33881.4s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005005581170795733
-Compromised Number: 294
-MTD: IPShuffle triggered 34081.8s
-MTD: Interrupted EXPLOIT_VULN at 34192.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005001170997842243
-Compromised Number: 295
-MTD: OSDiversity triggered 34282.1s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005005265907404328
-Compromised Number: 297
-MTD: IPShuffle triggered 34482.2s
-MTD: Interrupted SCAN_PORT at 34592.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005001115382142519
-Compromised Number: 299
-MTD: CompleteTopologyShuffle triggered 34682.7s
-MTD: Interrupted ENUM_HOST at 34803.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004999456428356142
-Compromised Number: 301
-MTD: ServiceDiversity triggered 34883.0s
-STATS BEFORE MTD OPERATION
-Current Attack: EXPLOIT_VULN
-MTD Frequency: 0.0050065137842634656
-Compromised Number: 302
-MTD: ServiceDiversity triggered 35083.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005006650659899583
-Compromised Number: 306
-MTD: ServiceDiversity triggered 35284.2s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050063729051284455
-Compromised Number: 311
-MTD: IPShuffle triggered 35485.2s
-MTD: Interrupted SCAN_NEIGHBOR at 35595.6s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005000613384141126
-Compromised Number: 314
-MTD: IPShuffle triggered 35685.9s
-MTD: Interrupted SCAN_PORT at 35796.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005000553985038901
-Compromised Number: 316
-MTD: CompleteTopologyShuffle triggered 35886.7s
-MTD: Interrupted BRUTE_FORCE at 36007.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004999026579445311
-Compromised Number: 318
-MTD: IPShuffle triggered 36087.4s
-MTD: Interrupted SCAN_PORT at 36197.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050002893620863225
-Compromised Number: 321
-MTD: ServiceDiversity triggered 36290.5s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050053412589080555
-Compromised Number: 322
-MTD: CompleteTopologyShuffle triggered 36491.3s
-MTD: Interrupted ENUM_HOST at 36611.5s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004998429937909179
-Compromised Number: 324
-MTD: CompleteTopologyShuffle triggered 36691.5s
-MTD: Interrupted ENUM_HOST at 36811.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0049983795456516
-Compromised Number: 325
-MTD: ServiceDiversity triggered 36891.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005005099752011252
-Compromised Number: 326
-MTD: CompleteTopologyShuffle triggered 37092.5s
-MTD: Interrupted SCAN_PORT at 37213.2s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004998232682437995
-Compromised Number: 327
-MTD: OSDiversity triggered 37292.9s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050034568131575065
-Compromised Number: 327
-MTD: ServiceDiversity triggered 37493.0s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050048681719182374
-Compromised Number: 327
-MTD: ServiceDiversity triggered 37693.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00500489507167448
-Compromised Number: 329
-MTD: CompleteTopologyShuffle triggered 37893.9s
-MTD: Interrupted SCAN_PORT at 38014.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004998053993132663
-Compromised Number: 330
-MTD: OSDiversity triggered 38095.7s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005003166642682429
-Compromised Number: 333
-MTD: ServiceDiversity triggered 38296.0s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005004316384372422
-Compromised Number: 336
-MTD: ServiceDiversity triggered 38496.3s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005004346617673583
-Compromised Number: 338
-MTD: OSDiversity triggered 38697.1s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005002895638647374
-Compromised Number: 341
-MTD: IPShuffle triggered 38897.9s
-MTD: Interrupted SCAN_PORT at 39008.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004998881954002693
-Compromised Number: 345
-MTD: ServiceDiversity triggered 39098.1s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005004026709939573
-Compromised Number: 348
-MTD: CompleteTopologyShuffle triggered 39298.3s
-MTD: Interrupted SCAN_PORT at 39418.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_NEIGHBOR
-MTD Frequency: 0.004997617931681186
-Compromised Number: 349
-MTD: IPShuffle triggered 39498.9s
-MTD: Interrupted ENUM_HOST at 39609.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.004998829278399767
-Compromised Number: 349
-MTD: CompleteTopologyShuffle triggered 39699.5s
-MTD: Interrupted BRUTE_FORCE at 39819.7s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.004997530868434625
-Compromised Number: 349
-MTD: CompleteTopologyShuffle triggered 39902.8s
-MTD: Interrupted SCAN_PORT at 40022.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004997145641326936
-Compromised Number: 349
-MTD: OSDiversity triggered 40103.3s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005002073242608627
-Compromised Number: 350
-MTD: OSDiversity triggered 40303.7s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.00500195321281
-Compromised Number: 351
-MTD: ServiceDiversity triggered 40503.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005003191813829812
-Compromised Number: 352
-MTD: ServiceDiversity triggered 40704.7s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0050030991690063874
-Compromised Number: 356
-MTD: CompleteTopologyShuffle triggered 40905.5s
-MTD: Interrupted SCAN_PORT at 41025.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004996842979282481
-Compromised Number: 360
-MTD: OSDiversity triggered 41107.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005001527399436882
-Compromised Number: 360
-MTD: OSDiversity triggered 41307.4s
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.005001490375424889
-Compromised Number: 361
-MTD: IPShuffle triggered 41507.6s
-MTD: Interrupted BRUTE_FORCE at 41617.8s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.0049978634058170535
-Compromised Number: 362
-MTD: ServiceDiversity triggered 41708.4s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005002386579858176
-Compromised Number: 364
-MTD: IPShuffle triggered 41908.7s
-MTD: Interrupted ENUM_HOST at 42018.9s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004997754853797355
-Compromised Number: 366
-MTD: IPShuffle triggered 42109.7s
-MTD: Interrupted SCAN_PORT at 42222.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: SCAN_PORT
-MTD Frequency: 0.004997399034625841
-Compromised Number: 367
-MTD: CompleteTopologyShuffle triggered 42310.1s
-MTD: Interrupted ENUM_HOST at 42430.3s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004996430664243071
-Compromised Number: 370
-MTD: ServiceDiversity triggered 42510.2s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005002200198335848
-Compromised Number: 372
-MTD: OSDiversity triggered 42710.3s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050011264654282826
-Compromised Number: 377
-MTD: CompleteTopologyShuffle triggered 42910.9s
-MTD: Interrupted BRUTE_FORCE at 43031.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004996392238924865
-Compromised Number: 380
-MTD: ServiceDiversity triggered 43111.2s
-STATS BEFORE MTD OPERATION
-Current Attack: BRUTE_FORCE
-MTD Frequency: 0.005002130873348127
-Compromised Number: 382
-MTD: OSDiversity triggered 43311.8s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.0050009070097199
-Compromised Number: 383
-MTD: CompleteTopologyShuffle triggered 43513.6s
-MTD: Interrupted ENUM_HOST at 43634.0s!
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.004996100609906753
-Compromised Number: 385
-MTD: OSDiversity triggered 43714.9s
-STATS BEFORE MTD OPERATION
-Current Attack: ENUM_HOST
-MTD Frequency: 0.005000527798548039
-Compromised Number: 385
-MTD: ServiceDiversity triggered 43914.9s
+Host Compromise Ratio: 0.225
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.30434782608695654
+MTD: OSDiversity triggered 9622.9s
+STATS BEFORE MTD OPERATION
+MTD Frequency: 0.00504958118689978
+Compromised Number: 47
+Host Compromise Ratio: 0.235
+Number of Vulns: 0
+Num Exposed Endpoints: 5
+Attack Path Exposure Score: 0.2608695652173913
+MTD: CompleteTopologyShuffle triggered 9825.0s
+MTD: Interrupted SCAN_PORT at 9946.8s!

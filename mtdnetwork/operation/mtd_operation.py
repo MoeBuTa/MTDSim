@@ -85,7 +85,7 @@ class MTDOperation:
             logging.info(f"STATS BEFORE MTD OPERATION")
             logging.info(f"MTD Frequency: {mtd_freq}")
             logging.info(f"Compromised Number: {compromised_num}")
-            logging.info(f"Host Compromise ration: {compromised_num/len(self.network.get_hosts())}")
+            logging.info(f"Host Compromise Ratio: {compromised_num/len(self.network.get_hosts())}")
             # logging.info(f"Scan Port Compromise Ratio: {scan_port/compromised_num}")
             # logging.info(f"Exploit Vuln Compromise Ratio: {exploit_vlun/compromised_num}")
             # logging.info(f"Brute Force Compromise Ratio: {brute_force/compromised_num}")
