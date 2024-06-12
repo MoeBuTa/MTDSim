@@ -3,6 +3,7 @@ import logging
 import simpy
 from mtdnetwork.component.mtd_scheme import MTDScheme
 from mtdnetwork.statistic.evaluation import Evaluation
+import numpy as np
 
 
 class MTDOperation:
@@ -71,28 +72,47 @@ class MTDOperation:
             evaluation = Evaluation(self.network, self.adversary)
             mtd_freq = evaluation.mtd_execution_frequency()
             compromised_num = evaluation.compromised_num()
+            host_compromise_ratio = compromised_num/len(self.network.get_hosts())
+
             # scan_port = len(evaluation.compromise_record_by_attack_action('SCAN_PORT'))
             # exploit_vlun = len(evaluation.compromise_record_by_attack_action('EXPLOIT_VULN'))
             # brute_force = len(evaluation.compromise_record_by_attack_action('BRUTE_FORCE'))
 
-            # evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
+            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+            if evaluation_results:
+                total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+
+                # Iterate through each evaluation result
+                for result in evaluation_results:
+                    if result['host_compromise_ratio'] != 0:  # Check if there was any compromise
+                        total_time_to_compromise += result['time_to_compromise']
+                        total_compromises += 1
+                    total_asr += result['attack_success_rate']
+
+                # Calculate overall averages
+                overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+                overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+            else:
+                overall_asr_avg = 0
+                overall_mttc_avg = 0
 
             # logging.info(f"MTD Stats: {mtd_stats}")
             #logging.info(f"Current Attack: {current_attack}")
             # logging.info(f"Attack Stats: {attack_stats}")
             # logging.info(f"Number of Compromised Hosts: {compromised_hosts}")
             # logging.info(f"Evaluation Results: {evaluation_results}")
-            logging.info(f"STATS BEFORE MTD OPERATION")
-            logging.info(f"MTD Frequency: {mtd_freq}")
-            logging.info(f"Compromised Number: {compromised_num}")
-            logging.info(f"Host Compromise Ratio: {compromised_num/len(self.network.get_hosts())}")
             # logging.info(f"Scan Port Compromise Ratio: {scan_port/compromised_num}")
             # logging.info(f"Exploit Vuln Compromise Ratio: {exploit_vlun/compromised_num}")
             # logging.info(f"Brute Force Compromise Ratio: {brute_force/compromised_num}")
-            logging.info(f"Number of Vulns: {num_vulns}")
+
+            logging.info(f"STATS BEFORE MTD OPERATION")
+            logging.info(f"Host Compromise Ratio: {host_compromise_ratio}")
             logging.info(f"Num Exposed Endpoints: {exposed_endpoints}")
             logging.info(f"Attack Path Exposure Score: {attack_path_exposure}")
+            logging.info(f"Attack Success Rate: {overall_asr_avg}")
 
+            logging.info(f"MTD Frequency: {mtd_freq}")
+            logging.info(f"Time to Compromise: {overall_mttc_avg}")
 
 
             # register an MTD
