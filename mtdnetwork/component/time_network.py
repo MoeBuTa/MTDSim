@@ -18,6 +18,7 @@ class TimeNetwork(Network):
         super().__init__(total_nodes=total_nodes, total_endpoints=total_endpoints, total_subnets=total_subnets,
                          total_layers=total_layers, target_layer=target_layer, total_database=total_database)
         self.init_network()
+        self.last_mtd_triggered_time = 0
 
     def setup_network(self):
         """
@@ -59,6 +60,8 @@ class TimeNetwork(Network):
     def set_unfinished_mtd(self, mtd):
         self._unfinished_mtd[mtd.get_resource_type()] = mtd
 
+    def set_last_mtd_triggered_time(self, time):
+        self.last_mtd_triggered_time = time
 
 
 

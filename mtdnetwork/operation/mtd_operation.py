@@ -82,9 +82,8 @@ class MTDOperation:
             if evaluation_results:
                 total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
 
-                # Iterate through each evaluation result
                 for result in evaluation_results:
-                    if result['host_compromise_ratio'] != 0:  # Check if there was any compromise
+                    if result['host_compromise_ratio'] != 0:  
                         total_time_to_compromise += result['time_to_compromise']
                         total_compromises += 1
                     total_asr += result['attack_success_rate']
@@ -95,6 +94,9 @@ class MTDOperation:
             else:
                 overall_asr_avg = 0
                 overall_mttc_avg = 0
+
+            time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
+            self.network.last_mtd_triggered_time = self.env.now
 
             # logging.info(f"MTD Stats: {mtd_stats}")
             #logging.info(f"Current Attack: {current_attack}")
@@ -113,6 +115,7 @@ class MTDOperation:
 
             logging.info(f"MTD Frequency: {mtd_freq}")
             logging.info(f"Time to Compromise: {overall_mttc_avg}")
+            logging.info(f"Time Since Last MTD: {time_since_last_mtd}")
 
 
             # register an MTD
