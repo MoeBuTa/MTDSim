@@ -3,13 +3,14 @@ import logging
 import simpy
 from mtdnetwork.component.mtd_scheme import MTDScheme
 from mtdnetwork.statistic.evaluation import Evaluation
+from mtdnetwork.statistic.scorer import Scorer
 import numpy as np
 from mtdnetwork.mtdai.mtd_ai import update_target_model, choose_action, replay, calculate_reward
-
+import pandas as pd
 
 class MTDAIOperation:
 
-    def __init__(self, env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
+    def __init__(self, scorer ,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
                  gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None):
         """
@@ -46,12 +47,15 @@ class MTDAIOperation:
         self.epsilon_decay = epsilon_decay
         self.train_start = train_start
         self.batch_size = batch_size
+        self.scorer = scorer
+        
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
             for k, v in self.network.get_unfinished_mtd().items():
                 self._mtd_scheme.suspend_mtd(v)
         self.env.process(self._mtd_trigger_action())
+        
 
     def _mtd_trigger_action(self):
         """
@@ -75,6 +79,8 @@ class MTDAIOperation:
                 # register an MTD
                 if not self.network.get_mtd_queue():
                     self._mtd_scheme.register_mtd()
+                    # Register the mtd in scorer as well
+                    self.scorer.register_mtd(self._mtd_scheme._mtd_register_scheme)
                 # trigger an MTD
                 if self.network.get_suspended_mtd():
                     mtd = self._mtd_scheme.trigger_suspended_mtd()
@@ -208,13 +214,14 @@ class MTDAIOperation:
     
 
     def get_state_and_time_series(self):
+
         evaluation = Evaluation(self.network, self.adversary)
 
         exposed_endpoints = len(self.network.get_exposed_endpoints())
         attack_path_exposure = self.network.attack_path_exposure()
         evaluation = Evaluation(self.network, self.adversary)
         compromised_num = evaluation.compromised_num()
-        host_compromise_ratio = compromised_num/len(self.network.get_hosts())
+        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
         evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
         if evaluation_results:
@@ -234,6 +241,18 @@ class MTDAIOperation:
 
         time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
         mtd_freq = evaluation.mtd_execution_frequency()
+        features = self.scorer.get_statistics()
 
-        return np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg]), np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
+        # Gather statistics on the types of vulnerabilities that were exploited
+        # eg. RoA score, impact and complexity
+        average_roa_score = sum(features['Vulnerabilities Exploited']['roa'])/len(features['Vulnerabilities Exploited']['roa']) if features['Vulnerabilities Exploited']['roa'] else 0
+
+        print(average_roa_score)
+  
+        risk = 1
+        return_on_attack = 1
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg])
+        features_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd, average_roa_score])
+ 
+        return state_array, features_array
     

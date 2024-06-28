@@ -26,7 +26,7 @@ def create_network(state_size, action_size, time_series_size):
     output = Dense(action_size)(z)
 
     model = Model(inputs=[static_input, time_series_input], outputs=output)
-    model.compile(loss='mse', optimizer=Adam(lr=0.001))
+    model.compile(loss='mse', optimizer=Adam(learning_rate=0.001))
     return model
 
 # Define a function to update the target network

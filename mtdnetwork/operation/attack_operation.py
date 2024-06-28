@@ -6,7 +6,7 @@ from mtdnetwork.data.constants import ATTACK_DURATION
 
 
 class AttackOperation:
-    def __init__(self, env, end_event, adversary, proceed_time=0):
+    def __init__(self, scorer, env, end_event, adversary, proceed_time=0):
         """
 
         :param env: the parameter to facilitate simPY env framework
@@ -21,6 +21,7 @@ class AttackOperation:
         self._interrupted_mtd = None
         self._proceed_time = proceed_time
         self.logging = False
+        self.scorer = scorer
 
     def proceed_attack(self):
         if self.adversary.get_curr_process() == 'SCAN_HOST':
@@ -280,7 +281,7 @@ class AttackOperation:
                         if vuln.exploitability > 1:
                             vuln.exploitability = 1
                         # todo: record vulnerability roa, impact, and complexity
-                        # self.scorer.add_vuln_compromise(self.curr_time, vuln)
+                        self.scorer.add_vuln_compromise(self.env.now, vuln)
             self.update_compromise_progress(self.env.now, self._proceed_time)
             self._scan_neighbors()
         else:
