@@ -23,7 +23,6 @@ from collections import deque
 import random
 import threading
 import queue
-from mtdnetwork.statistic.scorer import Scorer
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 mtd_strategies = [
@@ -296,7 +295,7 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
 def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
-                       target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False, scorer = Scorer()):
+                       target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False):
     """
 
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
@@ -319,7 +318,7 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
     
 
     # Environment and agent settings
-    state_size = 4  # HCR, Exposed Endpoints, Attack Success Rate, Attack Path Exposure Score
+    state_size = 7  # HCR, Exposed Endpoints, Attack Success Rate, Attack Path Exposure Score, Return on Attack Score, Attack Path Variability, Risk
     time_series_size = 2  # Time Since Last MTD, MTTC
     action_size = 2  # Deploy or don't deploy MTD technique
 
@@ -329,6 +328,7 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
     target_network.set_weights(main_network.get_weights())
 
     memory = deque(maxlen=2000)
+
 
     # Parameters
     gamma = 0.95  # discount rate
@@ -365,16 +365,15 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
         # snapshot_checkpoint.save_initialised(time_network, adversary)
         snapshot_checkpoint.save_snapshots_by_network_size(time_network, adversary)
 
-    # Initialise scorer object for features record
-    scorer.set_initial_statistics(time_network)
+
 
     # start attack
-    attack_operation = AttackOperation(scorer= scorer, env=env, end_event=end_event, adversary=adversary, proceed_time=0)
+    attack_operation = AttackOperation(env=env, end_event=end_event, adversary=adversary, proceed_time=0)
     attack_operation.proceed_attack()
 
     # start mtd
     if scheme != 'None':
-        mtd_operation = MTDAIOperation(scorer=scorer, env=env, end_event=end_event, network=time_network, scheme=scheme,
+        mtd_operation = MTDAIOperation(env=env, end_event=end_event, network=time_network, scheme=scheme,
                                      attack_operation=attack_operation, proceed_time=0,
                                      mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                      main_network=main_network, target_network=target_network, memory=memory, 

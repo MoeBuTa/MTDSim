@@ -25,5 +25,8 @@ class TargetNetwork(Network):
         self.scorer.set_initial_statistics(self)
         self.update_host_information()
         self.add_attack_path_exposure()
+        ##
+        self.add_shortest_path()
+        
 
 

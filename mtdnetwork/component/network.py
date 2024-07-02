@@ -69,13 +69,16 @@ class Network:
         self.service_dict = {}
         self.service_count = {}
         self.total_vulns = 0
+        # self.total_vulns_lst = []
+        # self.vuln_dict_lst = []
         self.total_services = 0
         self.scorer = Scorer()
         self.users_to_nodes_ratio = users_to_nodes_ratio
         self.prob_user_reuse_pass = prob_user_reuse_pass
-
+   
         self.target_node = None
         self.target_layer = target_layer
+
 
     def init_network(self):
         self.assign_tags()
@@ -92,6 +95,8 @@ class Network:
         for host_id in self.nodes:
             host = self.get_host(host_id)
             host.swap_network(self)
+
+
 
     def gen_graph(self, min_nodes_per_subnet=2, max_subnets_per_layer=5, subnet_m_ratio=0.2,
                   prob_inter_layer_edge=0.4):
@@ -605,6 +610,17 @@ class Network:
         """
         self.scorer.add_attack_path_exposure(self.attack_path_exposure())
 
+    def add_shortest_path(self):
+        """
+
+        Returns:
+            Shortest Attack Path Variability (SAPV): changes on shortest attack paths over time
+        """
+        shortest_path = self.get_path_from_exposed(self.target_node, self.graph)[0]
+       
+        self.scorer.add_shortest_path(shortest_path)
+
+
     def attack_path_exposure(self):
         """
         Gets the total attack path exposure, scoring each node based on the % of new vulnerabilities found in each node on the shortest path to the target_node out of 1
@@ -943,6 +959,16 @@ class Network:
     def get_total_vulns(self):
         return self.total_vulns
 
+    def record_current_total_vulns(self):
+        for host_id in self.nodes:
+            host = self.get_host(host_id)
+            vulns = host.get_all_vulns()
+            self.total_vulns += len(vulns)
+        self.total_vulns_lst.append(self.total_vulns)
+    
+    def record_current_vuln_dict(self):
+        self.vuln_dict_lst.append(self.get_vuln_dict())
+
     def get_vuln_dict(self):
         """
         Gets all the vulnerabilities for every hosts and puts them in vuln_dict
@@ -961,6 +987,7 @@ class Network:
                     self.vuln_count[v.get_id()] += 1
                 else:
                     self.vuln_count[v.get_id()] = 1
+        
         return self.vuln_count
 
     def get_total_services(self):

@@ -1,6 +1,6 @@
 # import mtdnetwork.irrelevant_stuff.exceptions as exceptions
 
-
+import numpy as np
 class Statistics:
 
     def __init__(self, record_type):
@@ -71,6 +71,7 @@ class VulnStatistics(Statistics):
         self.roa_list = []
         self.impact_list = []
         self.complexity_list = []
+        self.risk_list = []
         self.has_os_dependency = 0
         self.has_dependent_vulns = 0
         super().__init__(record_type)
@@ -80,6 +81,7 @@ class VulnStatistics(Statistics):
         self.roa_list.append(vuln.roa())
         self.impact_list.append(vuln.impact)
         self.complexity_list.append(vuln.complexity)
+        self.risk_list.append(vuln.risk())
         self.has_os_dependency += 1 if vuln.has_os_dependency else 0
         self.has_dependent_vulns += 1 if vuln.has_dependent_vulns else 0
 
@@ -91,6 +93,7 @@ class VulnStatistics(Statistics):
             "cumulative exploited vulns": cumulative_exploited_vulns,
             "roa": self.roa_list,
             "impact": self.impact_list,
+            "risk": self.risk_list,
             "complexity": self.complexity_list,
             "total had os dependency": self.has_os_dependency,
             "total were dependent on another vuln": self.has_dependent_vulns
@@ -133,6 +136,7 @@ class Scorer:
         self.host_pass_spray_compromises = CompromiseStatistics("Password Spray Compromises")
         self.user_account_leaks = Statistics("User Account Has Been Leaked By Compromise")
         self.attack_path_exposure = []
+        self.shortest_path_record = []
 
         # Gather statistics on the types of vulnerabilities that were exploited
         # eg. RoA score, impact and complexity
@@ -140,6 +144,8 @@ class Scorer:
 
         self.last_mtd = None
         self.mtd_statistics = []
+
+
 
     def register_mtd(self, mtd_strategy):
         self.mtd_statistics.append(MTDStatistics(str(mtd_strategy)))
@@ -207,6 +213,9 @@ class Scorer:
     def add_attack_path_exposure(self, score):
         self.attack_path_exposure.append(score)
 
+    def add_shortest_path(self, score):
+        self.shortest_path_record.append(score)
+
     def set_initial_statistics(self, network):
         """
         Collects statistics on the initial state of the network
@@ -268,7 +277,6 @@ class Scorer:
 
     def get_statistics(self):
         stats = self.stats
-
         stats["Host Compromises"] = self.host_compromises.get_dict()
         stats["Vuln Compromises"] = self.host_vuln_compromises.get_dict()
         stats["Reuse Password Compromises"] = self.host_reuse_pass_compromises.get_dict()

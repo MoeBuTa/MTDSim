@@ -41,3 +41,4 @@ class OSDiversity(MTD):
         # Update Attack Path Exposure for target networks
         if self.network.get_network_type() == 0:
             self.network.add_attack_path_exposure()
+        self.network.add_shortest_path()

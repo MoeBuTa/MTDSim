@@ -139,6 +139,23 @@ class Vulnerability:
         The x100 is because impact is expressed as a value 1-10 on CVE
         """
         return (self.complexity * self.impact) / self.exploit_time()
+    
+    def risk(self):
+        """
+        Psuedo risk of this vulnerability.
+        
+        Risk is defined as the product of the likelihood of exploitation and the impact.
+        The likelihood can be adjusted based on exploit attempts and other factors if needed.
+
+        Purpose: Measures the potential danger or threat posed by a vulnerability from the defender's perspective.
+
+        Returns:
+            The calculated risk value.
+        """
+        likelihood = self.complexity  # Likelihood of exploitation is based on complexity
+        impact = self.impact  # Impact value
+        
+        return likelihood * impact
 
     def initial_roa(self):
         return (self.complexity * self.impact) / (constants.VULN_MIN_EXPLOIT_TIME +
@@ -192,6 +209,19 @@ class Service:
                    for v in self.vulnerabilities
                    if v.roa() > roa_threshold and not v.is_exploited()
                ][:constants.SERVICE_TOP_X_VULNS_TO_RETURN]
+    
+        
+    # def get_vulns_risk(self, risk_threshold=0):
+    #     """
+    #     Returns:
+    #         the top X vulnerabilities in terms of Risk of the service that have not been exploited yet
+    #     """
+    #     return [
+    #                v
+    #                for v in self.vulnerabilities
+    #                if v.risk() > risk_threshold and not v.is_exploited()
+    #            ][:constants.SERVICE_TOP_X_VULNS_TO_RETURN]
+ 
 
     def get_all_vulns(self):
         return self.vulnerabilities
