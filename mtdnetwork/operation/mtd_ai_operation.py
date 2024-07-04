@@ -71,7 +71,14 @@ class MTDAIOperation:
 
             state, time_series = self.get_state_and_time_series()
 
-            action = choose_action(state, time_series, self.main_network, 2, self.epsilon)
+            # Static network degradation factor
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 100: # The number 100 is just a temperory threshold
+                action = 1
+            else:
+                action = choose_action(state, time_series, self.main_network, 2, self.epsilon)
+            logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))
+            if action == 1 or self.network.get_last_mtd_triggered_time() == 0:
+                self.network.set_last_mtd_triggered_time(self.env.now)
             logging.info('Action: %s' % action)
 
             if action == 1:

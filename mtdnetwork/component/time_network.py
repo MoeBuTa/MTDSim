@@ -20,6 +20,7 @@ class TimeNetwork(Network):
         self.init_network()
         self.last_mtd_triggered_time = 0
 
+
     def setup_network(self):
         """
         Using the generated graph, generates a host for each node on the graph.
@@ -56,13 +57,15 @@ class TimeNetwork(Network):
 
     def get_unfinished_mtd(self):
         return self._unfinished_mtd
+    
+    def get_last_mtd_triggered_time(self):
+        return self.last_mtd_triggered_time
 
     def set_unfinished_mtd(self, mtd):
         self._unfinished_mtd[mtd.get_resource_type()] = mtd
 
     def set_last_mtd_triggered_time(self, time):
         self.last_mtd_triggered_time = time
-
 
 
 
