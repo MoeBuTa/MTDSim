@@ -293,7 +293,7 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
     return evaluation
 
-def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
+def execute_ai_simulation(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False):
     """
@@ -320,7 +320,7 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
     # Environment and agent settings
     state_size = 7  # HCR, Exposed Endpoints, Attack Success Rate, Attack Path Exposure Score, Return on Attack Score, Attack Path Variability, Risk
     time_series_size = 2  # Time Since Last MTD, MTTC
-    action_size = 2  # Deploy or don't deploy MTD technique
+    action_size = 5  # Deploy or don't deploy MTD technique
 
     # Create main and target models
     main_network = create_network(state_size, action_size, time_series_size)

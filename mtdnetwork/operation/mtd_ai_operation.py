@@ -75,18 +75,18 @@ class MTDAIOperation:
             if (self.env.now - self.network.get_last_mtd_triggered_time()) > 100: # The number 100 is just a temperory threshold
                 action = 1
             else:
-                action = choose_action(state, time_series, self.main_network, 2, self.epsilon)
+                action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
             logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))
-            if action == 1 or self.network.get_last_mtd_triggered_time() == 0:
+            if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
                 self.network.set_last_mtd_triggered_time(self.env.now)
             logging.info('Action: %s' % action)
 
-            if action == 1:
+            if action > 0:
                 # register an MTD
                 if not self.network.get_mtd_queue():
-                    self._mtd_scheme.register_mtd()
+                    self._mtd_scheme.register_mtd(mtd_action=action)
                     # Register the mtd in scorer as well
-                    self.network.scorer.register_mtd(self._mtd_scheme._mtd_register_scheme)
+                    self.network.scorer.register_mtd(self._mtd_scheme.register_mtd(action))
                 # trigger an MTD
                 if self.network.get_suspended_mtd():
                     mtd = self._mtd_scheme.trigger_suspended_mtd()
