@@ -79,7 +79,7 @@ class AttackOperation:
 
     def _scan_port(self):
         """
-        raise an SCAN_PORT action
+        raise an SCAN_PORT action 
         """
         self.adversary.set_curr_process('SCAN_PORT')
         self._attack_process = self.env.process(self._execute_attack_action(ATTACK_DURATION['SCAN_PORT'],

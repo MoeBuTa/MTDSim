@@ -295,7 +295,7 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
 def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
-                       target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False):
+                       target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False, features = 'all'):
     """
 
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
@@ -313,12 +313,13 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
     :param total_database: the number of database nodes used for computing DAP algorithm
     :param terminate_compromise_ratio: terminate the simulation if reached compromise ratio
     :param new_network: True: create new snapshots based on network size, False: load snapshots based on network size
+    :param features: all: the metrics/features that will be used for the model 
     """
 
     
 
     # Environment and agent settings
-    state_size = 7  # HCR, Exposed Endpoints, Attack Success Rate, Attack Path Exposure Score, Return on Attack Score, Attack Path Variability, Risk
+    state_size = len(features)  # HCR, Exposed Endpoints, Attack Success Rate, Attack Path Exposure Score, Return on Attack Score, Attack Path Variability, Risk
     time_series_size = 2  # Time Since Last MTD, MTTC
     action_size = 2  # Deploy or don't deploy MTD technique
 
@@ -378,7 +379,7 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
                                      mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                      main_network=main_network, target_network=target_network, memory=memory, 
                                      gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, 
-                                     batch_size=batch_size, train_start=train_start)
+                                     batch_size=batch_size, train_start=train_start, features=features)
         mtd_operation.proceed_mtd()
 
     # save snapshot by time
