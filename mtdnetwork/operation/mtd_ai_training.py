@@ -4,13 +4,14 @@ import simpy
 from mtdnetwork.component.mtd_scheme import MTDScheme
 from mtdnetwork.statistic.evaluation import Evaluation
 import numpy as np
-from mtdnetwork.mtdai.mtd_ai import choose_action
+from mtdnetwork.mtdai.mtd_ai import update_target_model, choose_action, replay, calculate_reward
 import pandas as pd
 
-class MTDAIOperation:
+class MTDAITraining:
 
     def __init__(self,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
-                 mtd_trigger_interval=None, custom_strategies=None, main_network=None, epsilon=None):
+                 mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
+                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None):
         """
         :param env: the parameter to facilitate simPY env framework
         :param network: the simulation network
@@ -37,8 +38,16 @@ class MTDAIOperation:
         self.reserve_resource = simpy.Resource(self.env, 1)
 
         self.main_network = main_network
+        self.target_network = target_network
+        self.memory = memory
+        self.gamma = gamma
         self.epsilon = epsilon
+        self.epsilon_min = epsilon_min
+        self.epsilon_decay = epsilon_decay
+        self.train_start = train_start
+        self.batch_size = batch_size
 
+        
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
@@ -144,6 +153,13 @@ class MTDAIOperation:
         self.network.get_mtd_stats().append_mtd_operation_record(mtd, start_time, finish_time, duration)
         # interrupt adversary
         self._interrupt_adversary(env, mtd)
+
+        # update reinforcement learning model
+        new_state, new_time_series = self.get_state_and_time_series()
+        reward = calculate_reward(state, time_series, new_state, new_time_series)
+        done = False
+        self.memory.append((state, time_series, action, reward, new_state, new_time_series, done))
+        replay(self.memory, self.main_network, self.target_network, self.batch_size, self.gamma, self.epsilon, self.epsilon_min, self.epsilon_decay, self.train_start)
 
         # Update time since last MTD operation
         self.network.last_mtd_triggered_time = self.env.now
