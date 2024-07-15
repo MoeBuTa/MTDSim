@@ -77,6 +77,7 @@ class MTDAIOperation:
             else:
                 action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
             logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))
+
             if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
                 self.network.set_last_mtd_triggered_time(self.env.now)
             logging.info('Action: %s' % action)
@@ -258,7 +259,7 @@ class MTDAIOperation:
 
         
 
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk ])
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk])
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  

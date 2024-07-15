@@ -35,6 +35,9 @@ def update_target_model(target_network, main_network):
 
 # Function to act based on model's output
 def choose_action(state, time_series, main_network, action_size, epsilon):
+    state = state.reshape((1,-1))
+    time_series = time_series.reshape((1,-1))
+
     if np.random.rand() <= epsilon:
         return random.randrange(action_size)
     act_values = main_network.predict([state, time_series])
@@ -42,10 +45,16 @@ def choose_action(state, time_series, main_network, action_size, epsilon):
 
 # Learning function
 def replay(memory, main_network, target_network, batch_size, gamma, epsilon, epsilon_min, epsilon_decay, train_start):
+    
     if len(memory) < train_start:
         return
     minibatch = random.sample(memory, batch_size)
     for state, time_series, action, reward, next_state, next_time_series, done in minibatch:
+        state = state.reshape((1,-1))
+        time_series = time_series.reshape((1,-1))
+        next_state = next_state.reshape((1,-1))
+        next_time_series = next_time_series.reshape((1,-1))
+
         target = main_network.predict([state, time_series])
         if done:
             target[0][action] = reward
