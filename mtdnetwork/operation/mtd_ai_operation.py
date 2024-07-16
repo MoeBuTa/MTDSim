@@ -61,9 +61,10 @@ class MTDAIOperation:
                 return
 
             state, time_series = self.get_state_and_time_series()
+            self.network.get_security_metric_stats().append_security_metric_record(state, time_series, self.env.now)
 
             # Static network degradation factor
-            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 100: # The number 100 is just a temperory threshold
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000: # The number 100 is just a temperory threshold
                 action = 1
             else:
                 action = choose_action(state, time_series, self.main_network, 5, self.epsilon)

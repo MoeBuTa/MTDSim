@@ -15,6 +15,7 @@ class Evaluation:
         self._adversary = adversary
         self._mtd_record = network.get_mtd_stats().get_record()
         self._attack_record = adversary.get_attack_stats().get_record()
+        self._security_metric_record = network.get_security_metric_stats().get_record()
 
     def compromised_num(self, record=None):
         if record is None:
@@ -231,3 +232,33 @@ class Evaluation:
 
     def get_network(self):
         return self._network
+    
+    def visualize_host_compromise_ratio(self):
+        record = self._security_metric_record
+        plt.figure(1, figsize=(16, 5))
+        plt.plot(record['times'], record['host_compromise_ratio'], label='Host Compromise Ratio')
+        plt.xlabel('Time', weight='bold', fontsize=18)
+        plt.ylabel('Host Compromise Ratio', weight='bold', fontsize=18)
+        plt.legend()
+        plt.savefig(directory + '/experimental_data/plots/host_compromise_ratio.png')
+        plt.show()
+
+    def visualize_attack_path_exposure_score(self):
+        record = self._security_metric_record
+        plt.figure(1, figsize=(16, 5))
+        plt.plot(record['times'], record['attack_path_exposure_score'], label='Attack Path Exposure Score')
+        plt.xlabel('Time', weight='bold', fontsize=18)
+        plt.ylabel('Attack Path Exposure Score', weight='bold', fontsize=18)
+        plt.legend()
+        plt.savefig(directory + '/experimental_data/plots/attack_path_exposure_score.png')
+        plt.show()
+    
+    def visualize_risk(self):
+        record = self._security_metric_record
+        plt.figure(1, figsize=(16, 5))
+        plt.plot(record['times'], record['risk'], label='Risk')
+        plt.xlabel('Time', weight='bold', fontsize=18)
+        plt.ylabel('Risk', weight='bold', fontsize=18)
+        plt.legend()
+        plt.savefig(directory + '/experimental_data/plots/risk.png')
+        plt.show()
