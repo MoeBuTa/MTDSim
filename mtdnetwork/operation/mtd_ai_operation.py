@@ -226,8 +226,8 @@ class MTDAIOperation:
     
     def get_state_and_time_series(self):
 
-        
-        evaluation = Evaluation(self.network, self.adversary)
+   
+        evaluation = Evaluation(self.network, self.adversary, self.features)
         exposed_endpoints = len(self.network.get_exposed_endpoints())
         attack_path_exposure = self.network.attack_path_exposure()
         
@@ -235,7 +235,7 @@ class MTDAIOperation:
         shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
         
 
-        evaluation = Evaluation(self.network, self.adversary)
+        evaluation = Evaluation(self.network, self.adversary, self.features)
         compromised_num = evaluation.compromised_num()
         host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 

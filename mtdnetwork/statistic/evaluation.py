@@ -9,12 +9,20 @@ directory = os.getcwd()
 
 
 class Evaluation:
-    def __init__(self, network, adversary):
+    def __init__(self, network, adversary, features):
 
         self._network = network
         self._adversary = adversary
         self._mtd_record = network.get_mtd_stats().get_record()
         self._attack_record = adversary.get_attack_stats().get_record()
+        self.features = '_'.join(features)
+        self.create_directory()
+
+    def create_directory(self):
+        # Create the directory if it does not exist(for saving figures)
+        path = os.path.join(directory, 'experimental_data', 'plots', self.features)
+        os.makedirs(path, exist_ok=True)
+
 
     def compromised_num(self, record=None):
         if record is None:
@@ -111,7 +119,7 @@ class Evaluation:
         """
         plt.figure(1, figsize=(15, 12))
         nx.draw(self._network.graph, pos=self._network.pos, node_color=self._network.colour_map, with_labels=True)
-        plt.savefig(directory + '/experimental_data/plots/network.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features + '/network.png')
         plt.show()
 
     def draw_hacker_visible(self):
@@ -169,7 +177,7 @@ class Evaluation:
         plt.xlabel('Time', weight='bold', fontsize=18)
         plt.ylabel('Hosts', weight='bold', fontsize=18)
         fig.tight_layout()
-        plt.savefig(directory + '/experimental_data/plots/attack_action_record_group_by_host.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features+'/attack_action_record_group_by_host.png')
         plt.show()
 
     def visualise_attack_operation(self):
@@ -201,7 +209,7 @@ class Evaluation:
         plt.xlabel('Time', weight='bold', fontsize=18)
         plt.ylabel('Attack Actions', weight='bold', fontsize=18)
         fig.tight_layout()
-        plt.savefig(directory + '/experimental_data/plots/attack_record.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features + '/attack_record.png')
         plt.show()
 
     def visualise_mtd_operation(self):
@@ -226,7 +234,7 @@ class Evaluation:
         plt.xlabel('Time', weight='bold', fontsize=18)
         plt.ylabel('MTD Strategies', weight='bold', fontsize=18)
         fig.tight_layout()
-        plt.savefig(directory + '/experimental_data/plots/mtd_record.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features + '/mtd_record.png')
         plt.show()
 
     def get_network(self):

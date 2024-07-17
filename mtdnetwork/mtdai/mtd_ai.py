@@ -91,5 +91,5 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
     # Penalty for high Time Since Last MTD
     if "attack_path_exposure" in features and next_time_series[2] > current_time_series[2]:
         reward -= (next_time_series[2] - current_time_series[2]) * mtd_time_penalty
-
+    
     return reward

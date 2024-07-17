@@ -391,7 +391,7 @@ def execute_ai_simulation(start_time=0, finish_time=None, scheme='random', mtd_i
         env.run(until=(finish_time - start_time))
     else:
         env.run(until=end_event)
-    evaluation = Evaluation(network=time_network, adversary=adversary)
+    evaluation = Evaluation(network=time_network, adversary=adversary, features=features)
 
     # sim_item = scheme
     # if scheme == 'single':
