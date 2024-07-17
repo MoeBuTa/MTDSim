@@ -72,15 +72,13 @@ class MTDAITraining:
             state, time_series = self.get_state_and_time_series()
 
             # Static network degradation factor
-            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000:
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000:
                 action = 1
             else:
                 action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
-            logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))
 
             if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
                 self.network.set_last_mtd_triggered_time(self.env.now)
-            logging.info('Action: %s' % action)
 
             if action > 0:
                 # register an MTD
@@ -96,7 +94,6 @@ class MTDAITraining:
             
                 if self.logging:
                     logging.info('MTD: %s triggered %.1fs' % (mtd.get_name(), self.env.now + self._proceed_time))
-                logging.info('MTD: %s triggered %.1fs' % (mtd.get_name(), self.env.now + self._proceed_time))
 
                 resource = self._get_mtd_resource(mtd)
                 if len(resource.users) == 0:
