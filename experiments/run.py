@@ -25,7 +25,9 @@ import random
 import threading
 import queue
 from tensorflow.keras.models import load_model
-
+from tensorflow.keras.losses import MeanSquaredError
+import tensorflow as tf
+import keras
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 mtd_strategies = [
@@ -296,6 +298,11 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
     return evaluation
 
+# Define and register the custom mse function
+@keras.saving.register_keras_serializable
+def mse(y_true, y_pred):
+    return MeanSquaredError()(y_true, y_pred)
+
 def execute_ai_training(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
@@ -423,8 +430,10 @@ def execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interv
     :param new_network: True: create new snapshots based on network size, False: load snapshots based on network size
     :param epsilon: exploration rate
     """
+    custom_objects = {'mse': mse}
+    main_network = load_model('AI_model/main_network_final.h5', custom_objects=custom_objects)
 
-    main_network = load_model('AI_model/main_network_final.h5')
+    # main_network = load_model('AI_model/main_network_final.h5')
 
     # initialise the simulation
     env = simpy.Environment()
