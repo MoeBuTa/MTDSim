@@ -4,7 +4,7 @@ from matplotlib.lines import Line2D
 import networkx as nx
 import pandas as pd
 import os
-
+import seaborn as sns
 directory = os.getcwd()
 
 
@@ -33,24 +33,39 @@ class Evaluation:
         else:
             return 0
 
-    # def mean_time_to_compromise_10_timestamp(self):
+    def mean_time_to_compromise_10_timestamp(self):
+        record = self._attack_record
+        step = max(record['finish_time']) / 10
+        MTTC = []
+        for i in range(1, 11, 1):
+            compromised_num = self.compromised_num_by_timestamp(step * i)
+            if compromised_num == 0:
+                continue
+            attack_action_time = record[(record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])) &
+                                        (record['finish_time'] <= step * i)]['duration'].sum()
+            MTTC.append({'Mean Time to Compromise': attack_action_time / compromised_num, 'Time': step * i})
+    
+        return MTTC
+    
+    # def mean_time_to_compromise_intervals(self, time_intervals):
     #     record = self._attack_record
-    #     step = max(record['finish_time']) / 10
     #     MTTC = []
-    #     for i in range(1, 11, 1):
-    #         compromised_num = self.compromised_num_by_timestamp(step * i)
+
+    #     for time in time_intervals:
+    #         compromised_num = self.compromised_num_by_timestamp(time)
     #         if compromised_num == 0:
     #             continue
     #         attack_action_time = record[(record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])) &
-    #                                     (record['finish_time'] <= step * i)]['duration'].sum()
-    #         MTTC.append({'Mean Time to Compromise': attack_action_time / compromised_num, 'Time': step * i})
-    #
+    #                                     (record['finish_time'] <= time)]['duration'].sum()
+    #         MTTC.append({'Mean Time to Compromise': attack_action_time / compromised_num, 'Time': time})
+        
     #     return MTTC
-    # def compromised_num_by_timestamp(self, timestamp):
-    #     record = self._attack_record
-    #     compromised_hosts = record[(record['compromise_host_uuid'] != 'None') &
-    #                                (record['finish_time'] <= timestamp)]['compromise_host_uuid'].unique()
-    #     return len(compromised_hosts)
+    
+    def compromised_num_by_timestamp(self, timestamp):
+        record = self._attack_record
+        compromised_hosts = record[(record['compromise_host_uuid'] != 'None') &
+                                   (record['finish_time'] <= timestamp)]['compromise_host_uuid'].unique()
+        return len(compromised_hosts)
 
     def mtd_execution_frequency(self):
         """
@@ -236,6 +251,29 @@ class Evaluation:
         fig.tight_layout()
         plt.savefig(directory + '/experimental_data/plots/' + self.features + '/mtd_record.png')
         plt.show()
+
+
+    def visualise_against_mttc(self):
+         """
+        visualise a specific feature against a specific security posture (e.g. mttc score)
+        """
+         record = self._mtd_record
+         res = pd.DataFrame(self.mean_time_to_compromise_10_timestamp())
+        #  # Create a row with NaN values to pad
+        #  nan_row = pd.DataFrame({'Mean Time to Compromise': [np.nan], 'Time': [np.nan]})
+        #  # Append the NaN row at the beginning of the DataFrame
+        #  res = pd.concat([nan_row, res], ignore_index=True)
+        #  df = pd.concat([record, res], axis=1)
+
+         plt.figure(figsize=(14, 8))
+         plt.plot(res['Time'], res['Mean Time to Compromise'], marker='o', linestyle='-', color='b')
+         plt.xlabel('Time')
+         plt.ylabel('Mean Time to Compromise')
+         plt.title('Mean Time to Compromise over 10 time stamp')
+         plt.grid(True)
+         plt.savefig(directory + '/experimental_data/plots/' + self.features + '/against_mttc_score.png')
+         plt.show()
+         return res
 
     def get_network(self):
         return self._network
