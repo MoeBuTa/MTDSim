@@ -51,6 +51,8 @@ class MTDScheme:
             self._mtd_register_scheme = self._register_mtd_alternatively
         elif scheme == 'single':
             self._mtd_register_scheme = self._register_mtd_single
+        elif scheme == 'mtd_ai':
+            self._mtd_register_scheme = self._register_mtd_ai
 
     def _mtd_register(self, mtd):
         """
@@ -87,6 +89,12 @@ class MTDScheme:
     def _register_mtd_single(self):
         self._mtd_register(mtd=self._mtd_custom_strategies)
 
+    def _register_mtd_ai(self, mtd_technique):
+        """
+        register an MTD for AI scheme
+        """
+        self._mtd_register(mtd=self._mtd_custom_strategies[mtd_technique - 1])
+
     def trigger_suspended_mtd(self):
         """
         trigger an MTD from suspended list
@@ -109,11 +117,13 @@ class MTDScheme:
         self.network.get_mtd_stats().add_total_suspended()
         self.network.get_suspended_mtd()[mtd_strategy.get_priority()] = mtd_strategy
 
-    def register_mtd(self):
+    def register_mtd(self, mtd_action=None):
         """
         call an MTD register scheme function
         """
-        self._mtd_register_scheme()
+        if mtd_action is not None:
+            self._mtd_register_scheme(mtd_action)
+        self._mtd_register_scheme(mtd_action)
 
     def get_scheme(self):
         return self._scheme

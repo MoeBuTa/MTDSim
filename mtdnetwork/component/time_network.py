@@ -1,6 +1,7 @@
 from mtdnetwork.component.network import Network
 from mtdnetwork.statistic.mtd_statistics import MTDStatistics
 from mtdnetwork.component.host import Host
+from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatistics
 import random
 
 
@@ -10,6 +11,7 @@ class TimeNetwork(Network):
                  target_layer=4, total_database=5, terminate_compromise_ratio=0.8):
         # default parameters
         self._mtd_stats = MTDStatistics()
+        self._security_metric_stats = SecurityMetricStatistics()
         self._mtd_queue = []
         self._suspension_queue = dict()
         self._unfinished_mtd = dict()
@@ -66,6 +68,9 @@ class TimeNetwork(Network):
 
     def set_last_mtd_triggered_time(self, time):
         self.last_mtd_triggered_time = time
+    
+    def get_security_metric_stats(self):
+        return self._security_metric_stats
 
 
 
