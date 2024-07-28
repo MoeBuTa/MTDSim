@@ -393,7 +393,7 @@ def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai
             env.run(until=(finish_time - start_time))
         else:
             env.run(until=end_event)
-        evaluation = Evaluation(network=time_network, adversary=adversary, features=features)
+        # evaluation = Evaluation(network=time_network, adversary=adversary, features=features)
 
         if episode % 10 == 0:
             update_target_model(target_network, main_network)
@@ -411,7 +411,7 @@ def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai
 def mse(y_true, y_pred):
     return MeanSquaredError()(y_true, y_pred)
 
-def execute_ai_model(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def execute_ai_model(model, features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        epsilon=1.0):
@@ -436,7 +436,7 @@ def execute_ai_model(features, start_time=0, finish_time=None, scheme='mtd_ai', 
     custom_objects = {'mse': 'mse'}
      
     # main_network = load_model('AI_model/main_network_final.h5', custom_objects=custom_objects)
-    main_network = legacy_h5_format.load_model_from_hdf5("AI_model/main_network_final.h5", custom_objects=custom_objects)
+    main_network = legacy_h5_format.load_model_from_hdf5(f"AI_model/{model}.h5", custom_objects=custom_objects)
     # main_network = load_model('AI_model/main_network_final.h5')
 
     # initialise the simulation
