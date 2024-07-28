@@ -32,17 +32,19 @@ class Evaluation:
         else:
             return 0
 
-    def mean_time_to_compromise_10_timestamp(self):
+    def mean_time_to_compromise_10_timestamp(self, run_index = 1):
+        interval = 10
         record = self._attack_record
-        step = max(record['finish_time']) / 10
+        step = max(record['finish_time']) / interval
         MTTC = []
-        for i in range(1, 11, 1):
+        for i in range(1, interval + 1, 1):
             compromised_num = self.compromised_num_by_timestamp(step * i)
             if compromised_num == 0:
+                MTTC.append({f'Mean Time to Compromise_{run_index}': None, 'Time': step * i})
                 continue
             attack_action_time = record[(record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])) &
                                         (record['finish_time'] <= step * i)]['duration'].sum()
-            MTTC.append({'Mean Time to Compromise': attack_action_time / compromised_num, 'Time': step * i})
+            MTTC.append({f'Mean Time to Compromise_{run_index}': attack_action_time / compromised_num, f'Time_{run_index}': step * i})
     
         return MTTC
     
