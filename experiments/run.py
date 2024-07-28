@@ -301,7 +301,7 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
 
 
-def execute_ai_training(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000):
@@ -376,7 +376,7 @@ def execute_ai_training(start_time=0, finish_time=None, scheme='mtd_ai', mtd_int
 
         # start mtd
         if scheme != 'None':
-            mtd_operation = MTDAITraining(env=env, end_event=end_event, network=time_network, scheme=scheme,
+            mtd_operation = MTDAITraining(features = features, env=env, end_event=end_event, network=time_network, scheme=scheme,
                                         attack_operation=attack_operation, proceed_time=0,
                                         mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                         main_network=main_network, target_network=target_network, memory=memory, 
@@ -393,7 +393,7 @@ def execute_ai_training(start_time=0, finish_time=None, scheme='mtd_ai', mtd_int
             env.run(until=(finish_time - start_time))
         else:
             env.run(until=end_event)
-        evaluation = Evaluation(network=time_network, adversary=adversary)
+        evaluation = Evaluation(network=time_network, adversary=adversary, features=features)
 
         if episode % 10 == 0:
             update_target_model(target_network, main_network)
@@ -403,7 +403,7 @@ def execute_ai_training(start_time=0, finish_time=None, scheme='mtd_ai', mtd_int
         
         print(f"Episode: {episode}, Epsilon: {epsilon}")
     
-    main_network.save('AI_model/main_network_final.h5')
+    main_network.save(f'AI_model/main_network_final_{"#".join(features)}.h5')
     print("Training completed and model saved.")
 
 # Define and register the custom mse function

@@ -15,7 +15,7 @@ class Evaluation:
         self._adversary = adversary
         self._mtd_record = network.get_mtd_stats().get_record()
         self._attack_record = adversary.get_attack_stats().get_record()
-        self.features = features
+        self.features = "#".join(features)
         self.create_directories()
 
     def create_directories(self):
@@ -252,23 +252,23 @@ class Evaluation:
         plt.show()
 
 
-    def visualise_against_mttc(self):
+    def visualise_against_mttc(self, runs = 100):
          """
         visualise a specific feature against a specific security posture (e.g. mttc score)
         """
-         record = self._mtd_record
+        #  record = self._mtd_record
          res = pd.DataFrame(self.mean_time_to_compromise_10_timestamp())
         #  # Create a row with NaN values to pad
         #  nan_row = pd.DataFrame({'Mean Time to Compromise': [np.nan], 'Time': [np.nan]})
         #  # Append the NaN row at the beginning of the DataFrame
         #  res = pd.concat([nan_row, res], ignore_index=True)
         #  df = pd.concat([record, res], axis=1)
-
+        #  print(res)
          plt.figure(figsize=(14, 8))
          plt.plot(res['Time'], res['Mean Time to Compromise'], marker='o', linestyle='-', color='b')
          plt.xlabel('Time')
          plt.ylabel('Mean Time to Compromise')
-         plt.title('Mean Time to Compromise over 10 time stamp')
+         plt.title(f'Mean Time to Compromise over 10 time stamp ({self.features})')
          plt.grid(True)
          plt.savefig(directory + '/experimental_data/plots/' + self.features + '/against_mttc_score.png')
          plt.show()
