@@ -411,7 +411,7 @@ def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai
 def mse(y_true, y_pred):
     return MeanSquaredError()(y_true, y_pred)
 
-def execute_ai_model(model, features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        epsilon=1.0):
