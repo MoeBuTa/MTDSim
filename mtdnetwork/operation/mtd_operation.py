@@ -57,66 +57,6 @@ class MTDOperation:
                 if not self.end_event.triggered:  # Check if the event has not been triggered yet
                     self.end_event.succeed()
                 return
-            
-            # test - getting some stats out of the network everytime an MTD is triggered
-            # timenetwork.py
-            # mtd_stats = self.network.get_mtd_stats().dict()
-            exposed_endpoints = len(self.network.get_exposed_endpoints())
-            attack_path_exposure = self.network.attack_path_exposure()
-            # advesary.py
-            num_vulns = len(self.adversary.get_curr_vulns())
-            # attack_stats = self.adversary.get_statistics()
-            # compromised_hosts = len(self.adversary.get_compromised_hosts())
-            # current_attack = self.adversary.get_curr_process()
-            # evaluation.py
-            evaluation = Evaluation(self.network, self.adversary)
-            mtd_freq = evaluation.mtd_execution_frequency()
-            compromised_num = evaluation.compromised_num()
-            host_compromise_ratio = compromised_num/len(self.network.get_hosts())
-
-            # scan_port = len(evaluation.compromise_record_by_attack_action('SCAN_PORT'))
-            # exploit_vlun = len(evaluation.compromise_record_by_attack_action('EXPLOIT_VULN'))
-            # brute_force = len(evaluation.compromise_record_by_attack_action('BRUTE_FORCE'))
-
-            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-            if evaluation_results:
-                total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
-
-                for result in evaluation_results:
-                    if result['host_compromise_ratio'] != 0:  
-                        total_time_to_compromise += result['time_to_compromise']
-                        total_compromises += 1
-                    total_asr += result['attack_success_rate']
-
-                # Calculate overall averages
-                overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-                overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-            else:
-                overall_asr_avg = 0
-                overall_mttc_avg = 0
-
-            time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
-            self.network.last_mtd_triggered_time = self.env.now
-
-            # logging.info(f"MTD Stats: {mtd_stats}")
-            #logging.info(f"Current Attack: {current_attack}")
-            # logging.info(f"Attack Stats: {attack_stats}")
-            # logging.info(f"Number of Compromised Hosts: {compromised_hosts}")
-            # logging.info(f"Evaluation Results: {evaluation_results}")
-            # logging.info(f"Scan Port Compromise Ratio: {scan_port/compromised_num}")
-            # logging.info(f"Exploit Vuln Compromise Ratio: {exploit_vlun/compromised_num}")
-            # logging.info(f"Brute Force Compromise Ratio: {brute_force/compromised_num}")
-
-            logging.info(f"STATS BEFORE MTD OPERATION")
-            logging.info(f"Host Compromise Ratio: {host_compromise_ratio}")
-            logging.info(f"Num Exposed Endpoints: {exposed_endpoints}")
-            logging.info(f"Attack Path Exposure Score: {attack_path_exposure}")
-            logging.info(f"Attack Success Rate: {overall_asr_avg}")
-
-            logging.info(f"MTD Frequency: {mtd_freq}")
-            logging.info(f"Time to Compromise: {overall_mttc_avg}")
-            logging.info(f"Time Since Last MTD: {time_since_last_mtd}")
-
 
             # register an MTD
             if not self.network.get_mtd_queue():

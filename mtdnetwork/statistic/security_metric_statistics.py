@@ -21,4 +21,6 @@ class SecurityMetricStatistics:
         })
     
     def get_record(self):
-        return pd.DataFrame(self._metric_record)
+        df = pd.DataFrame(self._metric_record)
+        df = df.drop_duplicates(subset=['times'], keep='last')
+        return df

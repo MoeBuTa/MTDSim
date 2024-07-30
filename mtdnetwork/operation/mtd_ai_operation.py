@@ -59,27 +59,39 @@ class MTDAIOperation:
                 if not self.end_event.triggered:  # Check if the event has not been triggered yet (will crash without this check)
                     self.end_event.succeed()
                 return
-
+            
             state, time_series = self.get_state_and_time_series()
-            self.network.get_security_metric_stats().append_security_metric_record(state, time_series, self.env.now)
+            self.network.get_security_metric_stats().append_security_metric_record(state, time_series, round(self.env.now, -2))
 
-            # Static network degradation factor
-            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000: # The number 100 is just a temperory threshold
-                action = 1
+            # if using the mtd_ai scheme
+            if self._mtd_scheme._scheme == 'mtd_ai':
+
+                # Static network degradation factor
+                if (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000: # The number 100 is just a temperory threshold
+                    action = 1
+                else:
+                    action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
+                
+                if self.logging:
+                    logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))
+
+                if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
+                    self.network.set_last_mtd_triggered_time(self.env.now)
+                if self.logging:
+                    logging.info('Action: %s' % action)
             else:
-                action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
-            logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))
-
-            if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
-                self.network.set_last_mtd_triggered_time(self.env.now)
-            logging.info('Action: %s' % action)
+                action = 1 #if using a different scheme other than mtd_ai set action to 1 to trigger MTD on timer
 
             if action > 0:
                 # register an MTD
                 if not self.network.get_mtd_queue():
-                    self._mtd_scheme.register_mtd(mtd_action=action)
-                    # Register the mtd in scorer as well
-                    self.network.scorer.register_mtd(self._mtd_scheme.register_mtd(action))
+                    if self._mtd_scheme._scheme == 'mtd_ai':
+                        self._mtd_scheme.register_mtd(mtd_action=action)
+                        # Register the mtd in scorer as well
+                        self.network.scorer.register_mtd(self._mtd_scheme.register_mtd(action))
+                    else:
+                        self._mtd_scheme.register_mtd(mtd_action=None)
+                        self.network.scorer.register_mtd(self._mtd_scheme.register_mtd(mtd_action=None))
                 # trigger an MTD
                 if self.network.get_suspended_mtd():
                     mtd = self._mtd_scheme.trigger_suspended_mtd()
@@ -88,7 +100,6 @@ class MTDAIOperation:
             
                 if self.logging:
                     logging.info('MTD: %s triggered %.1fs' % (mtd.get_name(), self.env.now + self._proceed_time))
-                logging.info('MTD: %s triggered %.1fs' % (mtd.get_name(), self.env.now + self._proceed_time))
 
                 resource = self._get_mtd_resource(mtd)
                 if len(resource.users) == 0:
@@ -169,7 +180,7 @@ class MTDAIOperation:
                 self.attack_operation.set_interrupted_mtd(mtd)
                 self.attack_operation.get_attack_process().interrupt()
                 
-                if logging:
+                if self.logging:
                     logging.info(
                     'MTD: Interrupted %s at %.1fs!' % (self.attack_operation.get_adversary().get_curr_process(),
                                                        env.now + self._proceed_time))
