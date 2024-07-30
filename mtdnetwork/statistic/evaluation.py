@@ -15,7 +15,7 @@ class Evaluation:
         self._adversary = adversary
         self._mtd_record = network.get_mtd_stats().get_record()
         self._attack_record = adversary.get_attack_stats().get_record()
-        self.features = features
+        self.features = "#".join(features)
         self.create_directories()
 
     def create_directories(self):

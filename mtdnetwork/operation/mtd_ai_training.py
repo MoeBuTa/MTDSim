@@ -272,7 +272,7 @@ class MTDAITraining:
         filtered_features = {key: features_dict[key] for key in self.features if key in features_dict}
 
         state_array = np.array([value for key, value in filtered_features.items()])
-        # print(state_array)
+        print(state_array)
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  
