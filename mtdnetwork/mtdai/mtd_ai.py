@@ -83,7 +83,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
     mtd_time_penalty = 50
 
     for index, feature in enumerate(features):
-        reward += (current_state[index] - next_state[index]) * weights[feature]
+        reward += (next_state[index] - current_state[index]) * weights[feature]
 
     # # Reward for reducing Host Compromise Ratio
     # reward += (current_state[0] - next_state[0]) * hcr_weight
