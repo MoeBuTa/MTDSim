@@ -47,6 +47,8 @@ class MTDAITraining:
         self.train_start = train_start
         self.batch_size = batch_size
 
+        self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
+
         
 
     def proceed_mtd(self):
@@ -181,7 +183,7 @@ class MTDAITraining:
                 self.attack_operation.set_interrupted_mtd(mtd)
                 self.attack_operation.get_attack_process().interrupt()
                 
-                if logging:
+                if self.logging:
                     logging.info(
                     'MTD: Interrupted %s at %.1fs!' % (self.attack_operation.get_adversary().get_curr_process(),
                                                        env.now + self._proceed_time))
@@ -231,6 +233,10 @@ class MTDAITraining:
         compromised_num = evaluation.compromised_num()
         host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
+        current_attack = self.adversary.get_curr_process()
+        current_attack_value = self.attack_dict.get(current_attack, 7)
+
+
         evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
         if evaluation_results:
             total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
@@ -256,7 +262,7 @@ class MTDAITraining:
 
         
 
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk])
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  

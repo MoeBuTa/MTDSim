@@ -6,11 +6,12 @@ from mtdnetwork.statistic.evaluation import Evaluation
 import numpy as np
 from mtdnetwork.mtdai.mtd_ai import choose_action
 import pandas as pd
+import random
 
 class MTDAIOperation:
 
     def __init__(self,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
-                 mtd_trigger_interval=None, custom_strategies=None, main_network=None, epsilon=None):
+                 mtd_trigger_interval=None, custom_strategies=None, main_network=None, attacker_sensitivity=None, epsilon=None):
         """
         :param env: the parameter to facilitate simPY env framework
         :param network: the simulation network
@@ -26,6 +27,7 @@ class MTDAIOperation:
         self.network = network
         self.attack_operation = attack_operation
         self.adversary = adversary
+        self.attacker_sensitivity = attacker_sensitivity
         self.logging = False
 
         self._mtd_scheme = MTDScheme(network=network, scheme=scheme, mtd_trigger_interval=mtd_trigger_interval,
@@ -230,6 +232,13 @@ class MTDAIOperation:
         compromised_num = evaluation.compromised_num()
         host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
+        sensitivity_factor = random.random()
+        if sensitivity_factor <= self.attacker_sensitivity:
+            current_attack = self.adversary.get_curr_process()
+            current_attack_value = self.attack_dict.get(current_attack, 7)
+        else:
+            current_attack_value = 7
+
         evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
         if evaluation_results:
             total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
@@ -255,7 +264,7 @@ class MTDAIOperation:
 
         
 
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk])
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  
