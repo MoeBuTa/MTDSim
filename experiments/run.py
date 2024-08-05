@@ -304,7 +304,8 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
-                       state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000):
+                       state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000,
+                       file_name=None):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -403,7 +404,7 @@ def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai
         
         print(f"Episode: {episode}, Epsilon: {epsilon}")
     
-    main_network.save(f'AI_model/main_network_final_{"#".join(features)}.h5')
+    main_network.save(f'AI_model/main_network_{file_name}.h5')
     print("Training completed and model saved.")
 
 # Define and register the custom mse function

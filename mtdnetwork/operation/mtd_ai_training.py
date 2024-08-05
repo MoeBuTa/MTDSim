@@ -49,6 +49,8 @@ class MTDAITraining:
         self.features = features
   
 
+        self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
+
         
 
     def proceed_mtd(self):
@@ -183,7 +185,7 @@ class MTDAITraining:
                 self.attack_operation.set_interrupted_mtd(mtd)
                 self.attack_operation.get_attack_process().interrupt()
                 
-                if logging:
+                if self.logging:
                     logging.info(
                     'MTD: Interrupted %s at %.1fs!' % (self.attack_operation.get_adversary().get_curr_process(),
                                                        env.now + self._proceed_time))
@@ -229,9 +231,13 @@ class MTDAITraining:
         shortest_paths = self.network.scorer.shortest_path_record 
         shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
         
-        evaluation = Evaluation(self.network, self.adversary, self.features)
+
         compromised_num = evaluation.compromised_num()
         host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
+
+        current_attack = self.adversary.get_curr_process()
+        current_attack_value = self.attack_dict.get(current_attack, 7)
+
 
         evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
         if evaluation_results:
@@ -264,15 +270,16 @@ class MTDAITraining:
         "overall_asr_avg": overall_asr_avg,
         "roa": roa,
         "shortest_path_variability": shortest_path_variability,
-        "risk": risk
+        "risk": risk,
+        "attack_type": current_attack_value,
         }
 
-        
+        # print(features_dict)
         # Filter features_dict based on self.features list
         filtered_features = {key: features_dict[key] for key in self.features if key in features_dict}
 
         state_array = np.array([value for key, value in filtered_features.items()])
-        # print(state_array)
+
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  

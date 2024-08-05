@@ -77,7 +77,8 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
         "overall_asr_avg": 75,
         "roa": 150,
         "shortest_path_variability": 50,
-        "risk": 75
+        "risk": 75,
+        "attack_type": 150
     }
 
     mtd_time_penalty = 50

@@ -123,7 +123,8 @@ class MTDScheme:
         """
         if mtd_action is not None:
             self._mtd_register_scheme(mtd_action)
-        self._mtd_register_scheme(mtd_action)
+        else:
+            self._mtd_register_scheme()
 
     def get_scheme(self):
         return self._scheme
