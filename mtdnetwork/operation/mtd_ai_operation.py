@@ -231,7 +231,6 @@ class MTDAIOperation:
         shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
         
 
-        evaluation = Evaluation(self.network, self.adversary, self.features)
         compromised_num = evaluation.compromised_num()
         host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
@@ -265,10 +264,18 @@ class MTDAIOperation:
         risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
         roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
 
-        
-
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
-
+        state_dict = {
+            "host_compromise_ratio": host_compromise_ratio,
+            "exposed_endpoints": exposed_endpoints,
+            "attack_path_exposure": attack_path_exposure,
+            "overall_asr_avg": overall_asr_avg,
+            "roa": roa,
+            "shortest_path_variability": shortest_path_variability,
+            "risk": risk,
+            "current_attack_value": current_attack_value
+        }
+        state_array = np.array([state_dict[feature] for feature in self.features])
+        print(state_array)
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  
         return state_array, time_series_array

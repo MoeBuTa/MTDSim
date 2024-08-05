@@ -6,6 +6,8 @@ from mtdnetwork.statistic.evaluation import Evaluation
 import numpy as np
 from mtdnetwork.mtdai.mtd_ai import update_target_model, choose_action, replay, calculate_reward
 import pandas as pd
+import random
+
 
 class MTDAITraining:
 
@@ -74,12 +76,13 @@ class MTDAITraining:
                 return
 
             state, time_series = self.get_state_and_time_series()
+            action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
 
-            # Static network degradation factor
-            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000:
-                action = 1
-            else:
-                action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
+            # Static network degradation factor (if exceed 1000 force to deploy MTD)
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000 and action == 0:
+                action =  choose_action(state, time_series, self.main_network, 5, self.epsilon)
+
+                
 
             if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
                 self.network.set_last_mtd_triggered_time(self.env.now)
@@ -265,7 +268,6 @@ class MTDAITraining:
         features_dict = {
         "host_compromise_ratio" : host_compromise_ratio,
         "exposed_endpoints" : exposed_endpoints,
-
         "attack_path_exposure" : attack_path_exposure,
         "overall_asr_avg": overall_asr_avg,
         "roa": roa,
@@ -274,7 +276,8 @@ class MTDAITraining:
         "attack_type": current_attack_value,
         }
 
-        # print(features_dict)
+
+        
         # Filter features_dict based on self.features list
         filtered_features = {key: features_dict[key] for key in self.features if key in features_dict}
 
