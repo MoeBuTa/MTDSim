@@ -11,7 +11,7 @@ import random
 
 class MTDAITraining:
 
-    def __init__(self,features,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
+    def __init__(self,security_metric_record, features,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
                  gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None):
         """
@@ -49,7 +49,7 @@ class MTDAITraining:
         self.train_start = train_start
         self.batch_size = batch_size
         self.features = features
-  
+        self.security_metric_record = security_metric_record
 
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
 
@@ -228,7 +228,7 @@ class MTDAITraining:
     
     def get_state_and_time_series(self):
 
-        evaluation = Evaluation(self.network, self.adversary, self.features)
+        evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
         exposed_endpoints = len(self.network.get_exposed_endpoints())
         attack_path_exposure = self.network.attack_path_exposure()
         shortest_paths = self.network.scorer.shortest_path_record 

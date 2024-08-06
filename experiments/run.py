@@ -341,6 +341,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
     target_network.set_weights(main_network.get_weights())
 
     memory = deque(maxlen=2000)
+    security_metric_record = SecurityMetricStatistics()
 
     for episode in range(episodes):
         # initialise the simulation
@@ -378,14 +379,14 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
 
         # start mtd
         if scheme != 'None':
-            mtd_operation = MTDAITraining(features = features, env=env, end_event=end_event, network=time_network, scheme=scheme,
+            mtd_operation = MTDAITraining(security_metric_record=security_metric_record,features = features, env=env, end_event=end_event, network=time_network, scheme=scheme,
                                         attack_operation=attack_operation, proceed_time=0,
                                         mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                         main_network=main_network, target_network=target_network, memory=memory, 
                                         gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, 
                                         batch_size=batch_size, train_start=train_start)
             mtd_operation.proceed_mtd()
-
+            security_metric_record = mtd_operation.security_metric_record
         # save snapshot by time
         if checkpoints is not None:
             snapshot_checkpoint.proceed_save(time_network, adversary)
