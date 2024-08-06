@@ -9,13 +9,14 @@ directory = os.getcwd()
 
 
 class Evaluation:
-    def __init__(self, network, adversary, features):
+    def __init__(self, network, adversary, features, security_metrics_record):
 
         self._network = network
         self._adversary = adversary
         self._mtd_record = network.get_mtd_stats().get_record()
         self._attack_record = adversary.get_attack_stats().get_record()
         self.features = "#".join(features)
+        self.security_metrics_record = security_metrics_record
         self.create_directories()
 
     def create_directories(self):

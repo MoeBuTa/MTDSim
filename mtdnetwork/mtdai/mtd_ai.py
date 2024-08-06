@@ -70,20 +70,20 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
 
     # Parameters to control the scale of reward and penalty (random placeholder for now)
     weights = {
-        "host_compromise_ratio" : 100,
-        "exposed_endpoints" : 50,
-        # "mttc_weight" : 20,
-        "attack_path_exposure" : -100,
-        "overall_asr_avg": 75,
-        "roa": 150,
+        "host_compromise_ratio": -100,
+        "exposed_endpoints": -50,
+        "attack_path_exposure": -150,
+        "overall_asr_avg": 100,
+        "roa": 75,
         "shortest_path_variability": 50,
-        "risk": 75
+        "risk": -75,
+        "attack_type": 0
     }
 
     mtd_time_penalty = 50
 
     for index, feature in enumerate(features):
-        reward += (current_state[index] - next_state[index]) * weights[feature]
+        reward += (next_state[index] - current_state[index]) * weights[feature]
 
     # # Reward for reducing Host Compromise Ratio
     # reward += (current_state[0] - next_state[0]) * hcr_weight

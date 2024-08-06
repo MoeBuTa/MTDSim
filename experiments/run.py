@@ -29,6 +29,7 @@ from tensorflow.keras.losses import MeanSquaredError
 import tensorflow as tf
 import keras
 from keras.src.legacy.saving import legacy_h5_format
+from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatistics
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 mtd_strategies = [
@@ -301,10 +302,11 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
 
 
-def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
-                       state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000):
+                       state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000,
+                       file_name=None):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -403,7 +405,7 @@ def execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_ai
         
         print(f"Episode: {episode}, Epsilon: {epsilon}")
     
-    main_network.save(f'AI_model/main_network_final_{"#".join(features)}.h5')
+    main_network.save(f'AI_model/main_network_{file_name}.h5')
     print("Training completed and model saved.")
 
 # Define and register the custom mse function
@@ -414,7 +416,7 @@ def mse(y_true, y_pred):
 def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
-                       epsilon=1.0):
+                       epsilon=1.0, attacker_sensitivity = 0.5):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -438,7 +440,7 @@ def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='m
     # main_network = load_model('AI_model/main_network_final.h5', custom_objects=custom_objects)
     main_network = legacy_h5_format.load_model_from_hdf5(f"AI_model/{model}.h5", custom_objects=custom_objects)
     # main_network = load_model('AI_model/main_network_final.h5')
-
+    security_metrics_record = SecurityMetricStatistics()
     # initialise the simulation
     env = simpy.Environment()
     end_event = env.event()
@@ -467,18 +469,19 @@ def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='m
         snapshot_checkpoint.save_snapshots_by_network_size(time_network, adversary)
 
 
-    features = "#".join(features)
+ 
     # start attack
     attack_operation = AttackOperation(env=env, end_event=end_event, adversary=adversary, proceed_time=0)
     attack_operation.proceed_attack()
 
     # start mtd
     if scheme != 'None':
-        mtd_operation = MTDAIOperation(env=env, end_event=end_event, network=time_network, scheme=scheme,
+        mtd_operation = MTDAIOperation(security_metrics_record, env=env, end_event=end_event, network=time_network, scheme=scheme,
                                     attack_operation=attack_operation, proceed_time=0,
                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
-                                    main_network=main_network, epsilon=epsilon, features = features)
+                                    main_network=main_network, attacker_sensitivity=attacker_sensitivity, epsilon=epsilon, features = features)
         mtd_operation.proceed_mtd()
+        security_metrics_record = mtd_operation.security_metrics_record
 
     # save snapshot by time
     if checkpoints is not None:
@@ -489,7 +492,7 @@ def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='m
         env.run(until=(finish_time - start_time))
     else:
         env.run(until=end_event)
-    evaluation = Evaluation(network=time_network, adversary=adversary, features = features)
+    evaluation = Evaluation(network=time_network, adversary=adversary, features = features, security_metrics_record = security_metrics_record)
     return evaluation
         
     
