@@ -84,7 +84,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
 
     for index, feature in enumerate(features):
         reward += (next_state[index] - current_state[index]) * weights[feature]
-        print(reward, feature)
+        # print(reward, feature)
 
     # # Reward for reducing Host Compromise Ratio
     # reward += (current_state[0] - next_state[0]) * hcr_weight
