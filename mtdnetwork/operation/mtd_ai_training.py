@@ -265,24 +265,21 @@ class MTDAITraining:
         risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
         roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
 
-        features_dict = {
-        "host_compromise_ratio" : host_compromise_ratio,
-        "exposed_endpoints" : exposed_endpoints,
-        "attack_path_exposure" : attack_path_exposure,
-        "overall_asr_avg": overall_asr_avg,
-        "roa": roa,
-        "shortest_path_variability": shortest_path_variability,
-        "risk": risk,
-        "attack_type": current_attack_value,
-        }
+        # features_dict = {
+        # "host_compromise_ratio" : host_compromise_ratio,
+        # "exposed_endpoints" : exposed_endpoints,
+        # "attack_path_exposure" : attack_path_exposure,
+        # "overall_asr_avg": overall_asr_avg,
+        # "roa": roa,
+        # "shortest_path_variability": shortest_path_variability,
+        # "risk": risk,
+        # "attack_type": current_attack_value,
+        # }
 
 
-        
-        # Filter features_dict based on self.features list
-        filtered_features = {key: features_dict[key] for key in self.features if key in features_dict}
-
-        state_array = np.array([value for key, value in filtered_features.items()])
-
+ 
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
+ 
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  
