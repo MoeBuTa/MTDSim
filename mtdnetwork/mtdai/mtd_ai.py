@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Input, Dense, LSTM, Concatenate, ReLU
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import MeanSquaredError
 import numpy as np
 import random
 from collections import deque
@@ -26,7 +27,8 @@ def create_network(state_size, action_size, time_series_size):
     output = Dense(action_size)(z)
 
     model = Model(inputs=[static_input, time_series_input], outputs=output)
-    model.compile(loss='mse', optimizer=Adam(learning_rate=0.001))
+    #model.compile(loss=MeanSquaredError(), optimizer=Adam(learning_rate=0.001))
+    model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
     return model
 
 # Define a function to update the target network

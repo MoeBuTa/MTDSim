@@ -25,6 +25,8 @@ import random
 import threading
 import queue
 from tensorflow.keras.models import load_model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import MeanSquaredError
 
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -405,7 +407,7 @@ def execute_ai_training(start_time=0, finish_time=None, scheme='mtd_ai', mtd_int
 def execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
-                       epsilon=1.0):
+                       epsilon=1.0, attacker_sensitivity=1, model_path=None):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -425,7 +427,8 @@ def execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interv
     :param epsilon: exploration rate
     """
 
-    main_network = load_model('AI_model/main_network_final.h5')
+    main_network = load_model(model_path)
+    main_network.compile(loss=MeanSquaredError(), optimizer=Adam())
 
     # initialise the simulation
     env = simpy.Environment()
@@ -465,7 +468,7 @@ def execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interv
         mtd_operation = MTDAIOperation(env=env, end_event=end_event, network=time_network, scheme=scheme,
                                     attack_operation=attack_operation, proceed_time=0,
                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
-                                    main_network=main_network, epsilon=epsilon)
+                                    main_network=main_network, epsilon=epsilon, attacker_sensitivity=attacker_sensitivity)
         mtd_operation.proceed_mtd()
 
     # save snapshot by time

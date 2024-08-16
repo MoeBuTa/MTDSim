@@ -41,6 +41,9 @@ class MTDAIOperation:
         self.main_network = main_network
         self.epsilon = epsilon
 
+        self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
+
+
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
