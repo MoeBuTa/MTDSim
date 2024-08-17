@@ -220,7 +220,7 @@ def multiple_mtd_simulation(file_name, combination):
     return evaluations
 
 
-def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
+def execute_simulation(features, start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False):
     """
@@ -247,7 +247,7 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
     snapshot_checkpoint = SnapshotCheckpoint(env=env, checkpoints=checkpoints)
     time_network = None
     adversary = None
-
+    security_metrics_record = SecurityMetricStatistics()
     if start_time > 0:
         try:
             time_network, adversary = snapshot_checkpoint.load_snapshots_by_time(start_time)
@@ -261,10 +261,10 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
             print('set new_network=True')
     else:
         time_network = TimeNetwork(total_nodes=total_nodes, total_endpoints=total_endpoints,
-                                   total_subnets=total_subnets, total_layers=total_layers,
-                                   target_layer=target_layer, total_database=total_database,
-                                   terminate_compromise_ratio=terminate_compromise_ratio)
-        adversary = Adversary(network=time_network, attack_threshold=ATTACKER_THRESHOLD)
+                                    total_subnets=total_subnets, total_layers=total_layers,
+                                    target_layer=target_layer, total_database=total_database,
+                                    terminate_compromise_ratio=terminate_compromise_ratio)
+        adversary = Adversary(network=time_network,attack_threshold=ATTACKER_THRESHOLD)
         # snapshot_checkpoint.save_initialised(time_network, adversary)
         snapshot_checkpoint.save_snapshots_by_network_size(time_network, adversary)
 
@@ -274,10 +274,11 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
 
     # start mtd
     if scheme != 'None':
-        mtd_operation = MTDOperation(env=env, end_event=end_event, network=time_network, scheme=scheme,
+        mtd_operation = MTDOperation(features=features,security_metrics_record=security_metrics_record,env=env, end_event=end_event, network=time_network, scheme=scheme,
                                      attack_operation=attack_operation, proceed_time=0,
                                      mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
         mtd_operation.proceed_mtd()
+        security_metrics_record = mtd_operation.security_metric_record
 
     # save snapshot by time
     if checkpoints is not None:
@@ -288,7 +289,8 @@ def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_inte
         env.run(until=(finish_time - start_time))
     else:
         env.run(until=end_event)
-    evaluation = Evaluation(network=time_network, adversary=adversary)
+    
+    evaluation = Evaluation(network=time_network, adversary=adversary, features=features, security_metrics_record = security_metrics_record)
 
     # sim_item = scheme
     # if scheme == 'single':
