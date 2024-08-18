@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Input, Dense, LSTM, Concatenate, ReLU
+from tensorflow.keras.layers import Input, Dense, LSTM, Concatenate, ReLU, BatchNormalization, Dropout, Add
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import MeanSquaredError
@@ -9,25 +9,37 @@ from collections import deque
 
 # Define the neural network architecture
 def create_network(state_size, action_size, time_series_size):
-    # Feature extraction module for static features
+    # Static feature extraction module
     static_input = Input(shape=(state_size,))
-    x = Dense(128, activation='relu')(static_input)
-    x = Dense(64, activation='relu')(x)
+    x = Dense(128)(static_input)
+    x = ReLU()(x)
+    x = BatchNormalization()(x)
+    x = Dense(64)(x)
+    x = ReLU()(x)
+    x = BatchNormalization()(x)
+    x = Dropout(0.3)(x)
 
-    # Time-series analysis module for dynamic features
+    # Time-series analysis module
     time_series_input = Input(shape=(time_series_size, 1))
-    y = LSTM(64, activation='relu')(time_series_input)
-    y = Dense(32, activation='relu')(y)
+    y = LSTM(64, return_sequences=True)(time_series_input)
+    y = ReLU()(y)
+    y = BatchNormalization()(y)
+    y = LSTM(32)(y)
+    y = ReLU()(y)
+    y = BatchNormalization()(y)
+    y = Dropout(0.3)(y)
 
     # Feature fusion module
     z = Concatenate()([x, y])
-    z = Dense(64, activation='relu')(z)
+    z = Dense(64)(z)
+    z = ReLU()(z)
+    z = BatchNormalization()(z)
+    z = Dropout(0.3)(z)
 
     # Q-Network output layer
     output = Dense(action_size)(z)
 
     model = Model(inputs=[static_input, time_series_input], outputs=output)
-    #model.compile(loss=MeanSquaredError(), optimizer=Adam(learning_rate=0.001))
     model.compile(loss='mean_squared_error', optimizer=Adam(learning_rate=0.001))
     return model
 
@@ -46,8 +58,13 @@ def choose_action(state, time_series, main_network, action_size, epsilon):
     return np.argmax(act_values[0])
 
 # Learning function
+def soft_update_target_model(target_network, main_network, tau=0.1):
+    main_weights = np.array(main_network.get_weights())
+    target_weights = np.array(target_network.get_weights())
+    target_network.set_weights(tau * main_weights + (1 - tau) * target_weights)
+
+# Double Q-learning
 def replay(memory, main_network, target_network, batch_size, gamma, epsilon, epsilon_min, epsilon_decay, train_start):
-    
     if len(memory) < train_start:
         return
     minibatch = random.sample(memory, batch_size)
@@ -61,8 +78,10 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
         if done:
             target[0][action] = reward
         else:
-            t = target_network.predict([next_state, next_time_series])
-            target[0][action] = reward + gamma * np.amax(t[0])
+            t_next_action = np.argmax(main_network.predict([next_state, next_time_series])[0])
+            t_next_q = target_network.predict([next_state, next_time_series])[0][t_next_action]
+            target[0][action] = reward + gamma * t_next_q
+
         main_network.fit([state, time_series], target, epochs=1, verbose=0)
     if epsilon > epsilon_min:
         epsilon *= epsilon_decay
