@@ -39,17 +39,20 @@ class MTDOperation:
         self.features = features
 
     def get_state_and_time_series(self):
-
-    
             evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
             exposed_endpoints = len(self.network.get_exposed_endpoints())
             attack_path_exposure = self.network.attack_path_exposure()
            
-            
+
             shortest_paths = self.network.scorer.shortest_path_record 
+
      
-            shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
-            
+            if len(shortest_paths) > 1:
+                shortest_path_variability = abs(len(shortest_paths[-1]) - len(shortest_paths[-2])) / len(shortest_paths[-2])
+            else:
+                shortest_path_variability = 0  # Or handle this case differently
+
+
 
             compromised_num = evaluation.compromised_num()
             host_count = len(self.network.get_hosts())
@@ -81,7 +84,7 @@ class MTDOperation:
             risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
             roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
 
- 
+            print(attack_stats['Vulnerabilities Exploited'])
              
             state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk])
  
@@ -89,6 +92,7 @@ class MTDOperation:
             time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
     
             self.security_metric_record.append_security_metric_record(state_array, time_series_array, self.env.now)
+            print(state_array)
      
             return state_array, time_series_array
     
@@ -162,6 +166,8 @@ class MTDOperation:
             
             state, time_series = self.get_state_and_time_series()
             self.network.get_security_metric_stats().append_security_metric_record(state, time_series, round(self.env.now, -2))
+            
+
 
             suspension_queue = self.network.get_suspended_mtd()
             if suspension_queue:
@@ -188,7 +194,7 @@ class MTDOperation:
                         # suspend MTD if resource is occupied
                         self._mtd_scheme.suspend_mtd(mtd_strategy=mtd)
                         logging.info('MTD: %s suspended at %.1fs due to resource occupation' %
-                                     (mtd.get_name(), self.env.now + self._proceed_time))
+                                    (mtd.get_name(), self.env.now + self._proceed_time))
 
             # exponential distribution for triggering MTD operations
             yield self.env.timeout(exponential_variates(self._mtd_scheme.get_mtd_trigger_interval(),

@@ -54,6 +54,7 @@ class MTDScheme:
         elif scheme == 'mtd_ai':
             self._mtd_register_scheme = self._register_mtd_ai
 
+
     def _mtd_register(self, mtd):
         """
         register an MTD strategy to the queue
