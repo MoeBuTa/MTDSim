@@ -131,6 +131,52 @@ class Evaluation:
         return record[(record['name'] == action) &
                       (record['compromise_host'] != 'None')]
 
+    def get_metrics(self, env):
+        # State metrics
+
+        compromised_num = self.compromised_num()
+        host_compromise_ratio = compromised_num/len(self._network.get_hosts()) \
+
+        exposed_endpoints = len(self._network.get_exposed_endpoints())
+
+        attack_path_exposure = self._network.attack_path_exposure()
+
+        attack_stats = self._adversary.get_network().get_scorer().get_statistics()
+        risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
+        roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
+
+        shortest_paths = self._network.scorer.shortest_path_record 
+        shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
+
+        evaluation_results = self.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+        if evaluation_results:
+            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+
+            for result in evaluation_results:
+                if result['host_compromise_ratio'] != 0:  
+                    total_time_to_compromise += result['time_to_compromise']
+                    total_compromises += 1
+                total_asr += result['attack_success_rate']
+
+            overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+            overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+        else:
+            overall_asr_avg = 0
+            overall_mttc_avg = 0
+
+
+        # Time-series metrics
+        time_since_last_mtd = env.now - self._network.last_mtd_triggered_time
+        mtd_freq = self.mtd_execution_frequency()
+
+        state_array = [host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
+ 
+
+        time_series_array = [mtd_freq, overall_mttc_avg, time_since_last_mtd]
+ 
+        return [state_array, time_series_array]
+
+
     def draw_network(self):
         """
         Draws the topology of the network while also highlighting compromised and exposed endpoint nodes.
