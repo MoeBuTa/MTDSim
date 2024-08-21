@@ -273,20 +273,13 @@ def execute_simulation(features, start_time=0, finish_time=None, scheme='random'
     attack_operation.proceed_attack()
 
     # start mtd
-    if scheme != 'None':
-        mtd_operation = MTDOperation(features=features,security_metrics_record=security_metrics_record,env=env, end_event=end_event, network=time_network, scheme=scheme,
-                                     attack_operation=attack_operation, proceed_time=0,
-                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
-        mtd_operation.proceed_mtd()
-        security_metrics_record = mtd_operation.security_metric_record
-    else:
-
-        mtd_operation = MTDOperation(features=features,security_metrics_record=security_metrics_record,env=env, end_event=end_event, network=time_network, scheme=scheme,
-                                     attack_operation=attack_operation, proceed_time=0,
-                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
-        mtd_operation.proceed_mtd()
-        security_metrics_record = mtd_operation.security_metric_record
-        # print(mtd_operation.network._security_metric_stats.get_record())
+    # if scheme != 'None':
+    mtd_operation = MTDOperation(features=features,security_metrics_record=security_metrics_record,env=env, end_event=end_event, network=time_network, scheme=scheme,
+                                    attack_operation=attack_operation, proceed_time=0,
+                                    mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
+    mtd_operation.proceed_mtd()
+    security_metrics_record = mtd_operation.security_metric_record
+    print("metrics", mtd_operation.security_metric_record.get_record())
 
     # save snapshot by time
     if checkpoints is not None:

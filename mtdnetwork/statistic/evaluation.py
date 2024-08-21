@@ -173,6 +173,8 @@ class Evaluation:
  
 
         time_series_array = [mtd_freq, overall_mttc_avg, time_since_last_mtd]
+
+        self.security_metrics_record.append_security_metric_record(state_array,time_series_array, env.now)
  
         return [state_array, time_series_array]
 

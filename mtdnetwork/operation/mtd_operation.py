@@ -37,64 +37,10 @@ class MTDOperation:
         self.reserve_resource = simpy.Resource(self.env, 1)
         self.security_metric_record = security_metrics_record
         self.features = features
+        self.evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
 
-    def get_state_and_time_series(self):
-            evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
-            exposed_endpoints = len(self.network.get_exposed_endpoints())
-            attack_path_exposure = self.network.attack_path_exposure()
-           
-
-            shortest_paths = self.network.scorer.shortest_path_record 
-
-     
-            if len(shortest_paths) > 1:
-                shortest_path_variability = abs(len(shortest_paths[-1]) - len(shortest_paths[-2])) / len(shortest_paths[-2])
-            else:
-                shortest_path_variability = 0  # Or handle this case differently
-
-
-
-            compromised_num = evaluation.compromised_num()
-            host_count = len(self.network.get_hosts())
-            host_compromise_ratio = compromised_num / host_count
     
-
-   
-
-            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-            if evaluation_results:
-                total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
-
-                for result in evaluation_results:
-                    if result['host_compromise_ratio'] != 0:  
-                        total_time_to_compromise += result['time_to_compromise']
-                        total_compromises += 1
-                    total_asr += result['attack_success_rate']
-
-                overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-                overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-            else:
-                overall_asr_avg = 0
-                overall_mttc_avg = 0
-
-            time_since_last_mtd = self.env.now - self.network.get_last_mtd_triggered_time()
-            mtd_freq = evaluation.mtd_execution_frequency()
-
-            attack_stats = self.adversary.get_network().get_scorer().get_statistics()
-            risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
-            roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
-
-            print(attack_stats['Vulnerabilities Exploited'])
-             
-            state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk])
- 
-
-            time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
-    
-            self.security_metric_record.append_security_metric_record(state_array, time_series_array, self.env.now)
-            print(state_array)
-     
-            return state_array, time_series_array
+        
     
     
     def proceed_mtd(self):
@@ -103,9 +49,13 @@ class MTDOperation:
                 self._mtd_scheme.suspend_mtd(v)
         if self._mtd_scheme.get_scheme() == 'simultaneous':
             self.env.process(self._mtd_batch_trigger_action())
+            self.evaluation.get_metrics(self.env)
+        elif self._mtd_scheme.get_scheme() == 'None': # Not run any mtd (No MTD)
+            self.evaluation.get_metrics(self.env)
         else:
             self.env.process(self._mtd_trigger_action())
-        
+            self.evaluation.get_metrics(self.env)
+
 
     def _mtd_trigger_action(self):
         """
@@ -120,9 +70,6 @@ class MTDOperation:
                 if not self.end_event.triggered:  # Check if the event has not been triggered yet
                     self.end_event.succeed()
 
-                        
-            state, time_series = self.get_state_and_time_series()
-            self.network.get_security_metric_stats().append_security_metric_record(state, time_series, round(self.env.now, -2))
 
             # register an MTD
             if not self.network.get_mtd_queue():
@@ -164,10 +111,6 @@ class MTDOperation:
                     compromised_hosts=self.attack_operation.get_adversary().get_compromised_hosts()):
                 return
             
-            state, time_series = self.get_state_and_time_series()
-            self.network.get_security_metric_stats().append_security_metric_record(state, time_series, round(self.env.now, -2))
-            
-
 
             suspension_queue = self.network.get_suspended_mtd()
             if suspension_queue:
