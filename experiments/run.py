@@ -30,6 +30,7 @@ import tensorflow as tf
 import keras
 from keras.src.legacy.saving import legacy_h5_format
 from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatistics
+import numpy as np
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 mtd_strategies = [
@@ -44,6 +45,7 @@ mtd_strategies = [
     # UserShuffle
 ]
 
+features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
 
 def save_evaluation_result(file_name, evaluations):
     current_directory = os.getcwd()
@@ -134,6 +136,7 @@ def construct_average_result(results):
 
 
 def construct_experiment_result(name, mtd_interval, item, network_size):
+
     return {
         'Name': name,
         'mtd_interval': mtd_interval,
@@ -141,12 +144,19 @@ def construct_experiment_result(name, mtd_interval, item, network_size):
         'ASR': item['attack_success_rate'],
         'time_to_compromise': item['time_to_compromise'],
         'host_compromise_ratio': item['host_compromise_ratio'],
-        'network_size': network_size
+        'network_size': network_size,
+        'exposed_endpoints': item["exposed_endpoints"],
+        'attack_path_exposure': item["attack_path_exposure"],
+        'ROA': item['roa'],
+        'risk': item['risk'],
+        'shortest_path_variability': item['shortest_path_variability'],
         # 'Compromised Num': evaluation.compromised_num()
     }
 
 
-def single_mtd_simulation(file_name, combination):
+# def single_mtd_simulation(file_name, combination):
+
+def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None'):
     """
     Simulations for single mtd and no mtd
     """
@@ -162,14 +172,51 @@ def single_mtd_simulation(file_name, combination):
         for mtd_interval in [100, 200]:
             for network_size in [25, 50, 75, 100]:
                 evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
-                                                custom_strategies=mtd, total_nodes=network_size)
-                evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
+                                                custom_strategies=mtd, total_nodes=network_size, features=features)
+                if checkpoint != 'None':
+                    evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(checkpoint)
+                else:
+                    evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
                 for item in evaluation_results:
                     result = construct_experiment_result(mtd_name, mtd_interval, item, network_size)
                     evaluations.append(result)
                     mtd_evaluation.append(result)
         save_evaluation_result(file_name, mtd_evaluation)
         print(mtd_name)
+    return evaluations
+
+def single_mtd_ai_simulation(file_name,  model, start_time, finish_time, total_nodes, new_network):
+    """
+    Simulations for single ai mtd
+    """
+    evaluations = []
+   
+    scheme = 'mtd_ai'
+    # print(mtd_name, scheme)
+    for mtd_interval in [100, 200]:
+        for network_size in [25, 50, 75, 100]:
+            evaluation = execute_ai_model(
+                model=model,
+                features=features,
+                start_time=start_time,
+                finish_time=finish_time,
+                mtd_interval=mtd_interval,
+                scheme= scheme,
+                total_nodes=total_nodes,
+                new_network=new_network
+            )
+            
+            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+            # print(evaluation_results)
+            for item in evaluation_results:
+            
+                result = construct_experiment_result('mtd_ai', mtd_interval, item, network_size)
+        
+                evaluations.append(result)
+            
+
+    save_evaluation_result(file_name, evaluations)
+
     return evaluations
 
 
@@ -187,7 +234,7 @@ def dap_mtd_simulation(file_name, combination):
                 time_network, adversary = snapshot_checkpoint.load_snapshots_by_network_size(network_size)
                 mtd = OSDiversityAssignment(network=time_network, os_types=os_types)
                 evaluation = execute_simulation(scheme='single', mtd_interval=mtd_interval,
-                                                custom_strategies=mtd, total_nodes=network_size)
+                                                custom_strategies=mtd, total_nodes=network_size, features=features)
                 evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
                 for item in evaluation_results:
                     result = construct_experiment_result(mtd.get_name(), mtd_interval, item, network_size)
@@ -209,7 +256,7 @@ def multiple_mtd_simulation(file_name, combination):
         for mtd_interval in [100, 200]:
             for network_size in [25, 50, 75, 100]:
                 evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
-                                                custom_strategies=combination, total_nodes=network_size)
+                                                custom_strategies=combination, total_nodes=network_size, features=features)
                 evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
                 for item in evaluation_results:
                     result = construct_experiment_result(scheme, mtd_interval, item, network_size)
@@ -273,13 +320,13 @@ def execute_simulation(features, start_time=0, finish_time=None, scheme='random'
     attack_operation.proceed_attack()
 
     # start mtd
-    # if scheme != 'None':
-    mtd_operation = MTDOperation(features=features,security_metrics_record=security_metrics_record,env=env, end_event=end_event, network=time_network, scheme=scheme,
-                                    attack_operation=attack_operation, proceed_time=0,
-                                    mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
-    mtd_operation.proceed_mtd()
-    security_metrics_record = mtd_operation.security_metric_record
-    print("metrics", mtd_operation.security_metric_record.get_record())
+    if scheme != 'None':
+        mtd_operation = MTDOperation(features=features,security_metrics_record=security_metrics_record,env=env, end_event=end_event, network=time_network, scheme=scheme,
+                                        attack_operation=attack_operation, proceed_time=0,
+                                        mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary)
+        mtd_operation.proceed_mtd()
+        security_metrics_record = mtd_operation.security_metric_record
+    # print("metrics", mtd_operation.security_metric_record.get_record())
 
     # save snapshot by time
     if checkpoints is not None:
@@ -496,7 +543,8 @@ def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='m
         env.run(until=(finish_time - start_time))
     else:
         env.run(until=end_event)
-    evaluation = Evaluation(network=time_network, adversary=adversary, features = features, security_metrics_record = security_metrics_record)
+
+    evaluation = Evaluation(network=time_network, adversary=adversary, features=features, security_metrics_record = security_metrics_record)
     return evaluation
         
     

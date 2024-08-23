@@ -96,6 +96,7 @@ class Evaluation:
         for comp_ratio in checkpoint:
             comp_nums[comp_ratio] = host_num * comp_ratio
 
+
         for comp_ratio, comp_num in comp_nums.items():
             if 'cumulative_compromised_hosts' not in record.columns:
                 return []
@@ -115,10 +116,20 @@ class Evaluation:
 
             mtd_execution_frequency = self.mtd_execution_frequency()
 
+            state_array, time_series_array = self.get_metrics()
+            # print(state_array, time_series_array) #debug
+
             result.append({'time_to_compromise': time_to_compromise,
                            'attack_success_rate': attack_success_rate,
                            'host_compromise_ratio': comp_ratio,
-                           'mtd_execution_frequency': mtd_execution_frequency})
+                           'mtd_execution_frequency': mtd_execution_frequency,
+                           "exposed_endpoints": state_array[1],
+                           "attack_path_exposure": state_array[2],
+                           "roa": state_array[4],
+                           "shortest_path_variability": state_array[5],
+                           "risk": state_array[6],})
+
+
         return result
 
     def compromise_record_by_attack_action(self, action=None):
@@ -131,7 +142,7 @@ class Evaluation:
         return record[(record['name'] == action) &
                       (record['compromise_host'] != 'None')]
 
-    def get_metrics(self, env):
+    def get_metrics(self,env = None ):
         # State metrics
 
         compromised_num = self.compromised_num()
@@ -148,25 +159,26 @@ class Evaluation:
         shortest_paths = self._network.scorer.shortest_path_record 
         shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
 
-        evaluation_results = self.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-        if evaluation_results:
-            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+        # evaluation_results = self.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+        # if evaluation_results:
+        #     total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
 
-            for result in evaluation_results:
-                if result['host_compromise_ratio'] != 0:  
-                    total_time_to_compromise += result['time_to_compromise']
-                    total_compromises += 1
-                total_asr += result['attack_success_rate']
+        #     for result in evaluation_results:
+        #         if result['host_compromise_ratio'] != 0:  
+        #             total_time_to_compromise += result['time_to_compromise']
+        #             total_compromises += 1
+        #         total_asr += result['attack_success_rate']
 
-            overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-            overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-        else:
-            overall_asr_avg = 0
-            overall_mttc_avg = 0
+        #     overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+        #     overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+        # else:
+        overall_asr_avg = 0
+        overall_mttc_avg = 0
 
 
         # Time-series metrics
-        time_since_last_mtd = env.now - self._network.last_mtd_triggered_time
+        # time_since_last_mtd = env.now - self._network.last_mtd_triggered_time
+        time_since_last_mtd = 1
         mtd_freq = self.mtd_execution_frequency()
 
         state_array = [host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
@@ -174,7 +186,7 @@ class Evaluation:
 
         time_series_array = [mtd_freq, overall_mttc_avg, time_since_last_mtd]
 
-        self.security_metrics_record.append_security_metric_record(state_array,time_series_array, env.now)
+        # self.security_metrics_record.append_security_metric_record(state_array,time_series_array, env.now)
  
         return [state_array, time_series_array]
 
