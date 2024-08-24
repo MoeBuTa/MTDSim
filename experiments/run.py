@@ -156,7 +156,7 @@ def construct_experiment_result(name, mtd_interval, item, network_size):
 
 # def single_mtd_simulation(file_name, combination):
 
-def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None'):
+def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None', mtd_interval = [100, 200], network_size = [25, 50, 75, 100]):
     """
     Simulations for single mtd and no mtd
     """
@@ -169,8 +169,8 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None'):
         else:
             mtd_name = mtd().get_name()
             scheme = 'single'
-        for mtd_interval in [100, 200]:
-            for network_size in [25, 50, 75, 100]:
+        for mtd_interval in mtd_interval:
+            for network_size in network_size:
                 evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
                                                 custom_strategies=mtd, total_nodes=network_size, features=features)
                 if checkpoint != 'None':
@@ -185,7 +185,7 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None'):
         print(mtd_name)
     return evaluations
 
-def single_mtd_ai_simulation(file_name,  model, start_time, finish_time, total_nodes, new_network):
+def mtd_ai_simulation(file_name,  model, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100]):
     """
     Simulations for single ai mtd
     """
@@ -193,8 +193,8 @@ def single_mtd_ai_simulation(file_name,  model, start_time, finish_time, total_n
    
     scheme = 'mtd_ai'
     # print(mtd_name, scheme)
-    for mtd_interval in [100, 200]:
-        for network_size in [25, 50, 75, 100]:
+    for mtd_interval in mtd_interval:
+        for network_size in network_size:
             evaluation = execute_ai_model(
                 model=model,
                 features=features,
@@ -265,6 +265,26 @@ def multiple_mtd_simulation(file_name, combination):
         save_evaluation_result(file_name, mtd_evaluation)
         print(scheme)
     return evaluations
+
+def specific_multiple_mtd_simulation(file_name, combination, scheme, mtd_interval = [100, 200], network_size = [25, 50, 75, 100]):
+    """
+    simulations for multiple mtd using three different execution schemes.
+    """
+    evaluations = []
+    mtd_evaluation = []
+    for mtd_interval in mtd_interval:
+        for network_size in network_size:
+            evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
+                                            custom_strategies=combination, total_nodes=network_size, features=features)
+            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
+            for item in evaluation_results:
+                result = construct_experiment_result(scheme, mtd_interval, item, network_size)
+                evaluations.append(result)
+                mtd_evaluation.append(result)
+    save_evaluation_result(file_name, mtd_evaluation)
+    print(scheme)
+    return evaluations
+
 
 
 def execute_simulation(features, start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
