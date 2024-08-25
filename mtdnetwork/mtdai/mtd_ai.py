@@ -86,30 +86,41 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
     if epsilon > epsilon_min:
         epsilon *= epsilon_decay
 
-def calculate_reward(current_state, current_time_series, next_state, next_time_series):
+def calculate_reward(current_state, current_time_series, next_state, next_time_series, features):
     reward = 0
 
-    # Parameters to control the scale of reward and penalty
-    hcr_weight = 100
-    vulnerability_weight = 50
-    mttc_weight = 20
-    exposure_penalty = 100
+    # Parameters to control the scale of reward and penalty (random placeholder for now)
+    weights = {
+        "host_compromise_ratio": -100,
+        "exposed_endpoints": -50,
+        "attack_path_exposure": -150,
+        "overall_asr_avg": 100,
+        "roa": 75,
+        "shortest_path_variability": 50,
+        "risk": -75,
+        "attack_type": 0
+    }
+
     mtd_time_penalty = 50
 
-    # Reward for reducing Host Compromise Ratio
-    reward += (current_state[0] - next_state[0]) * hcr_weight
+    for index, feature in enumerate(features):
+        reward += (next_state[index] - current_state[index]) * weights[feature]
+        # print(reward, feature)
 
-    # Reward for reducing the number of vulnerabilities
-    reward += (current_state[1] - next_state[1]) * vulnerability_weight
+    # # Reward for reducing Host Compromise Ratio
+    # reward += (current_state[0] - next_state[0]) * hcr_weight
 
-    # Reward for increasing Mean Time to Compromise
-    reward += (next_time_series[1] - next_time_series[1]) * mttc_weight
+    # # Reward for reducing the number of vulnerabilities
+    # reward += (current_state[1] - next_state[1]) * vulnerability_weight
 
-    # Penalty for increased Attack Path Exposure Score
-    reward -= (next_state[2] - current_state[2]) * exposure_penalty
+    # # Reward for increasing Mean Time to Compromise
+    # reward += (next_time_series[1] - next_time_series[1]) * mttc_weight
+
+    # # Penalty for increased Attack Path Exposure Score
+    # reward -= (next_state[2] - current_state[2]) * exposure_penalty
 
     # Penalty for high Time Since Last MTD
-    if next_time_series[2] > current_time_series[2]:
+    if "attack_path_exposure" in features and next_time_series[2] > current_time_series[2]:
         reward -= (next_time_series[2] - current_time_series[2]) * mtd_time_penalty
-
+    
     return reward

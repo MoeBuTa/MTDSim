@@ -29,7 +29,7 @@ class Network:
             total_layers:
                 how many layers deep from the exposed endpoints the network is.
             user_to_nodes_ratio:
-                the percent of users in comparison to hsot machines.
+                the percent of users in comparison to host machines.
                 each node will then be given `int(1/user_to_nodes_ratio)` users each (less users more users on each computer).
             prob_user_reuse_pass:
                 the probability that a user has reused their password.
@@ -154,7 +154,7 @@ class Network:
                 n_index = random.randint(0, subnets - 1)
                 temp_subnet_nodes[n_index] = temp_subnet_nodes[n_index] + 1
             subnet_nodes.append(temp_subnet_nodes)
-
+            
         # self.graphenerate the graph
         self.graph = nx.Graph()
         # Node offset
@@ -205,7 +205,7 @@ class Network:
                     }
                 # Stores all the positions of items from subgraphs
                 self.pos = {**self.pos, **subgraph_pos}
-
+               
                 # Selects Target Host
                 if i == self.target_layer and j == 1 and self.network_type == 0 and self.target_node != -1:
                     self.target_node = node_id - random.randrange(0, s_nodes)
@@ -612,13 +612,13 @@ class Network:
 
     def add_shortest_path(self):
         """
-
         Returns:
             Shortest Attack Path Variability (SAPV): changes on shortest attack paths over time
         """
         shortest_path = self.get_path_from_exposed(self.target_node, self.graph)[0]
        
         self.scorer.add_shortest_path(shortest_path)
+
 
 
     def attack_path_exposure(self):

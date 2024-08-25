@@ -4,18 +4,25 @@ from matplotlib.lines import Line2D
 import networkx as nx
 import pandas as pd
 import os
-
+import seaborn as sns
 directory = os.getcwd()
 
 
 class Evaluation:
-    def __init__(self, network, adversary):
+    def __init__(self, network, adversary, features, security_metrics_record):
 
         self._network = network
         self._adversary = adversary
         self._mtd_record = network.get_mtd_stats().get_record()
         self._attack_record = adversary.get_attack_stats().get_record()
-        self._security_metric_record = network.get_security_metric_stats().get_record()
+        self.features = "#".join(features)
+        self.security_metrics_record = security_metrics_record
+        self.create_directories()
+
+    def create_directories(self):
+        os.makedirs(directory + '/experimental_data/plots/' + self.features, exist_ok=True)
+        return directory
+    
 
     def compromised_num(self, record=None):
         if record is None:
@@ -26,24 +33,42 @@ class Evaluation:
         else:
             return 0
 
-    # def mean_time_to_compromise_10_timestamp(self):
+    def mean_time_to_compromise_10_timestamp(self, run_index = 1):
+        interval = 10
+        record = self._attack_record
+        step = max(record['finish_time']) / interval
+        MTTC = []
+        for i in range(1, interval + 1, 1):
+            compromised_num = self.compromised_num_by_timestamp(step * i)
+            if compromised_num == 0:
+                MTTC.append({f'Mean Time to Compromise_{run_index}': None, 'Time': step * i})
+                continue
+            attack_action_time = record[(record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])) &
+                                        (record['finish_time'] <= step * i)]['duration'].sum()
+            MTTC.append({f'Mean Time to Compromise_{run_index}': attack_action_time / compromised_num, f'Time_{run_index}': step * i})
+    
+        return MTTC
+    
+    # def mean_time_to_compromise_intervals(self, time_intervals):
     #     record = self._attack_record
-    #     step = max(record['finish_time']) / 10
     #     MTTC = []
-    #     for i in range(1, 11, 1):
-    #         compromised_num = self.compromised_num_by_timestamp(step * i)
+
+    #     for time in time_intervals:
+    #         compromised_num = self.compromised_num_by_timestamp(time)
     #         if compromised_num == 0:
     #             continue
     #         attack_action_time = record[(record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])) &
-    #                                     (record['finish_time'] <= step * i)]['duration'].sum()
-    #         MTTC.append({'Mean Time to Compromise': attack_action_time / compromised_num, 'Time': step * i})
-    #
+    #                                     (record['finish_time'] <= time)]['duration'].sum()
+    #         MTTC.append({'
+    # ': attack_action_time / compromised_num, 'Time': time})
+        
     #     return MTTC
-    # def compromised_num_by_timestamp(self, timestamp):
-    #     record = self._attack_record
-    #     compromised_hosts = record[(record['compromise_host_uuid'] != 'None') &
-    #                                (record['finish_time'] <= timestamp)]['compromise_host_uuid'].unique()
-    #     return len(compromised_hosts)
+    
+    def compromised_num_by_timestamp(self, timestamp):
+        record = self._attack_record
+        compromised_hosts = record[(record['compromise_host_uuid'] != 'None') &
+                                   (record['finish_time'] <= timestamp)]['compromise_host_uuid'].unique()
+        return len(compromised_hosts)
 
     def mtd_execution_frequency(self):
         """
@@ -71,6 +96,7 @@ class Evaluation:
         for comp_ratio in checkpoint:
             comp_nums[comp_ratio] = host_num * comp_ratio
 
+
         for comp_ratio, comp_num in comp_nums.items():
             if 'cumulative_compromised_hosts' not in record.columns:
                 return []
@@ -90,10 +116,20 @@ class Evaluation:
 
             mtd_execution_frequency = self.mtd_execution_frequency()
 
+            state_array, time_series_array = self.get_metrics()
+            # print(state_array, time_series_array) #debug
+
             result.append({'time_to_compromise': time_to_compromise,
                            'attack_success_rate': attack_success_rate,
                            'host_compromise_ratio': comp_ratio,
-                           'mtd_execution_frequency': mtd_execution_frequency})
+                           'mtd_execution_frequency': mtd_execution_frequency,
+                           "exposed_endpoints": state_array[1],
+                           "attack_path_exposure": state_array[2],
+                           "roa": state_array[4],
+                           "shortest_path_variability": state_array[5],
+                           "risk": state_array[6],})
+
+
         return result
 
     def compromise_record_by_attack_action(self, action=None):
@@ -106,13 +142,62 @@ class Evaluation:
         return record[(record['name'] == action) &
                       (record['compromise_host'] != 'None')]
 
+    def get_metrics(self,env = None ):
+        # State metrics
+
+        compromised_num = self.compromised_num()
+        host_compromise_ratio = compromised_num/len(self._network.get_hosts()) \
+
+        exposed_endpoints = len(self._network.get_exposed_endpoints())
+
+        attack_path_exposure = self._network.attack_path_exposure()
+
+        attack_stats = self._adversary.get_network().get_scorer().get_statistics()
+        risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
+        roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
+
+        shortest_paths = self._network.scorer.shortest_path_record 
+        shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
+
+        # evaluation_results = self.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+        # if evaluation_results:
+        #     total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+
+        #     for result in evaluation_results:
+        #         if result['host_compromise_ratio'] != 0:  
+        #             total_time_to_compromise += result['time_to_compromise']
+        #             total_compromises += 1
+        #         total_asr += result['attack_success_rate']
+
+        #     overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+        #     overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+        # else:
+        overall_asr_avg = 0
+        overall_mttc_avg = 0
+
+
+        # Time-series metrics
+        # time_since_last_mtd = env.now - self._network.last_mtd_triggered_time
+        time_since_last_mtd = 1
+        mtd_freq = self.mtd_execution_frequency()
+
+        state_array = [host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
+ 
+
+        time_series_array = [mtd_freq, overall_mttc_avg, time_since_last_mtd]
+
+        # self.security_metrics_record.append_security_metric_record(state_array,time_series_array, env.now)
+ 
+        return [state_array, time_series_array]
+
+
     def draw_network(self):
         """
         Draws the topology of the network while also highlighting compromised and exposed endpoint nodes.
         """
         plt.figure(1, figsize=(15, 12))
         nx.draw(self._network.graph, pos=self._network.pos, node_color=self._network.colour_map, with_labels=True)
-        plt.savefig(directory + '/experimental_data/plots/network.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features + '/network.png')
         plt.show()
 
     def draw_hacker_visible(self):
@@ -170,7 +255,7 @@ class Evaluation:
         plt.xlabel('Time', weight='bold', fontsize=18)
         plt.ylabel('Hosts', weight='bold', fontsize=18)
         fig.tight_layout()
-        plt.savefig(directory + '/experimental_data/plots/attack_action_record_group_by_host.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features+'/attack_action_record_group_by_host.png')
         plt.show()
 
     def visualise_attack_operation(self):
@@ -202,7 +287,7 @@ class Evaluation:
         plt.xlabel('Time', weight='bold', fontsize=18)
         plt.ylabel('Attack Actions', weight='bold', fontsize=18)
         fig.tight_layout()
-        plt.savefig(directory + '/experimental_data/plots/attack_record.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features + '/attack_record.png')
         plt.show()
 
     def visualise_mtd_operation(self):
@@ -227,8 +312,10 @@ class Evaluation:
         plt.xlabel('Time', weight='bold', fontsize=18)
         plt.ylabel('MTD Strategies', weight='bold', fontsize=18)
         fig.tight_layout()
-        plt.savefig(directory + '/experimental_data/plots/mtd_record.png')
+        plt.savefig(directory + '/experimental_data/plots/' + self.features + '/mtd_record.png')
         plt.show()
+
+
 
     def get_network(self):
         return self._network

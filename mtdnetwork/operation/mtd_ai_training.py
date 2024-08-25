@@ -6,10 +6,12 @@ from mtdnetwork.statistic.evaluation import Evaluation
 import numpy as np
 from mtdnetwork.mtdai.mtd_ai import update_target_model, choose_action, replay, calculate_reward
 import pandas as pd
+import random
+
 
 class MTDAITraining:
 
-    def __init__(self,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
+    def __init__(self,security_metric_record, features,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
                  gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None):
         """
@@ -46,9 +48,11 @@ class MTDAITraining:
         self.epsilon_decay = epsilon_decay
         self.train_start = train_start
         self.batch_size = batch_size
+        self.features = features
+        self.security_metric_record = security_metric_record
 
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
-
+        self.evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
         
 
     def proceed_mtd(self):
@@ -72,12 +76,13 @@ class MTDAITraining:
                 return
 
             state, time_series = self.get_state_and_time_series()
+            action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
 
-            # Static network degradation factor
-            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000:
-                action = 1
-            else:
-                action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
+            # Static network degradation factor (if exceed 1000 force to deploy MTD)
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000 and action == 0:
+                action =  choose_action(state, time_series, self.main_network, 5, self.epsilon)
+
+                
 
             if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
                 self.network.set_last_mtd_triggered_time(self.env.now)
@@ -155,7 +160,7 @@ class MTDAITraining:
 
         # update reinforcement learning model
         new_state, new_time_series = self.get_state_and_time_series()
-        reward = calculate_reward(state, time_series, new_state, new_time_series)
+        reward = calculate_reward(state, time_series, new_state, new_time_series, self.features)
         done = False
         self.memory.append((state, time_series, action, reward, new_state, new_time_series, done))
         replay(self.memory, self.main_network, self.target_network, self.batch_size, self.gamma, self.epsilon, self.epsilon_min, self.epsilon_decay, self.train_start)
@@ -219,52 +224,71 @@ class MTDAITraining:
         return self._mtd_scheme
     
    
-
+   
     
     def get_state_and_time_series(self):
 
-        evaluation = Evaluation(self.network, self.adversary)
-        exposed_endpoints = len(self.network.get_exposed_endpoints())
-        attack_path_exposure = self.network.attack_path_exposure()
-        shortest_paths = self.network.scorer.shortest_path_record 
-        shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
+        # exposed_endpoints = len(self.network.get_exposed_endpoints())
+        # attack_path_exposure = self.network.attack_path_exposure()
+        # shortest_paths = self.network.scorer.shortest_path_record 
+        # shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
         
-        evaluation = Evaluation(self.network, self.adversary)
-        compromised_num = evaluation.compromised_num()
-        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
+        # compromised_num = evaluation.compromised_num()
+        # host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
+
+
+
+
+        # evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+        # if evaluation_results:
+        #     total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+
+        #     for result in evaluation_results:
+        #         if result['host_compromise_ratio'] != 0:  
+        #             total_time_to_compromise += result['time_to_compromise']
+        #             total_compromises += 1
+        #         total_asr += result['attack_success_rate']
+
+        #     overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+        #     overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+        # else:
+        #     overall_asr_avg = 0
+        #     overall_mttc_avg = 0
+
+        # time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
+        # mtd_freq = evaluation.mtd_execution_frequency()
+
+        # attack_stats = self.adversary.get_network().get_scorer().get_statistics()
+        # risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
+        # roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
+
+        # features_dict = {
+        # "host_compromise_ratio" : host_compromise_ratio,
+        # "exposed_endpoints" : exposed_endpoints,
+        # "attack_path_exposure" : attack_path_exposure,
+        # "overall_asr_avg": overall_asr_avg,
+        # "roa": roa,
+        # "shortest_path_variability": shortest_path_variability,
+        # "risk": risk,
+        # "attack_type": current_attack_value,
+        # }
+
+
+        # Not a metric but indicate the attacker type
         current_attack = self.adversary.get_curr_process()
         current_attack_value = self.attack_dict.get(current_attack, 7)
 
+        metrics = self.evaluation.get_metrics(self.env)
+        metrics[0].append(current_attack_value)
+        state_array = np.array(metrics[0])
+        time_series_array = np.array(metrics[1])
 
-        evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-        if evaluation_results:
-            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+ 
+        # state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
+ 
 
-            for result in evaluation_results:
-                if result['host_compromise_ratio'] != 0:  
-                    total_time_to_compromise += result['time_to_compromise']
-                    total_compromises += 1
-                total_asr += result['attack_success_rate']
-
-            overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-            overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-        else:
-            overall_asr_avg = 0
-            overall_mttc_avg = 0
-
-        time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
-        mtd_freq = evaluation.mtd_execution_frequency()
-
-        attack_stats = self.adversary.get_network().get_scorer().get_statistics()
-        risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
-        roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
-
-        
-
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
-
-        time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
+        # time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  
         return state_array, time_series_array
     

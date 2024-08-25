@@ -4,11 +4,11 @@ import simpy
 from mtdnetwork.component.mtd_scheme import MTDScheme
 from mtdnetwork.statistic.evaluation import Evaluation
 import numpy as np
-
+import random
 
 class MTDOperation:
 
-    def __init__(self, env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
+    def __init__(self, features ,security_metrics_record,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None):
         """
 
@@ -35,15 +35,27 @@ class MTDOperation:
         self.application_layer_resource = simpy.Resource(self.env, 1)
         self.network_layer_resource = simpy.Resource(self.env, 1)
         self.reserve_resource = simpy.Resource(self.env, 1)
+        self.security_metric_record = security_metrics_record
+        self.features = features
+        self.evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
 
+    
+        
+    
+    
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
             for k, v in self.network.get_unfinished_mtd().items():
                 self._mtd_scheme.suspend_mtd(v)
         if self._mtd_scheme.get_scheme() == 'simultaneous':
             self.env.process(self._mtd_batch_trigger_action())
+            self.evaluation.get_metrics(self.env)
+        elif self._mtd_scheme.get_scheme() == 'None': # Not run any mtd (No MTD)
+            self.evaluation.get_metrics(self.env)
         else:
             self.env.process(self._mtd_trigger_action())
+            self.evaluation.get_metrics(self.env)
+
 
     def _mtd_trigger_action(self):
         """
@@ -51,12 +63,13 @@ class MTDOperation:
         Select Execute or suspend/discard MTD strategy
         based on the given resource occupation condition
         """
+        
         while True:
             # terminate the simulation if the network is compromised
             if self.network.is_compromised(compromised_hosts=self.attack_operation.get_adversary().get_compromised_hosts()):
                 if not self.end_event.triggered:  # Check if the event has not been triggered yet
                     self.end_event.succeed()
-                return
+
 
             # register an MTD
             if not self.network.get_mtd_queue():
@@ -98,6 +111,7 @@ class MTDOperation:
                     compromised_hosts=self.attack_operation.get_adversary().get_compromised_hosts()):
                 return
             
+
             suspension_queue = self.network.get_suspended_mtd()
             if suspension_queue:
                 # triggering the suspended MTDs by priority
@@ -123,7 +137,7 @@ class MTDOperation:
                         # suspend MTD if resource is occupied
                         self._mtd_scheme.suspend_mtd(mtd_strategy=mtd)
                         logging.info('MTD: %s suspended at %.1fs due to resource occupation' %
-                                     (mtd.get_name(), self.env.now + self._proceed_time))
+                                    (mtd.get_name(), self.env.now + self._proceed_time))
 
             # exponential distribution for triggering MTD operations
             yield self.env.timeout(exponential_variates(self._mtd_scheme.get_mtd_trigger_interval(),

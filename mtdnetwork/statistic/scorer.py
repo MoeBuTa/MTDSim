@@ -216,6 +216,7 @@ class Scorer:
     def add_shortest_path(self, score):
         self.shortest_path_record.append(score)
 
+
     def set_initial_statistics(self, network):
         """
         Collects statistics on the initial state of the network
