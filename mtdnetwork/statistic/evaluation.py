@@ -119,6 +119,9 @@ class Evaluation:
             state_array, time_series_array = self.get_metrics()
             # print(state_array, time_series_array) #debug
 
+            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+
+
             result.append({'time_to_compromise': time_to_compromise,
                            'attack_success_rate': attack_success_rate,
                            'host_compromise_ratio': comp_ratio,

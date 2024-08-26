@@ -228,67 +228,64 @@ class MTDAITraining:
     
     def get_state_and_time_series(self):
 
-        # exposed_endpoints = len(self.network.get_exposed_endpoints())
-        # attack_path_exposure = self.network.attack_path_exposure()
-        # shortest_paths = self.network.scorer.shortest_path_record 
-        # shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
+        exposed_endpoints = len(self.network.get_exposed_endpoints())
+        attack_path_exposure = self.network.attack_path_exposure()
+        shortest_paths = self.network.scorer.shortest_path_record 
+        shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
         
 
-        # compromised_num = evaluation.compromised_num()
-        # host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
+        compromised_num = self.evaluation.compromised_num()
+        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
 
 
 
-        # evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-        # if evaluation_results:
-        #     total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+        evaluation_results = self.evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+        if evaluation_results:
+            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
 
-        #     for result in evaluation_results:
-        #         if result['host_compromise_ratio'] != 0:  
-        #             total_time_to_compromise += result['time_to_compromise']
-        #             total_compromises += 1
-        #         total_asr += result['attack_success_rate']
+            for result in evaluation_results:
+                if result['host_compromise_ratio'] != 0:  
+                    total_time_to_compromise += result['time_to_compromise']
+                    total_compromises += 1
+                total_asr += result['attack_success_rate']
 
-        #     overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-        #     overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-        # else:
-        #     overall_asr_avg = 0
-        #     overall_mttc_avg = 0
+            overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+            overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+        else:
+            overall_asr_avg = 0
+            overall_mttc_avg = 0
 
-        # time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
-        # mtd_freq = evaluation.mtd_execution_frequency()
+        time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
+        mtd_freq = self.evaluation.mtd_execution_frequency()
 
-        # attack_stats = self.adversary.get_network().get_scorer().get_statistics()
-        # risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
-        # roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
-
-        # features_dict = {
-        # "host_compromise_ratio" : host_compromise_ratio,
-        # "exposed_endpoints" : exposed_endpoints,
-        # "attack_path_exposure" : attack_path_exposure,
-        # "overall_asr_avg": overall_asr_avg,
-        # "roa": roa,
-        # "shortest_path_variability": shortest_path_variability,
-        # "risk": risk,
-        # "attack_type": current_attack_value,
-        # }
-
+        attack_stats = self.adversary.get_network().get_scorer().get_statistics()
+        risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
+        roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
 
         # Not a metric but indicate the attacker type
         current_attack = self.adversary.get_curr_process()
         current_attack_value = self.attack_dict.get(current_attack, 7)
 
-        metrics = self.evaluation.get_metrics(self.env)
-        metrics[0].append(current_attack_value)
-        state_array = np.array(metrics[0])
-        time_series_array = np.array(metrics[1])
+        features_dict = {
+        "host_compromise_ratio" : host_compromise_ratio,
+        "exposed_endpoints" : exposed_endpoints,
+        "attack_path_exposure" : attack_path_exposure,
+        "overall_asr_avg": overall_asr_avg,
+        "roa": roa,
+        "shortest_path_variability": shortest_path_variability,
+        "risk": risk,
+        "attack_type": current_attack_value,
+        }
+
+
+       
 
  
-        # state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
  
 
-        # time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
+        time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
  
         return state_array, time_series_array
     
