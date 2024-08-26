@@ -509,7 +509,16 @@ def  execute_ai_model(model, features, start_time=0, finish_time=None, scheme='m
     """
 
     custom_objects = {'mse': mse}
-    main_network = load_model(model_path, custom_objects=custom_objects)
+
+    
+    try:
+        main_network = legacy_h5_format.load_model_from_hdf5(f"AI_model/{model}.h5", custom_objects=custom_objects)  #For Mac
+        print("On Mac")
+    
+    except:
+        main_network = load_model(model_path, custom_objects=custom_objects)    #For Windows/Linux
+        print("On Windows/Linux")
+
     main_network.compile(loss=MeanSquaredError(), optimizer=Adam())
 
     security_metrics_record = SecurityMetricStatistics()

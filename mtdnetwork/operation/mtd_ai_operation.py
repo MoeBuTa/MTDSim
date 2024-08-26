@@ -250,21 +250,21 @@ class MTDAIOperation:
         shortest_paths = self.network.scorer.shortest_path_record 
         shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
 
-        # evaluation_results = self.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-        # if evaluation_results:
-        #     total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
+        evaluation_results = self.evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+        if evaluation_results:
+            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
 
-        #     for result in evaluation_results:
-        #         if result['host_compromise_ratio'] != 0:  
-        #             total_time_to_compromise += result['time_to_compromise']
-        #             total_compromises += 1
-        #         total_asr += result['attack_success_rate']
+            for result in evaluation_results:
+                if result['host_compromise_ratio'] != 0:  
+                    total_time_to_compromise += result['time_to_compromise']
+                    total_compromises += 1
+                total_asr += result['attack_success_rate']
 
-        #     overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-        #     overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-        # else:
-        overall_asr_avg = 0
-        overall_mttc_avg = 0
+            overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
+            overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
+        else:
+            overall_asr_avg = 0
+            overall_mttc_avg = 0
 
 
         # Time-series metrics

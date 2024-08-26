@@ -96,8 +96,8 @@ class Evaluation:
         for comp_ratio in checkpoint:
             comp_nums[comp_ratio] = host_num * comp_ratio
 
-
         for comp_ratio, comp_num in comp_nums.items():
+      
             if 'cumulative_compromised_hosts' not in record.columns:
                 return []
 
@@ -129,7 +129,7 @@ class Evaluation:
                            "shortest_path_variability": state_array[5],
                            "risk": state_array[6],})
 
-
+    
         return result
 
     def compromise_record_by_attack_action(self, action=None):
