@@ -79,7 +79,8 @@ class MTDAITraining:
             action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
 
             # Static network degradation factor (if exceed 1000 force to deploy MTD)
-            if (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000 and action == 0:
+
+            while (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000 and action == 0:
                 action =  choose_action(state, time_series, self.main_network, 5, self.epsilon)
 
                 
@@ -238,7 +239,11 @@ class MTDAITraining:
         host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
 
-
+        # Not a metric but indicate the attacker type
+        sensitivity_factor = random.random()
+        if sensitivity_factor <= self.attacker_sensitivity:
+            current_attack = self.adversary.get_curr_process()
+            current_attack_value = self.attack_dict.get(current_attack, 7)
 
         evaluation_results = self.evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
         if evaluation_results:
@@ -263,23 +268,7 @@ class MTDAITraining:
         risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
         roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
 
-        # Not a metric but indicate the attacker type
-        current_attack = self.adversary.get_curr_process()
-        current_attack_value = self.attack_dict.get(current_attack, 7)
-
-        features_dict = {
-        "host_compromise_ratio" : host_compromise_ratio,
-        "exposed_endpoints" : exposed_endpoints,
-        "attack_path_exposure" : attack_path_exposure,
-        "overall_asr_avg": overall_asr_avg,
-        "roa": roa,
-        "shortest_path_variability": shortest_path_variability,
-        "risk": risk,
-        "attack_type": current_attack_value,
-        }
-
-
-       
+    
 
  
         state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])

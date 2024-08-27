@@ -75,6 +75,8 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
         next_time_series = next_time_series.reshape((1,-1))
 
         target = main_network.predict([state, time_series])
+
+
         if done:
             target[0][action] = reward
         else:
@@ -83,8 +85,47 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
             target[0][action] = reward + gamma * t_next_q
 
         main_network.fit([state, time_series], target, epochs=1, verbose=0)
+
     if epsilon > epsilon_min:
         epsilon *= epsilon_decay
+
+
+def calculate_reward(current_state, current_time_series, next_state, next_time_series, features):
+    reward = 0
+
+    # Dynamic weights based on context
+    context_multiplier = 1  # Adjust this dynamically based on system context
+    dynamic_weights = {
+        "host_compromise_ratio": -75 * context_multiplier,
+        "exposed_endpoints": -75 * context_multiplier,
+        "attack_path_exposure": -75 * context_multiplier,
+        "overall_asr_avg": 75 * context_multiplier,
+        "roa": 75 * context_multiplier,
+        "shortest_path_variability": 75 * context_multiplier,
+        "risk": -75 * context_multiplier,
+        "attack_type": 0
+    }
+
+    # mtd_time_penalty = 50 * context_multiplier
+        # Include time series features in the dynamic weights
+
+    for index, feature in enumerate(features):
+        delta = (next_state[index] - current_state[index])
+         
+        print(next_state, current_state)
+        # Non-linear scaling for critical features
+        # if feature in ["risk", "attack_path_exposure"]:
+        #     delta = np.exp(delta) - 1
+        
+        # Accumulate the reward
+        reward += delta * dynamic_weights[feature]
+     
+
+
+    return reward
+
+
+
 
 # def calculate_reward(current_state, current_time_series, next_state, next_time_series, features):
 #     reward = 0
@@ -126,41 +167,3 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
 #     return reward
         
 
-def calculate_reward(current_state, current_time_series, next_state, next_time_series, features):
-    reward = 0
-
-    # Dynamic weights based on context
-    context_multiplier = 1  # Adjust this dynamically based on system context
-    dynamic_weights = {
-        "host_compromise_ratio": -75 * context_multiplier,
-        "exposed_endpoints": -75 * context_multiplier,
-        "attack_path_exposure": -75 * context_multiplier,
-        "overall_asr_avg": 75 * context_multiplier,
-        "roa": 75 * context_multiplier,
-        "shortest_path_variability": 75 * context_multiplier,
-        "risk": -75 * context_multiplier,
-        "attack_type": 0
-    }
-
-    mtd_time_penalty = 50 * context_multiplier
-
-    for index, feature in enumerate(features):
-        delta = (next_state[index] - current_state[index])
-        
-        # Non-linear scaling for critical features
-        if feature in ["risk", "attack_path_exposure"]:
-            delta = np.exp(delta) - 1
-        
-        # Accumulate the reward
-        reward += delta * dynamic_weights[feature]
-    
-    # Penalty for high Time Since Last MTD
-    if "attack_path_exposure" in features and next_time_series[2] > current_time_series[2]:
-        reward -= (next_time_series[2] - current_time_series[2]) * mtd_time_penalty
-    
-    # Reward for stability and consistency
-    stability_bonus = 10  # Reward for maintaining stability
-    if np.abs(delta) < 0.01:  # Consider it stable if changes are minimal
-        reward += stability_bonus
-
-    return reward

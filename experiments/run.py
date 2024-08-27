@@ -467,7 +467,6 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
             env.run(until=(finish_time - start_time))
         else:
             env.run(until=end_event)
-        # evaluation = Evaluation(network=time_network, adversary=adversary, features=features)
 
         if episode % 10 == 0:
             update_target_model(target_network, main_network)
