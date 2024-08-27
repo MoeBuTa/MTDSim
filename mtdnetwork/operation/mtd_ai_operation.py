@@ -237,7 +237,13 @@ class MTDAIOperation:
         # State metrics
 
         compromised_num = self.evaluation.compromised_num()
-        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) \
+        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
+        sensitivity_factor = random.random()
+        if sensitivity_factor <= self.attacker_sensitivity:
+            current_attack = self.adversary.get_curr_process()
+            current_attack_value = self.attack_dict.get(current_attack, 7)
+        else:
+            current_attack_value = 7
 
         exposed_endpoints = len(self.network.get_exposed_endpoints())
 
@@ -272,7 +278,7 @@ class MTDAIOperation:
         # time_since_last_mtd = 1
         mtd_freq = self.evaluation.mtd_execution_frequency()
 
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk])
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
  
 
         time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])

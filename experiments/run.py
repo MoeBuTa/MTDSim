@@ -208,7 +208,7 @@ def mtd_ai_simulation(file_name,  model, start_time, finish_time, total_nodes, n
             )
             
             evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-            # print(evaluation_results)
+
             for item in evaluation_results:
             
                 result = construct_experiment_result('mtd_ai', mtd_interval, item, network_size)
