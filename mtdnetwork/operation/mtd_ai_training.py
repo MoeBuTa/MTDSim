@@ -13,7 +13,7 @@ class MTDAITraining:
 
     def __init__(self,security_metric_record, features,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
-                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None):
+                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None, attacker_sensitivity = 1):
         """
         :param env: the parameter to facilitate simPY env framework
         :param network: the simulation network
@@ -50,9 +50,10 @@ class MTDAITraining:
         self.batch_size = batch_size
         self.features = features
         self.security_metric_record = security_metric_record
+        self.attacker_sensitivity = attacker_sensitivity
 
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
-        self.evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
+        self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)
         
 
     def proceed_mtd(self):
@@ -161,7 +162,7 @@ class MTDAITraining:
 
         # update reinforcement learning model
         new_state, new_time_series = self.get_state_and_time_series()
-        reward = calculate_reward(state, time_series, new_state, new_time_series, self.features)
+        reward = calculate_reward(state, time_series, new_state, new_time_series, self.features['static'], self.features['time'])
         done = False
         self.memory.append((state, time_series, action, reward, new_state, new_time_series, done))
         replay(self.memory, self.main_network, self.target_network, self.batch_size, self.gamma, self.epsilon, self.epsilon_min, self.epsilon_decay, self.train_start)

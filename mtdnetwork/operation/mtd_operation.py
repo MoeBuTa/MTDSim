@@ -8,7 +8,7 @@ import random
 
 class MTDOperation:
 
-    def __init__(self, features ,security_metrics_record,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
+    def __init__(self,security_metrics_record,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None):
         """
 
@@ -36,8 +36,8 @@ class MTDOperation:
         self.network_layer_resource = simpy.Resource(self.env, 1)
         self.reserve_resource = simpy.Resource(self.env, 1)
         self.security_metric_record = security_metrics_record
-        self.features = features
-        self.evaluation = Evaluation(self.network, self.adversary, self.features, self.security_metric_record)
+
+        self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)
 
     
         
