@@ -29,7 +29,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import MeanSquaredError
 import tensorflow as tf
 import keras
-from keras.src.legacy.saving import legacy_h5_format
+# from keras.src.legacy.saving import legacy_h5_format
 from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatistics
 import numpy as np
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
@@ -188,7 +188,7 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None', mtd_int
         print(mtd_name)
     return evaluations
 
-def mtd_ai_simulation(file_name,  model, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100]):
+def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100]):
     """
     Simulations for single ai mtd
     """
@@ -199,13 +199,13 @@ def mtd_ai_simulation(file_name,  model, start_time, finish_time, total_nodes, n
     for mtd_interval in mtd_interval:
         for network_size in network_size:
              evaluation = execute_ai_model(
-                model=model,
                 start_time=start_time,
                 finish_time=finish_time,
                 mtd_interval=mtd_interval,
                 scheme= scheme,
                 total_nodes=total_nodes,
-                new_network=new_network
+                new_network=new_network,
+                model_path=model_path
             )
              evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
 
@@ -288,7 +288,7 @@ def specific_multiple_mtd_simulation(file_name, combination, scheme, mtd_interva
 
 
 
-def execute_simulation( start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
+def execute_simulation(start_time=0, finish_time=None, scheme='random', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False):
     """
@@ -484,7 +484,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
 def mse(y_true, y_pred):
     return MeanSquaredError()(y_true, y_pred)
 
-def  execute_ai_model(model,start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        epsilon=1.0, attacker_sensitivity=1, model_path=None):
@@ -510,14 +510,15 @@ def  execute_ai_model(model,start_time=0, finish_time=None, scheme='mtd_ai', mtd
     custom_objects = {'mse': mse}
 
     
-    try:
-        main_network = legacy_h5_format.load_model_from_hdf5(f"AI_model/{model}.h5", custom_objects=custom_objects)  #For Mac
-        print("On Mac")
+    # try:
+    #     main_network = legacy_h5_format.load_model_from_hdf5(f"AI_model/{model}.h5", custom_objects=custom_objects)  #For Mac
+    #     print("On Mac")
     
-    except:
-        main_network = load_model(model_path, custom_objects=custom_objects)    #For Windows/Linux
-        print("On Windows/Linux")
+    # except:
+    #     main_network = load_model(model_path, custom_objects=custom_objects)    #For Windows/Linux
+    #     print("On Windows/Linux")
 
+    main_network = load_model(model_path, custom_objects=custom_objects) 
     main_network.compile(loss=MeanSquaredError(), optimizer=Adam())
 
     security_metrics_record = SecurityMetricStatistics()
