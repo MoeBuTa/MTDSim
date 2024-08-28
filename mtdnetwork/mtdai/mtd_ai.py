@@ -130,7 +130,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
 
         delta = (next_time_series[index] - current_time_series[index])
         reward += delta * time_series_weights.get(time_series_feature, 0)
-    print(reward, static_features, time_features)
+
     return reward
 
 
