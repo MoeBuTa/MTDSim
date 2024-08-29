@@ -29,7 +29,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import MeanSquaredError
 import tensorflow as tf
 import keras
-# from keras.src.legacy.saving import legacy_h5_format
+from keras.src.legacy.saving import legacy_h5_format
 from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatistics
 import numpy as np
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
@@ -208,7 +208,6 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
                 model_path=model_path
             )
              evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-
              for item in evaluation_results:
             
                 result = construct_experiment_result('mtd_ai', mtd_interval, item, network_size)
@@ -217,7 +216,7 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
             
 
     save_evaluation_result(file_name, evaluations)
-
+    print(scheme)
     return evaluations
 
 
@@ -510,15 +509,14 @@ def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inter
     custom_objects = {'mse': mse}
 
     
-    # try:
-    #     main_network = legacy_h5_format.load_model_from_hdf5(f"AI_model/{model}.h5", custom_objects=custom_objects)  #For Mac
-    #     print("On Mac")
+    try:
+        main_network = legacy_h5_format.load_model_from_hdf5(f"{model}.h5", custom_objects=custom_objects)  #For Mac
+        print("On Mac")
     
-    # except:
-    #     main_network = load_model(model_path, custom_objects=custom_objects)    #For Windows/Linux
-    #     print("On Windows/Linux")
+    except:
+        main_network = load_model(model_path, custom_objects=custom_objects)    #For Windows/Linux
+        print("On Windows/Linux")
 
-    main_network = load_model(model_path, custom_objects=custom_objects) 
     main_network.compile(loss=MeanSquaredError(), optimizer=Adam())
 
     security_metrics_record = SecurityMetricStatistics()
