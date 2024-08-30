@@ -145,8 +145,7 @@ class Scorer:
         self.last_mtd = None
         self.mtd_statistics = []
 
-
-
+  
     def register_mtd(self, mtd_strategy):
         self.mtd_statistics.append(MTDStatistics(str(mtd_strategy)))
 

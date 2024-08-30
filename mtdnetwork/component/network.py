@@ -612,7 +612,6 @@ class Network:
 
     def add_shortest_path(self):
         """
-        Returns:
             Shortest Attack Path Variability (SAPV): changes on shortest attack paths over time
         """
         shortest_path = self.get_path_from_exposed(self.target_node, self.graph)[0]

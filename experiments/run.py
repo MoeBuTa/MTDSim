@@ -510,7 +510,7 @@ def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inter
 
     
     try:
-        main_network = legacy_h5_format.load_model_from_hdf5(f"{model}.h5", custom_objects=custom_objects)  #For Mac
+        main_network = legacy_h5_format.load_model_from_hdf5(model_path, custom_objects=custom_objects)  #For Mac
         print("On Mac")
     
     except:

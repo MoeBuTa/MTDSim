@@ -53,8 +53,8 @@ class MTDAITraining:
         self.attacker_sensitivity = attacker_sensitivity
 
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
-        self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)
-        
+
+        self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)        
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
@@ -226,18 +226,68 @@ class MTDAITraining:
         return self._mtd_scheme
     
    
-   
     
     def get_state_and_time_series(self):
 
-        exposed_endpoints = len(self.network.get_exposed_endpoints())
-        attack_path_exposure = self.network.attack_path_exposure()
-        shortest_paths = self.network.scorer.shortest_path_record 
-        shortest_path_variability = (len(shortest_paths[-1]) - len(shortest_paths[-2]))/len(shortest_paths) if len(shortest_paths) > 1 else 0
-        
+        exposed_endpoints = len(self.network.get_exposed_endpoints()) # Correct(Checked)
 
-        compromised_num = self.evaluation.compromised_num()
-        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
+        attack_path_exposure = self.network.attack_path_exposure() # Correct(Checked)
+
+        shortest_paths = self.network.scorer.shortest_path_record 
+        # Extract the lengths of all paths
+        path_lengths = [len(path) for path in shortest_paths]
+        # Sort the lengths in ascending order
+        sorted_lengths = sorted(path_lengths)
+        # Calculate variability between the two shortest paths
+        if len(sorted_lengths) > 1:
+            shortest_path_variability = (sorted_lengths[1] - sorted_lengths[0]) / sorted_lengths[0] # Should be corrected(Checked)
+        else:
+            shortest_path_variability = 0
+
+
+        # shortest_distance = self.network.get_path_from_exposed(self.network.target_node, self.network.graph)[1]
+        # print(shortest_distance)
+
+        record = self.adversary.get_attack_stats().get_record()
+        if 'compromise_host_uuid' in record.columns:
+            compromised_hosts = record[record['compromise_host_uuid'] != 'None']['compromise_host_uuid'].unique()
+            compromised_num = len(compromised_hosts)
+        else:
+            compromised_num = 0    
+        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) # Correct(Checked)
+
+        time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time # Correct(Checked)
+
+        mtd_record = self.network.get_mtd_stats().get_record()
+
+        if len(mtd_record) == 0:
+            mtd_freq = 0
+        else:
+            mtd_freq = len(mtd_record) / (mtd_record.iloc[-1]['finish_time'] - mtd_record.iloc[0]['start_time']) # Correct(Checked)
+   
+
+        attack_stats = self.adversary.get_network().get_scorer().get_statistics()
+  
+        risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
+        roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
+ 
+
+        if 'cumulative_compromised_hosts' in record.columns:
+            sub_record = record[record['cumulative_compromised_hosts'] <= compromised_num]
+            attempt_hosts = sub_record[sub_record['current_host_uuid'] != -1]['current_host_uuid'].unique()
+            attack_actions = sub_record[sub_record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]
+            attack_event_num = 0
+            for host in attempt_hosts:
+                attack_event_num += len(attack_actions[(attack_actions['current_host_uuid'] == host) &
+                                                        (attack_actions['name'] == 'SCAN_PORT')])
+            overall_time_to_compromise = sub_record[sub_record[
+            'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum() # Corrected(Checked)
+            attack_success_rate = compromised_num / attack_event_num    # Corrected(Checked)
+        else:
+            attack_success_rate = 0
+            overall_time_to_compromise = 0
+        
+        
 
 
         # Not a metric but indicate the attacker type
@@ -246,36 +296,13 @@ class MTDAITraining:
             current_attack = self.adversary.get_curr_process()
             current_attack_value = self.attack_dict.get(current_attack, 7)
 
-        evaluation_results = self.evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
-        if evaluation_results:
-            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
-
-            for result in evaluation_results:
-                if result['host_compromise_ratio'] != 0:  
-                    total_time_to_compromise += result['time_to_compromise']
-                    total_compromises += 1
-                total_asr += result['attack_success_rate']
-
-            overall_asr_avg = total_asr / len(evaluation_results) if evaluation_results else 0
-            overall_mttc_avg = total_time_to_compromise / total_compromises if total_compromises else 0
-        else:
-            overall_asr_avg = 0
-            overall_mttc_avg = 0
-
-        time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time
-        mtd_freq = self.evaluation.mtd_execution_frequency()
-
-        attack_stats = self.adversary.get_network().get_scorer().get_statistics()
-        risk = attack_stats['Vulnerabilities Exploited']['risk'][-1] if attack_stats['Vulnerabilities Exploited']['risk'] else 0
-        roa = attack_stats['Vulnerabilities Exploited']['roa'][-1] if attack_stats['Vulnerabilities Exploited']['roa'] else 0
-
-    
-
+            
  
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk, current_attack_value])
+        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, attack_success_rate, roa, shortest_path_variability, risk, current_attack_value])
  
 
-        time_series_array = np.array([mtd_freq, overall_mttc_avg, time_since_last_mtd])
- 
+        time_series_array = np.array([mtd_freq, overall_time_to_compromise, time_since_last_mtd])
+        # print("State Array",state_array)
+        # print("Time Series Array", time_series_array)
         return state_array, time_series_array
     
