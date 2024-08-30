@@ -162,7 +162,7 @@ class MTDAITraining:
 
         # update reinforcement learning model
         new_state, new_time_series = self.get_state_and_time_series()
-        reward = calculate_reward(state, time_series, new_state, new_time_series, self.features['static'], self.features['time'])
+        reward = calculate_reward(state, time_series, new_state, new_time_series, self.features['static'], self.features['time'], self.memory)
         done = False
         self.memory.append((state, time_series, action, reward, new_state, new_time_series, done))
         replay(self.memory, self.main_network, self.target_network, self.batch_size, self.gamma, self.epsilon, self.epsilon_min, self.epsilon_decay, self.train_start)

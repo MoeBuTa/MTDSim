@@ -90,23 +90,61 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
         epsilon *= epsilon_decay
 
 
-def calculate_reward(current_state, current_time_series, next_state, next_time_series, static_features, time_features):
+
+
+
+def normalize_array(arr, min_val=None, max_val=None):
+    if min_val is None:
+        min_val = np.min(arr)
+    if max_val is None:
+        max_val = np.max(arr)
+    return (arr - min_val) / (max_val - min_val) if max_val > min_val else arr
+
+
+def calculate_reward(current_state, current_time_series, next_state, next_time_series, static_features, time_features, memory):
     reward = 0
 
+    # Check if memory has data for normalization
+    if len(memory) > 0:
+        # Extract min and max values for normalization from memory
+        memory_states = [item[0] for item in memory]
+        memory_time_series = [item[5] for item in memory]
+        
+        # Flatten lists of arrays to compute overall min and max
+        all_states = np.concatenate(memory_states, axis=0)
+        all_time_series = np.concatenate(memory_time_series, axis=0)
+
+        # Determine min and max for normalization
+        min_state, max_state = np.min(all_states), np.max(all_states)
+        min_time_series, max_time_series = np.min(all_time_series), np.max(all_time_series)
+
+        # Normalize current and next states
+        norm_current_state = normalize_array(current_state, min_state, max_state)
+        norm_next_state = normalize_array(next_state, min_state, max_state)
+
+        # Normalize current and next time series
+        norm_current_time_series = normalize_array(current_time_series, min_time_series, max_time_series)
+        norm_next_time_series = normalize_array(next_time_series, min_time_series, max_time_series)
+    else:
+        # Use raw values if memory is empty
+        norm_current_state = current_state
+        norm_next_state = next_state
+        norm_current_time_series = current_time_series
+        norm_next_time_series = next_time_series
+    # print(norm_current_state,norm_current_time_series)
     # Dynamic weights based on context
     context_multiplier = 1  # Adjust this dynamically based on system context
     dynamic_weights = {
         "host_compromise_ratio": -75 * context_multiplier,
         "exposed_endpoints": -75 * context_multiplier,
         "attack_path_exposure": -75 * context_multiplier,
-        "overall_asr_avg": -75 * context_multiplier,
-        "roa": -75 * context_multiplier,
-        "shortest_path_variability": -75 * context_multiplier,
+        "overall_asr_avg": 75 * context_multiplier,
+        "roa": 75 * context_multiplier,
+        "shortest_path_variability": 75 * context_multiplier,
         "risk": -75 * context_multiplier,
         "attack_type": 0
     }
 
-    # mtd_time_penalty = 50 * context_multiplier
     # Include time series features in the dynamic weights
     time_series_weights = {
         "mtd_freq": 20 * context_multiplier,
@@ -114,29 +152,15 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
         "time_since_last_mtd": -75 * context_multiplier
     }
 
-    # print(next_state, current_state)
+    # Calculate reward using normalized or raw values
     for index, feature in enumerate(static_features):
-        delta = (next_state[index] - current_state[index])
-
-        # Non-linear scaling for critical features
-        # if feature in ["risk", "attack_path_exposure"]:
-        #     delta = np.exp(delta) - 1
-        
-        # Accumulate the reward
-        reward += delta * dynamic_weights[feature]
+        delta = (norm_next_state[index] - norm_current_state[index])
+        reward += delta * dynamic_weights.get(feature, 0)
      
-    # Include time series data in the reward calculation
     for index, time_series_feature in enumerate(time_features):
-
-        delta = (next_time_series[index] - current_time_series[index])
+        delta = (norm_next_time_series[index] - norm_current_time_series[index])
         reward += delta * time_series_weights.get(time_series_feature, 0)
-
-    # print(static_features, time_features, reward)
-
+  
     return reward
-
-
-
-
 
 
