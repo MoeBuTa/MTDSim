@@ -473,7 +473,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
         if epsilon > epsilon_min:
             epsilon *= epsilon_decay
         
-        print(f"Episode: {episode}, Epsilon: {epsilon}")
+        # print(f"Episode: {episode}, Epsilon: {epsilon}")
     
     main_network.save(f'AI_model/main_network_{file_name}.h5')
     print("Training completed and model saved.")
