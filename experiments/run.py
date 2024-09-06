@@ -34,6 +34,7 @@ from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatis
 import numpy as np
 # logging.basicConfig(format='%(message)s', level=logging.INFO)
 
+
 mtd_strategies = [
     None,
     CompleteTopologyShuffle,
@@ -216,7 +217,7 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
             
 
     save_evaluation_result(file_name, evaluations)
-    print(scheme)
+    # print(scheme)
     return evaluations
 
 
@@ -511,11 +512,11 @@ def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inter
     
     try:
         main_network = legacy_h5_format.load_model_from_hdf5(model_path, custom_objects=custom_objects)  #For Mac
-        print("On Mac")
+        # print("On Mac")
     
     except:
         main_network = load_model(model_path, custom_objects=custom_objects)    #For Windows/Linux
-        print("On Windows/Linux")
+        # print("On Windows/Linux")
 
     main_network.compile(loss=MeanSquaredError(), optimizer=Adam())
 
