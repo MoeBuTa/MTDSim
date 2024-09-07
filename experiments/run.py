@@ -209,7 +209,7 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
                 model_path=model_path,
                 attacker_sensitivity=attacker_sensitivity
             )
-             evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
+             evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.25])
              for item in evaluation_results:
             
                 result = construct_experiment_result('mtd_ai', mtd_interval, item, network_size)
@@ -278,7 +278,7 @@ def specific_multiple_mtd_simulation(file_name, combination, scheme, mtd_interva
         for network_size in network_size:
             evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
                                             custom_strategies=combination, total_nodes=network_size)
-            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
+            evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.25])
             for item in evaluation_results:
                 result = construct_experiment_result(scheme, mtd_interval, item, network_size)
                 evaluations.append(result)
