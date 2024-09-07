@@ -73,15 +73,15 @@ class Experiment:
     def run_trials(self, scheme):
         for i in range(self.trial):
             print("Trial_", i)
+            print(scheme)
             if scheme == 'nomtd':
                 mtd = single_mtd_simulation("nomtd", [None], 
                                                          mtd_interval=self.mtd_interval,network_size=self.network_size) 
             elif scheme == self.model:
-                try:
-                    mtd = mtd_ai_simulation(self.model, self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
-                                                             mtd_interval=self.mtd_interval,network_size=self.network_size )  
-                except:
-                    continue  
+      
+                mtd = mtd_ai_simulation(self.model, self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
+                                                            mtd_interval=self.mtd_interval,network_size=self.network_size )  
+
             else:
                 mtd = specific_multiple_mtd_simulation(scheme, self.mtd_strategies, scheme, mtd_interval=self.mtd_interval,network_size=self.network_size)
         return 
@@ -124,11 +124,11 @@ class Experiment:
         for key, value in metrics_dict.items():
             if key in normalization_dict:
                 norm_value = normalization_dict[key]
-
                 if norm_value != 0:
                     if key in metrics_to_maximize:
                         # Normalize by dividing the metric value by the normalization value
                         scaled_metrics[key] = value / norm_value
+                        
                     elif key in metrics_to_minimize:
                         # Inverse the ratio for metrics to be minimized
                         scaled_metrics[key] = 1 / (value / norm_value)

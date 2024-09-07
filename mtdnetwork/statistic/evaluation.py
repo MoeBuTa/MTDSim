@@ -119,11 +119,12 @@ class Evaluation:
             # print(state_array, time_series_array) #debug
 
             total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
-
-
+            # print(self.compromised_num(record=sub_record), len(self._network.get_hosts()))
+            host_comp_ratio = self.compromised_num(record=sub_record)/len(self._network.get_hosts())
+            # print(host_comp_ratio)
             result.append({'time_to_compromise': time_to_compromise,
                            'attack_success_rate': attack_success_rate,
-                           'host_compromise_ratio': comp_ratio,
+                           'host_compromise_ratio': host_comp_ratio,
                            'mtd_execution_frequency': mtd_execution_frequency,
                            "exposed_endpoints": state_array[1],
                            "attack_path_exposure": state_array[2],
