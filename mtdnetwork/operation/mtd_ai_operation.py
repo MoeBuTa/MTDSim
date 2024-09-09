@@ -13,7 +13,7 @@ from mtdnetwork.statistic.security_metric_statistics import SecurityMetricStatis
 class MTDAIOperation:
 
     def __init__(self, security_metrics_record ,env, end_event, network, attack_operation, scheme, adversary,proceed_time=0,
-                 mtd_trigger_interval=None, custom_strategies=None, main_network=None, attacker_sensitivity=None, epsilon=None):
+                 mtd_trigger_interval=None, custom_strategies=None, main_network=None, attacker_sensitivity=None, epsilon=None, static_degrade_factor = 2000):
         """
         :param env: the parameter to facilitate simPY env framework
         :param network: the simulation network
@@ -54,8 +54,8 @@ class MTDAIOperation:
         self.evaluation = Evaluation(network=network, adversary=adversary,  security_metrics_record = security_metrics_record)
 
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
-
-
+        self.mtd_strategies = custom_strategies
+        self.static_degrade_factor = static_degrade_factor
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
@@ -84,10 +84,12 @@ class MTDAIOperation:
             if self._mtd_scheme._scheme == 'mtd_ai':
 
                 # Static network degradation factor
-                if (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000: # The number 100 is just a temperory threshold
-                    action = 1
+                if (self.env.now - self.network.get_last_mtd_triggered_time()) > self.static_degrade_factor: 
+                    action = random.randint(1, len(self.mtd_strategies) + 1)
+                    
+
                 else:
-                    action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
+                    action = choose_action(state, time_series, self.main_network, len(self.mtd_strategies) + 1, self.epsilon)
                 
                 if self.logging:
                     logging.info('Static period: %s' % (self.env.now - self.network.get_last_mtd_triggered_time()))

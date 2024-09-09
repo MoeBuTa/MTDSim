@@ -13,7 +13,7 @@ class MTDAITraining:
 
     def __init__(self,security_metric_record, features,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
-                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None, attacker_sensitivity = 1):
+                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None, attacker_sensitivity = 1, static_degrade_factor = 2000):
         """
         :param env: the parameter to facilitate simPY env framework
         :param network: the simulation network
@@ -33,6 +33,8 @@ class MTDAITraining:
 
         self._mtd_scheme = MTDScheme(network=network, scheme=scheme, mtd_trigger_interval=mtd_trigger_interval,
                                      custom_strategies=custom_strategies)
+        self.custom_strategies = custom_strategies
+     
         self._proceed_time = proceed_time
 
         self.application_layer_resource = simpy.Resource(self.env, 1)
@@ -51,10 +53,12 @@ class MTDAITraining:
         self.features = features
         self.security_metric_record = security_metric_record
         self.attacker_sensitivity = attacker_sensitivity
-
+        self.static_degrade_factor = static_degrade_factor
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
 
         self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)        
+
+
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
@@ -77,12 +81,16 @@ class MTDAITraining:
                 return
 
             state, time_series = self.get_state_and_time_series()
-            action = choose_action(state, time_series, self.main_network, 5, self.epsilon)
+    
 
-            # Static network degradation factor (if exceed 1000 force to deploy MTD)
+            # Static network degradation factor (if exceed static factor force to deploy MTD)
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > self.static_degrade_factor: 
+                action = random.randint(1, len(self.custom_strategies) + 1)
+            else: 
+                action = choose_action(state, time_series, self.main_network, len(self.custom_strategies) + 1, self.epsilon)
+                
 
-            while (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000 and action == 0:
-                action =  choose_action(state, time_series, self.main_network, 5, self.epsilon)
+        
 
                 
 

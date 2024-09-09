@@ -189,7 +189,7 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None', mtd_int
         print(mtd_name)
     return evaluations
 
-def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100]):
+def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100], custom_strategies = None, static_degrade_factor = 2000):
     """
     Simulations for single ai mtd
     """
@@ -206,7 +206,9 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
                 scheme= scheme,
                 total_nodes=total_nodes,
                 new_network=new_network,
-                model_path=model_path
+                model_path=model_path,
+                custom_strategies=custom_strategies,
+                static_degrade_factor = static_degrade_factor
             )
             #  evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(np.arange(0.01, 1.01, 0.01))
              evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.05, 0.1, 0.15, 0.2, 0.25])
@@ -379,7 +381,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000,
-                       file_name=None):
+                       file_name=None, static_degrade_factor = 2000):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -412,6 +414,10 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
     main_network = create_network(state_size, action_size, time_series_size)
     target_network = create_network(state_size, action_size, time_series_size)
     target_network.set_weights(main_network.get_weights())
+
+    print("Static_factor", static_degrade_factor)
+    print("MTD Scheme", custom_strategies)
+    print("Action size(include zero which is no deployment)", action_size)
 
     memory = deque(maxlen=2000)
     security_metric_record = SecurityMetricStatistics()
@@ -457,7 +463,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
                                         mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                         main_network=main_network, target_network=target_network, memory=memory, 
                                         gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, 
-                                        batch_size=batch_size, train_start=train_start)
+                                        batch_size=batch_size, train_start=train_start, static_degrade_factor = static_degrade_factor)
             mtd_operation.proceed_mtd()
             security_metric_record = mtd_operation.security_metric_record
         # save snapshot by time
@@ -486,10 +492,10 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
 def mse(y_true, y_pred):
     return MeanSquaredError()(y_true, y_pred)
 
-def   execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
-                       epsilon=1.0, attacker_sensitivity=1, model_path=None):
+                       epsilon=1.0, attacker_sensitivity=1, model_path=None, static_degrade_factor = 2000):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -531,6 +537,10 @@ def   execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inte
     time_network = None
     adversary = None
 
+    print("Static_factor", static_degrade_factor)
+    print("MTD Scheme", custom_strategies)
+    print("Action size(include zero which is no deployment)", len(custom_strategies) + 1)
+
     if start_time > 0:
         try:
             time_network, adversary = snapshot_checkpoint.load_snapshots_by_time(start_time)
@@ -562,7 +572,7 @@ def   execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inte
         mtd_operation = MTDAIOperation(security_metrics_record, env=env, end_event=end_event, network=time_network, scheme=scheme,
                                     attack_operation=attack_operation, proceed_time=0,
                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
-                                    main_network=main_network, epsilon=epsilon, attacker_sensitivity=attacker_sensitivity)
+                                    main_network=main_network, epsilon=epsilon, attacker_sensitivity=attacker_sensitivity, static_degrade_factor = static_degrade_factor)
         mtd_operation.proceed_mtd()
         security_metrics_record = mtd_operation.security_metrics_record
 
