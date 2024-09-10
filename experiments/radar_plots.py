@@ -81,6 +81,6 @@ class RadarPlot(Experiment):
         # Create legend
         legend_patches = [Patch(color=colors[i % len(colors)], label=scheme_name) for i, scheme_name in enumerate(scheme_names)]
         plt.legend(handles=legend_patches, loc='upper right', bbox_to_anchor=(1.1, 1.1))
-        # plt.savefig(f"{self.model}_{self.trial}.png")
+        plt.savefig(f"{self.model}_{self.trial}.png")
         plt.show()
 
