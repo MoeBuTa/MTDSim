@@ -72,51 +72,52 @@ static_degrade_factor = 2000
 #     execute_ai_training(custom_strategies=[mtd_strategies], features = features, start_time=start_time, finish_time=finish_time, mtd_interval=mtd_interval, state_size=state_size, time_series_size=time_series_size, action_size=action_size, gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, batch_size=batch_size, train_start=train_start, scheme=scheme, total_nodes=total_nodes, new_network=new_network, episodes=episodes, file_name=file_name )
 
 
-# Define your features
-static_features = [ "attack_path_exposure", "overall_asr_avg", "roa",  "risk"]
-# time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
-time_features = [ "overall_mttc_avg", "time_since_last_mtd"]
+# for mtd_strategies in custom_strategies:
+    # Define your features
+    # static_features = [ "attack_path_exposure", "overall_asr_avg", "roa",  "risk"]
+    # time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+    # time_features = [ "overall_mttc_avg", "time_since_last_mtd"]
 
 
-# Loop through time features
-for time_feature in time_features:
-    features = {"static": [], "time": [time_feature]}
-    
-    # Call the function with the current feature configuration
-    execute_ai_training(
-        features=features,
-        start_time=start_time,
-        finish_time=finish_time,
-        custom_strategies=custom_strategies,
-        mtd_interval=mtd_interval,
-        state_size=state_size,
-        time_series_size=time_series_size,
-        action_size=action_size,
-        gamma=gamma,
-        epsilon=epsilon,
-        epsilon_min=epsilon_min,
-        epsilon_decay=epsilon_decay,
-        batch_size=batch_size,
-        train_start=train_start,
-        scheme=scheme,
-        total_nodes=total_nodes,
-        new_network=new_network,
-        episodes=episodes,
-        file_name=time_feature,
-        static_degrade_factor = 2000
-    )
+#     # Loop through time features
+#     for time_feature in time_features:
+#         features = {"static": [], "time": [time_feature]}
+        
+#         # Call the function with the current feature configuration
+#         execute_ai_training(
+#             features=features,
+#             start_time=start_time,
+#             finish_time=finish_time,
+#             custom_strategies=[mtd_strategies],
+#             mtd_interval=mtd_interval,
+#             state_size=state_size,
+#             time_series_size=time_series_size,
+#             action_size=action_size,
+#             gamma=gamma,
+#             epsilon=epsilon,
+#             epsilon_min=epsilon_min,
+#             epsilon_decay=epsilon_decay,
+#             batch_size=batch_size,
+#             train_start=train_start,
+#             scheme=scheme,
+#             total_nodes=total_nodes,
+#             new_network=new_network,
+#             episodes=episodes,
+#             file_name=time_feature,
+#             static_degrade_factor = 2000
+#         )
 
 
 
 # Loop through static features
-# for static_feature in static_features:
-#     features = {"static": [static_feature], "time": []}
+for static_feature in static_features:
+    features = {"static": ["overall_asr_avg"], "time": []}
    
-#     for mtd_strategies in custom_strategies:
-#         action_size = 2
-#         file_name = static_feature
-#         file_name += f"_{[mtd_strategies][0]().get_name()}"
-#         print(file_name)
-#         # Train using all features and only deploy single MTD
-#         execute_ai_training(custom_strategies=[mtd_strategies], features = features, start_time=start_time, finish_time=finish_time, mtd_interval=mtd_interval, state_size=state_size, time_series_size=time_series_size, action_size=action_size, gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, batch_size=batch_size, train_start=train_start, scheme=scheme, total_nodes=total_nodes, new_network=new_network, episodes=episodes, file_name=file_name )
+    for mtd_strategies in custom_strategies:
+        action_size = 2
+        file_name = static_feature
+        file_name += f"_{[mtd_strategies][0]().get_name()}"
+        print(file_name)
+        # Train using all features and only deploy single MTD
+        execute_ai_training(custom_strategies=[mtd_strategies], features = features, start_time=start_time, finish_time=finish_time, mtd_interval=mtd_interval, state_size=state_size, time_series_size=time_series_size, action_size=action_size, gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, batch_size=batch_size, train_start=train_start, scheme=scheme, total_nodes=total_nodes, new_network=new_network, episodes=episodes, file_name=file_name )
 
