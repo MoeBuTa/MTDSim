@@ -53,6 +53,7 @@ mtd_strategies = [
 
 def save_evaluation_result(file_name, evaluations):
     current_directory = os.getcwd()
+    print(f"Saving evaluation results to {current_directory + '/experimental_data/results/' + file_name + '.csv'}")
     if not os.path.exists(current_directory + '/experimental_data/results/' + file_name + '.csv'):
         pd.DataFrame(evaluations).to_csv('experimental_data/results/' + file_name + '.csv', index=False)
     else:
@@ -194,7 +195,6 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
     Simulations for single ai mtd
     """
     evaluations = []
-   
     scheme = 'mtd_ai'
     # print(mtd_name, scheme)
     for mtd_interval in mtd_interval:
@@ -209,6 +209,8 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
                 model_path=model_path,
                 attacker_sensitivity=attacker_sensitivity
             )
+             print(evaluation.security_metrics_record._metric_record)
+
              evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.05, 0.1, 0.15, 0.2, 0.25])
              for item in evaluation_results:
             
@@ -279,6 +281,7 @@ def specific_multiple_mtd_simulation(file_name, combination, scheme, mtd_interva
             evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
                                             custom_strategies=combination, total_nodes=network_size)
             evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.05, 0.1, 0.15, 0.2, 0.25])
+            print(evaluation.security_metrics_record._metric_record)
             for item in evaluation_results:
                 result = construct_experiment_result(scheme, mtd_interval, item, network_size)
                 evaluations.append(result)

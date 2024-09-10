@@ -14,7 +14,7 @@ from heapq import heappush, heappop
 
 class MTDScheme:
 
-    def __init__(self, scheme: str, network, mtd_trigger_interval=None, mtd_trigger_std=0.5, custom_strategies=None):
+    def __init__(self, scheme: str, network, mtd_trigger_interval=None, mtd_trigger_std=0.5, custom_strategies=None, security_metric_record=None):
         self._scheme = scheme
         self._mtd_trigger_interval = mtd_trigger_interval
         self._mtd_trigger_std = mtd_trigger_std
@@ -32,6 +32,7 @@ class MTDScheme:
         self._mtd_custom_strategies = custom_strategies
         self.network = network
         self._init_mtd_scheme(scheme)
+        self._security_metric_record = security_metric_record
 
     def _init_mtd_scheme(self, scheme):
         """
@@ -69,6 +70,10 @@ class MTDScheme:
         """
         register all MTDs for simultaneous scheme
         """
+        if self._security_metric_record is not None:
+            for mtd in self._mtd_custom_strategies:
+                self._security_metric_record.increment_metric(mtd.__name__)
+
         for mtd in self._mtd_custom_strategies:
             self._mtd_register(mtd=mtd)
         return self.network.get_mtd_queue()
@@ -77,7 +82,12 @@ class MTDScheme:
         """
         register an MTD for random scheme
         """
-        self._mtd_register(mtd=random.choice(self._mtd_custom_strategies))
+        mtd = random.choice(self._mtd_custom_strategies)
+
+        if self._security_metric_record is not None:
+            self._security_metric_record.increment_metric(mtd.__name__)
+
+        self._mtd_register(mtd=mtd)
 
     def _register_mtd_alternatively(self):
         """
@@ -94,6 +104,9 @@ class MTDScheme:
         """
         register an MTD for AI scheme
         """
+        if self._security_metric_record is not None:
+            self._security_metric_record.increment_metric(self._mtd_custom_strategies[mtd_technique - 1].__name__)
+
         self._mtd_register(mtd=self._mtd_custom_strategies[mtd_technique - 1])
 
     def trigger_suspended_mtd(self):

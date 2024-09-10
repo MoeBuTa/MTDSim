@@ -28,14 +28,14 @@ class MTDOperation:
         self.adversary = adversary
         self.logging = False
 
+        self.security_metric_record = security_metrics_record
         self._mtd_scheme = MTDScheme(network=network, scheme=scheme, mtd_trigger_interval=mtd_trigger_interval,
-                                     custom_strategies=custom_strategies)
+                                     custom_strategies=custom_strategies, security_metric_record=self.security_metric_record)
         self._proceed_time = proceed_time
 
         self.application_layer_resource = simpy.Resource(self.env, 1)
         self.network_layer_resource = simpy.Resource(self.env, 1)
         self.reserve_resource = simpy.Resource(self.env, 1)
-        self.security_metric_record = security_metrics_record
 
         self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)
 

@@ -32,8 +32,9 @@ class MTDAIOperation:
         self.attacker_sensitivity = attacker_sensitivity
         self.logging = False
 
+        self.security_metrics_record = security_metrics_record
         self._mtd_scheme = MTDScheme(network=network, scheme=scheme, mtd_trigger_interval=mtd_trigger_interval,
-                                     custom_strategies=custom_strategies)
+                                     custom_strategies=custom_strategies, security_metric_record = self.security_metrics_record)
         self._proceed_time = proceed_time
 
         self.application_layer_resource = simpy.Resource(self.env, 1)
@@ -42,7 +43,6 @@ class MTDAIOperation:
 
         self.main_network = main_network
         self.epsilon = epsilon
-        self.security_metrics_record = security_metrics_record
         self.attack_dict = {
             'SCAN_HOST': 1,
             'ENUM_HOST': 2,
@@ -78,7 +78,7 @@ class MTDAIOperation:
                 return
             
             state, time_series = self.get_state_and_time_series()
-            self.network.get_security_metric_stats().append_security_metric_record(state, time_series, round(self.env.now, -2))
+            # self.network.get_security_metric_stats().append_security_metric_record(state, time_series, round(self.env.now, -2))
 
             # if using the mtd_ai scheme
             if self._mtd_scheme._scheme == 'mtd_ai':
