@@ -107,11 +107,11 @@ static_degrade_factor = 2000
 #             static_degrade_factor = 2000
 #         )
 
-
+static_features =["overall_asr_avg"]
 
 # Loop through static features
 for static_feature in static_features:
-    features = {"static": ["overall_asr_avg"], "time": []}
+    features = {"static": [static_feature], "time": []}
    
     for mtd_strategies in custom_strategies:
         action_size = 2
