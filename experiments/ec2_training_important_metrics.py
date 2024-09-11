@@ -64,8 +64,7 @@ static_degrade_factor = 2000
 
 
 # Define the lists of features
-static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure", 
-                   "overall_asr_avg", "roa", "shortest_path_variability", "risk", "attack_type"]
+static_features = [ "attack_path_exposure"]
 time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
 # Combine all features into a single list
