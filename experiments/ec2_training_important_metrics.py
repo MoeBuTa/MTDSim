@@ -64,8 +64,8 @@ static_degrade_factor = 2000
 
 
 # Define the lists of features
-static_features = [ "attack_path_exposure"]
-time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+static_features = []
+time_features = ["overall_mttc_avg", "time_since_last_mtd"]
 
 # Combine all features into a single list
 all_features = static_features + time_features
