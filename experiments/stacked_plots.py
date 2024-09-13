@@ -82,7 +82,10 @@ class StackedBarChart(Experiment):
 
     def normalized_chart(self,normalization = 'minmax'):
         result = self.weighted_data[normalization].sort_values()
+         # Set up the figure and axis for the bar chart
+        fig, ax = plt.subplots(figsize=(12, 9))  # Increase the figure size
         sns.barplot(x = result.index, y = result)
         # Rotate x-axis labels
         plt.xticks(rotation=45, ha='right')
+        plt.savefig(f"{self.model}_{self.trial}_normalized.png")
         plt.show()
