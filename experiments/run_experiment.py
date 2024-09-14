@@ -60,7 +60,8 @@ class Experiment:
         self.total_nodes = total_nodes
         self.new_network = new_network
         self.model = model
-        self.schemes = [ model, 'simultaneous', 'random', 'alternative']
+        self.model_metric = model_metric
+        self.other_schemes = [ "nomtd", 'simultaneous', 'random', 'alternative']
         self.trial = trial
         self.model_path = f"AI_model/models_will/new_models/{model_metric}/main_network_{model}.h5"
         self.mtd_strategies = mtd_strategies
@@ -93,7 +94,10 @@ class Experiment:
         return 
     
     def get_result(self, path,model):
-        path = f'{path}/experiments/experimental_data/results/{model}.csv'
+        if model not in self.other_schemes:
+            path = f'{path}/experiments/experimental_data/results/500_trials/{self.model_metric}/{model}.csv'
+        else:
+            path = f'{path}/experiments/experimental_data/results/other_schemes/{model}.csv'
         df = pd.read_csv(path)
         return df
     def get_result_checkpoint_median(self, model,checkpoints = 9):
@@ -158,6 +162,7 @@ class Experiment:
     def multiple_scaled_pipeline(self,schemes,run_trial = False, stats_type = 'median'):
         multi_schemes = {}
         nomtd_result = self.raw_result_stats_pipeline('nomtd',run_trial, stats_type)
+   
         for scheme in schemes:
             scheme_result = self.raw_result_stats_pipeline(scheme,run_trial, stats_type)
             scaled_scheme_result = self.scale_metrics(scheme_result.to_dict(), nomtd_result.to_dict())

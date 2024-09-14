@@ -5,8 +5,8 @@ from run_experiment import Experiment
 import seaborn as sns
 
 class StackedBarChart(Experiment):
-    def __init__(self, epsilon, start_time, finish_time, mtd_interval, network_size, total_nodes, new_network, model, trial, result_head_path):
-        super().__init__(epsilon, start_time, finish_time, mtd_interval, network_size, total_nodes, new_network, model, trial, result_head_path)
+    def __init__(self, metric, epsilon, start_time, finish_time, mtd_interval, network_size, total_nodes, new_network, model, trial, result_head_path):
+        super().__init__(metric, epsilon, start_time, finish_time, mtd_interval, network_size, total_nodes, new_network, model, trial, result_head_path)
         self.weighted_data = None
     def plot_n_schemes(self, schemes_data, weights=None):
         """
@@ -72,7 +72,7 @@ class StackedBarChart(Experiment):
         ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
 
         # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45, ha='right')
+        plt.xticks(rotation=45, ha='right',  fontsize=8)
 
         # Save the plot as a PNG file
         plt.savefig(f"{self.model}_{self.trial}.png")

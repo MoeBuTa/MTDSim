@@ -34,8 +34,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 class RadarPlot(Experiment):
-    def __init__(self, epsilon, start_time, finish_time, mtd_interval, network_size,total_nodes, new_network,  model, trial, result_head_path):
-        super().__init__(epsilon, start_time, finish_time, mtd_interval, network_size,total_nodes, new_network,  model, trial, result_head_path)
+    def __init__(self, metric,epsilon, start_time, finish_time, mtd_interval, network_size,total_nodes, new_network,  model, trial, result_head_path):
+        super().__init__(metric, epsilon, start_time, finish_time, mtd_interval, network_size,total_nodes, new_network,  model, trial, result_head_path)
 
     def plot_n_schemes(self, schemes_data):
         """
