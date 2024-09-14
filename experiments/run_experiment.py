@@ -138,10 +138,12 @@ class Experiment:
                     if key in metrics_to_maximize:
                         # Normalize by dividing the metric value by the normalization value
                         scaled_metrics[key] = value / norm_value
+                        # scaled_metrics[key] = 1 / (value / norm_value)
                         
                     elif key in metrics_to_minimize:
                         # Inverse the ratio for metrics to be minimized
                         scaled_metrics[key] = 1 / (value / norm_value)
+                        # scaled_metrics[key] = value / norm_value
                     else:
                         # Handle cases where the metric is not in either category
                         scaled_metrics[key] = value / norm_value
@@ -159,9 +161,10 @@ class Experiment:
         scaled_scheme_result = self.scale_metrics(scheme_result.to_dict(), nomtd_result.to_dict())
         return {scheme:scaled_scheme_result}
     
-    def multiple_scaled_pipeline(self,schemes,run_trial = False, stats_type = 'median'):
+    def multiple_scaled_pipeline(self,schemes,run_trial = False, stats_type = 'median', scaled_target = 'nomtd'):
         multi_schemes = {}
-        nomtd_result = self.raw_result_stats_pipeline('nomtd',run_trial, stats_type)
+
+        nomtd_result = self.raw_result_stats_pipeline(scaled_target,run_trial, stats_type)
    
         for scheme in schemes:
             scheme_result = self.raw_result_stats_pipeline(scheme,run_trial, stats_type)
@@ -169,3 +172,5 @@ class Experiment:
 
             multi_schemes[scheme] = scaled_scheme_result
         return multi_schemes
+    
+  

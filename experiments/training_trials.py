@@ -33,9 +33,9 @@ mtd_strategies_dict = {
 
 # Metrics and models
 
-static_features = [  "exposed_endpoints"]
-time_features = [ ]
-metrics = static_features + time_features
+static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
+time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+metrics = ["all_features"] + static_features + time_features
 
 # Define the function to run each experiment
 def run_experiment_in_process(model, metric, process_name):
@@ -61,7 +61,7 @@ def run_experiment_in_process(model, metric, process_name):
         model=model, 
         trial=trial, 
         result_head_path=result_head_path, 
-        mtd_strategies=[mtd_strategy]
+        mtd_strategies=[mtd_strategy] if mtd_strategy else mtd_strategies_dict.values()
     )
     
     experiment.run_trials_ai_multi(process_name)
@@ -69,8 +69,8 @@ def run_experiment_in_process(model, metric, process_name):
 if __name__ == '__main__':
     for metric in metrics:
         models = [
-            # f"{metric}_CompleteTopologyShuffle",
-            # f"{metric}_IPShuffle",
+            f"{metric}_CompleteTopologyShuffle",
+            f"{metric}_IPShuffle",
             f"{metric}_OSDiversity",
             f"{metric}_ServiceDiversity"
         ]
@@ -79,9 +79,8 @@ if __name__ == '__main__':
         process_names = ["process_1", "process_2", "process_3", "process_4"]
         
         # Create multiprocessing pool
-        with multiprocessing.Pool(processes=4) as pool:
+        with multiprocessing.Pool(processes=5) as pool:
             # Prepare arguments for each model
             args = [(model, metric, process_names[i]) for i, model in enumerate(models)]
-            
             # Run models in parallel
             pool.starmap(run_experiment_in_process, args)
