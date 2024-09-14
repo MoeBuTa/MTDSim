@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 
 
 class Experiment:
-    def __init__(self, epsilon, start_time, finish_time, mtd_interval, network_size,total_nodes, new_network,  model, trial, result_head_path, mtd_strategies = [
+    def __init__(self, model_metric,epsilon, start_time, finish_time, mtd_interval, network_size,total_nodes, new_network,  model, trial, result_head_path, mtd_strategies = [
             CompleteTopologyShuffle,
             # HostTopologyShuffle,
             IPShuffle,
@@ -62,13 +62,18 @@ class Experiment:
         self.model = model
         self.schemes = [ model, 'simultaneous', 'random', 'alternative']
         self.trial = trial
-        self.model_path = f"AI_model/models_will/main_network_{model}.h5"
+        self.model_path = f"AI_model/models_will/new_models/{model_metric}/main_network_{model}.h5"
         self.mtd_strategies = mtd_strategies
         self.mtd_interval = mtd_interval
         self.network_size = network_size
         self.result_head_path = result_head_path
         self.static_degrade_factor = static_degrade_factor
 
+
+    def run_trials_ai_multi(self, folder):
+        for i in range(self.trial):
+            mtd = mtd_ai_simulation(f"{folder}/{self.model}", self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
+                                                            mtd_interval=self.mtd_interval,network_size=self.network_size ,custom_strategies=self.mtd_strategies, static_degrade_factor = self.static_degrade_factor)  
 
 
     def run_trials(self, scheme):
