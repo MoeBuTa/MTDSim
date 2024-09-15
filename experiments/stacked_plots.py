@@ -24,7 +24,31 @@ class StackedBarChart(Experiment):
 
 
 
-    def plot_n_schemes(self, schemes_data, weights=None):
+    def calculate_weighted_sum(self, weighted_df):
+        """
+        This method calculates the sum of weighted metrics for each scheme and performs
+        additional calculations such as z-score and min-max normalization.
+        """
+        # Calculate the sum of the weighted metrics for each scheme
+        weighted_df['sum'] = weighted_df.sum(axis=1)
+
+        # Calculate mean, standard deviation, and z-score of the sums
+        mean_sum = weighted_df['sum'].mean()
+        std_sum = weighted_df['sum'].std()
+        weighted_df['zscore'] = (weighted_df['sum'] - mean_sum) / std_sum
+
+        # Perform min-max normalization on the sums
+        min_sum = weighted_df['sum'].min()
+        max_sum = weighted_df['sum'].max()
+        weighted_df['minmax'] = (weighted_df['sum'] - min_sum) / (max_sum - min_sum)
+
+        return weighted_df
+
+
+    def plot_n_schemes(self, schemes_data, weights=None, title = 'Comparison of Schemes with Weighted Metrics'):
+        """
+        This method plots a stacked bar chart comparing schemes based on weighted metrics.
+        """
         # Convert the schemes_data to a DataFrame and transpose so that rows are schemes and columns are metrics
         df = pd.DataFrame(schemes_data).T
 
@@ -43,15 +67,8 @@ class StackedBarChart(Experiment):
         # Calculate weighted metrics
         weighted_df = df * weights
 
-        # Calculate the sum of the weighted metrics for each scheme
-        weighted_df['sum'] = weighted_df.sum(axis=1)
-        mean_sum = weighted_df['sum'].mean()
-        std_sum = weighted_df['sum'].std()
-        weighted_df['zscore'] = (weighted_df['sum'] - mean_sum) / std_sum
-
-        min_sum = weighted_df['sum'].min()
-        max_sum = weighted_df['sum'].max()
-        weighted_df['minmax'] = (weighted_df['sum'] - min_sum) / (max_sum - min_sum)
+        # Use the newly created method to modify the weighted_df and calculate sum, z-score, and min-max normalization
+        weighted_df = self.calculate_weighted_sum(weighted_df)
 
         print("Normalized Weighted Metrics for Each Scheme:")
         print(weighted_df['sum'])
@@ -76,7 +93,8 @@ class StackedBarChart(Experiment):
 
         # Add labels and title
         ax.set_ylabel('Stacked Metric Value')
-        ax.set_title('Comparison of Schemes with Weighted Metrics')
+
+        ax.set_title(title)
         ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
 
         # Rotate x-axis labels for better readability
@@ -89,7 +107,9 @@ class StackedBarChart(Experiment):
         plt.savefig(f"{self.model}_{self.trial}.png")
         plt.show()
 
+        # Store the weighted data
         self.weighted_data = weighted_df
+
 
     def normalized_chart(self, normalization='minmax'):
         result = self.weighted_data[normalization].sort_values()
@@ -426,3 +446,5 @@ class StackedBarChart(Experiment):
         # Save the plot as a PNG file
         plt.savefig(f"{self.model}_{self.trial}_mtd_techniques.png")
         plt.show()
+
+

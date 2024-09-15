@@ -95,7 +95,7 @@ class Experiment:
     
     def get_result(self, path,model):
         if model not in self.other_schemes:
-            path = f'{path}/experiments/experimental_data/results/500_trials/{self.model_metric}/{model}.csv'
+            path = f'{path}/experiments/experimental_data/results/overall_trials/{self.model_metric}/{model}.csv'
         else:
             path = f'{path}/experiments/experimental_data/results/other_schemes/{model}.csv'
         df = pd.read_csv(path)
