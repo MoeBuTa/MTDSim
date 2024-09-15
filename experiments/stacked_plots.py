@@ -9,6 +9,8 @@ from mtdnetwork.mtd.osdiversity import OSDiversity
 from mtdnetwork.mtd.servicediversity import ServiceDiversity
 from matplotlib.colors import to_rgb, to_hex
 import matplotlib.ticker as ticker
+
+
 class StackedBarChart(Experiment):
     def __init__(self, metric, epsilon, start_time, finish_time, mtd_interval, network_size, total_nodes, new_network, model, trial, result_head_path):
         super().__init__(metric, epsilon, start_time, finish_time, mtd_interval, network_size, total_nodes, new_network, model, trial, result_head_path)
@@ -25,36 +27,51 @@ class StackedBarChart(Experiment):
 
 
     def calculate_weighted_sum(self, weighted_df):
+            """
+            Calculates the sum of weighted metrics for each scheme and performs
+            additional calculations such as z-score and min-max normalization.
+            
+            Parameters:
+            - weighted_df (pd.DataFrame): DataFrame with weighted metrics.
+
+            Returns:
+            - pd.DataFrame: DataFrame with additional columns for sum, z-score, and min-max normalization.
+            """
+            # Calculate the sum of the weighted metrics for each scheme
+            weighted_df['sum'] = weighted_df.sum(axis=1)
+
+            # Calculate mean, standard deviation, and z-score of the sums
+            mean_sum = weighted_df['sum'].mean()
+            std_sum = weighted_df['sum'].std()
+            weighted_df['zscore'] = (weighted_df['sum'] - mean_sum) / std_sum
+
+            # Perform min-max normalization on the sums
+            min_sum = weighted_df['sum'].min()
+            max_sum = weighted_df['sum'].max()
+            weighted_df['minmax'] = (weighted_df['sum'] - min_sum) / (max_sum - min_sum)
+
+            return weighted_df
+
+    def process_weighted_metrics(self, schemes_data, weights_df=None):
         """
-        This method calculates the sum of weighted metrics for each scheme and performs
-        additional calculations such as z-score and min-max normalization.
-        """
-        # Calculate the sum of the weighted metrics for each scheme
-        weighted_df['sum'] = weighted_df.sum(axis=1)
-
-        # Calculate mean, standard deviation, and z-score of the sums
-        mean_sum = weighted_df['sum'].mean()
-        std_sum = weighted_df['sum'].std()
-        weighted_df['zscore'] = (weighted_df['sum'] - mean_sum) / std_sum
-
-        # Perform min-max normalization on the sums
-        min_sum = weighted_df['sum'].min()
-        max_sum = weighted_df['sum'].max()
-        weighted_df['minmax'] = (weighted_df['sum'] - min_sum) / (max_sum - min_sum)
-
-        return weighted_df
-
-
-    def plot_n_schemes(self, schemes_data, weights=None, title = 'Comparison of Schemes with Weighted Metrics'):
-        """
-        This method plots a stacked bar chart comparing schemes based on weighted metrics.
+        Calculates weighted metrics from schemes_data and weights, and updates self.weighted_data.
+        
+        Parameters:
+        - schemes_data (dict or pd.DataFrame): Data for plotting, with schemes as rows and metrics as columns.
+        - weights_df (pd.DataFrame, optional): DataFrame with weights for each metric. If None, all weights default to 1.
+        
+        Returns:
+        - pd.DataFrame: DataFrame with weighted metrics, sum, z-score, and min-max normalization.
         """
         # Convert the schemes_data to a DataFrame and transpose so that rows are schemes and columns are metrics
         df = pd.DataFrame(schemes_data).T
 
         # Set default weights to 1 if no custom weights are provided
-        if weights is None:
+        if weights_df is None:
             weights = {metric: 1 for metric in df.columns}
+        else:
+            # Ensure weights_df is a Series with weights for each metric
+            weights = weights_df.squeeze()  # Convert DataFrame to Series if necessary
 
         # Ensure that weights are a Pandas Series for easy multiplication with DataFrame columns
         weights = pd.Series(weights)
@@ -67,11 +84,25 @@ class StackedBarChart(Experiment):
         # Calculate weighted metrics
         weighted_df = df * weights
 
-        # Use the newly created method to modify the weighted_df and calculate sum, z-score, and min-max normalization
+        # Calculate additional metrics using the separate function
         weighted_df = self.calculate_weighted_sum(weighted_df)
 
-        print("Normalized Weighted Metrics for Each Scheme:")
-        print(weighted_df['sum'])
+        # Update the instance variable with the calculated data
+        self.weighted_data = weighted_df
+
+        return weighted_df
+
+    def plot_n_schemes(self, title='Comparison of Schemes with Weighted Metrics', font_size = 8):
+        """
+        Plots a stacked bar chart comparing schemes based on weighted metrics.
+        
+        Parameters:
+        - title (str): Title of the plot.
+        """
+        if self.weighted_data is None:
+            raise ValueError("Weighted data has not been computed. Please run process_weighted_metrics first.")
+        
+        weighted_df = self.weighted_data
 
         # Sort DataFrame by 'sum'
         weighted_df_sorted = weighted_df.sort_values(by='sum', ascending=True)
@@ -84,31 +115,28 @@ class StackedBarChart(Experiment):
 
         # Initialize the bottom position for each metric as 0
         bottom = np.zeros(len(weighted_df_sorted))
-        metrics = df.columns  # Include all columns
+        metrics = weighted_df.columns  # Include all columns except 'sum', 'zscore', 'minmax'
 
         # Plot stacked bar chart where schemes are on the x-axis, and metrics are stacked bars
         for i, metric in enumerate(metrics):
-            ax.bar(weighted_df_sorted.index, weighted_df_sorted[metric], label=metric, color=colors[i % len(colors)], bottom=bottom)
-            bottom += weighted_df_sorted[metric]  # Update bottom to stack bars
+            if metric not in ['sum', 'zscore', 'minmax']:  # Exclude the summary metrics
+                ax.bar(weighted_df_sorted.index, weighted_df_sorted[metric], label=metric, color=colors[i % len(colors)], bottom=bottom)
+                bottom += weighted_df_sorted[metric]  # Update bottom to stack bars
 
         # Add labels and title
         ax.set_ylabel('Stacked Metric Value')
-
         ax.set_title(title)
         ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
 
         # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45, ha='right', fontsize=8)
+        plt.xticks(rotation=45, ha='right', fontsize=font_size)
 
         # Set y-axis to have intervals of 0.5
         ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
 
         # Save the plot as a PNG file
-        plt.savefig(f"{self.model}_{self.trial}.png")
+        plt.savefig(f"{self.__class__.__name__}_plot.png")
         plt.show()
-
-        # Store the weighted data
-        self.weighted_data = weighted_df
 
 
     def normalized_chart(self, normalization='minmax'):
@@ -120,13 +148,16 @@ class StackedBarChart(Experiment):
             'Static + Diversity': 'lightgreen',
             'Dynamic + Shuffling': 'salmon',
             'Dynamic + Diversity': 'orange',
-            'All Features + Shuffling': 'pink',  # New color for all features + Shuffling
-            'All Features + Diversity': 'purple',  # New color for all features + Diversity
+            'All Features + Shuffling': 'pink',
+            'All Features + Diversity': 'purple',
+            'Static + All MTD': 'cyan',
+            'Dynamic + All MTD': 'magenta',
+            'All Features + All MTD': 'gold'
         }
 
         # Feature classification using substring matching
-        static_substrings = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure", "risk"]
-        dynamic_substrings = ["overall_asr_avg", "roa", "shortest_path_variability", "mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+        static_substrings = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure", "risk", "roa"]
+        dynamic_substrings = ["overall_asr_avg", "shortest_path_variability", "mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
         # MTD strategy classification
         shuffling_strategies = ['CompleteTopologyShuffle', 'IPShuffle']
@@ -137,7 +168,7 @@ class StackedBarChart(Experiment):
         for feature in result.index:
             feature_lower = feature.lower()
             
-            # Check if feature belongs to static or dynamic categories
+            # Determine if feature is Static or Dynamic
             if any(substring in feature_lower for substring in static_substrings):
                 feature_type = 'Static'
             elif any(substring in feature_lower for substring in dynamic_substrings):
@@ -146,22 +177,31 @@ class StackedBarChart(Experiment):
                 feature_type = 'Unknown'
 
             # Identify the MTD strategy from the feature name
-            strategy_type = 'Shuffling' if any(strategy in feature for strategy in shuffling_strategies) else 'Diversity'
-            
-            # Determine if the feature is categorized as 'All Features'
-            if 'all_features' in feature.lower():
+            if any(strategy in feature for strategy in shuffling_strategies):
+                strategy_type = 'Shuffling'
+            elif any(strategy in feature for strategy in diversity_strategies):
+                strategy_type = 'Diversity'
+            else:
+                # If no specific MTD strategy is found, consider it as 'All MTD'
+                strategy_type = 'All MTD'
+
+            # Determine combination
+            if 'all_features' in feature_lower:
                 combination = f"All Features + {strategy_type}"
+            elif 'all_mtd' in feature_lower:
+                combination = f"All MTD + {feature_type}"
             else:
                 combination = f"{feature_type} + {strategy_type}"
 
+            # Print debug information
+            print(f"Feature: {feature}, Combination: {combination}")
+
+            # Assign color based on combination
             feature_colors[feature] = colors.get(combination, 'grey')  # Default color for unmatched combinations
 
         # Set up the figure and axis for the bar chart
         fig, ax = plt.subplots(figsize=(12, 9))  # Increase the figure size
 
-        # if normalization == 'sum':
-        #     # Add horizontal line at y = 7.230848
-        #     ax.axhline(y=7.230848, color='red', linestyle='--', label='Simultaneous Scheme')
         # Plot bars with colors based on feature and strategy type
         color_list = [feature_colors.get(feature, 'grey') for feature in result.index]
         sns.barplot(x=result.index, y=result, palette=color_list, ax=ax)
@@ -178,7 +218,8 @@ class StackedBarChart(Experiment):
         plt.savefig(f"{self.model}_{self.trial}_normalized.png")
         plt.show()
 
-        
+
+
     
 
     def all_combinations_chart(self, normalization='minmax'):
@@ -234,7 +275,7 @@ class StackedBarChart(Experiment):
 
         # Define static and dynamic feature lists
         static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure", "risk"]
-        dynamic_features = ["overall_asr_avg", "roa", "shortest_path_variability", "mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+        dynamic_features = ["overall_asr_avg", "shortest_path_variability", "mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
         # Define MTD strategy types
         shuffling_strategies = ['CompleteTopologyShuffle', 'IPShuffle']
@@ -355,10 +396,10 @@ class StackedBarChart(Experiment):
 
         # Define lists of static and dynamic features
         static_features = [
-            'host_compromise_ratio', 'exposed_endpoints', 'attack_path_exposure', 'risk'
+            'host_compromise_ratio', 'exposed_endpoints', 'attack_path_exposure', 'risk', 'roa', 
         ]
         dynamic_features = [
-            'overall_asr_avg', 'roa', 'shortest_path_variability', 'mtd_freq', 'overall_mttc_avg', 'time_since_last_mtd'
+            'overall_asr_avg', 'shortest_path_variability', 'mtd_freq', 'overall_mttc_avg', 'time_since_last_mtd'
         ]
 
         # Initialize DataFrame for plotting
@@ -448,3 +489,56 @@ class StackedBarChart(Experiment):
         plt.show()
 
 
+
+    def plot_stacked_plots(self, data,data_dict, weights_df=None):
+        """
+        Plots stacked bar charts for each scheme specified in the data_dict.
+        
+        Parameters:
+        - data_dict (dict): Dictionary where keys are scheme names and values are lists of data identifiers.
+        - weights_df (pd.DataFrame, optional): DataFrame with weights for each metric.
+        
+        Returns:
+        - None
+        """
+        num_schemes = len(data_dict)
+        fig, axes = plt.subplots(nrows=num_schemes, ncols=1, figsize=(16, 12 * num_schemes))
+
+        if num_schemes == 1:
+            axes = [axes]
+
+        for i, (scheme, data_keys) in enumerate(data_dict.items()):
+            # Collect data for the current scheme
+            scheme_data = pd.concat([data[key] for key in data_keys], axis=1)
+            scheme_data = scheme_data.T
+
+            # Sort the columns based on the sum row, from smallest to largest
+            if 'sum' in scheme_data.columns:
+                sorted_columns = scheme_data.sort_values(by='sum', axis=0).index
+                sorted_data = scheme_data[sorted_columns].drop('sum')
+            else:
+                sorted_columns = scheme_data.columns
+                sorted_data = scheme_data[sorted_columns]
+
+            # Process the weighted metrics for this scheme
+            self.process_weighted_metrics(sorted_data, weights_df)
+
+            # Plot on the provided axis
+            ax = axes[i]
+            weighted_df_sorted = self.weighted_data.sort_values(by='sum', ascending=True)
+            colors = plt.cm.tab20.colors
+            bottom = np.zeros(len(weighted_df_sorted))
+            metrics = weighted_df_sorted.columns
+
+            for j, metric in enumerate(metrics):
+                ax.bar(weighted_df_sorted.index, weighted_df_sorted[metric], label=metric, color=colors[j % len(colors)], bottom=bottom)
+                bottom += weighted_df_sorted[metric]
+
+            ax.set_ylabel('Stacked Metric Value')
+            ax.set_title(scheme)
+            ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
+            plt.setp(ax.get_xticklabels(), rotation=45, ha='right', fontsize=8)
+            ax.yaxis.set_major_locator(plt.MultipleLocator(0.5))
+
+        plt.tight_layout()
+        plt.show()
