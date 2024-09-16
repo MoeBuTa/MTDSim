@@ -95,12 +95,12 @@ class Experiment:
     
     def get_result(self, path,model):
         if model not in self.other_schemes:
-            path = f'{path}/experiments/experimental_data/results/overall_trials/{self.model_metric}/{model}.csv'
+            path = f'{path}/experiments/experimental_data/results/final_trials/{self.model_metric}/{model}.csv'
         else:
             path = f'{path}/experiments/experimental_data/results/other_schemes/{model}.csv'
         df = pd.read_csv(path)
         return df
-    def get_result_checkpoint_median(self, model,checkpoints = 9):
+    def get_result_checkpoint_median(self, model,checkpoints = 5):
 
         df = self.get_result(self.result_head_path, model).drop('Name', axis = 1)
         df['group'] = df.index // checkpoints
@@ -115,7 +115,7 @@ class Experiment:
             return checkpoint_medians.median()
         return checkpoint_medians.std()
     
-    def raw_result_stats_pipeline(self, scheme,run_trial = False, stats_type = 'median', checkpoints = 9):
+    def raw_result_stats_pipeline(self, scheme,run_trial = False, stats_type = 'median', checkpoints = 5):
         if run_trial:
             self.run_trials(scheme)
 
