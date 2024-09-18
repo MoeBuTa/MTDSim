@@ -81,7 +81,7 @@ class MTDAITraining:
 
             # Static network degradation factor (if exceed 1000 force to deploy MTD)
 
-            while (self.env.now - self.network.get_last_mtd_triggered_time()) > 1000 and action == 0:
+            while (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000 and action == 0:
                 action =  choose_action(state, time_series, self.main_network, 5, self.epsilon)
 
                 
