@@ -287,13 +287,22 @@ class MTDAITraining:
             attack_event_num = 0
             for host in attempt_hosts:
                 attack_event_num += len(attack_actions[(attack_actions['current_host_uuid'] == host) &
-                                                        (attack_actions['name'] == 'SCAN_PORT')])
+                                                    (attack_actions['name'] == 'SCAN_PORT')])
             overall_time_to_compromise = sub_record[sub_record[
-            'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum() # Corrected(Checked)
-            attack_success_rate = compromised_num / attack_event_num    # Corrected(Checked)
+                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum()  # Corrected(Checked)
+
+            attack_success_rate = compromised_num / attack_event_num  # Corrected(Checked)
+
+            # Calculate Mean Time to Compromise
+            if compromised_num > 0:
+                mean_time_to_compromise = overall_time_to_compromise / compromised_num
+            else:
+                mean_time_to_compromise = 0
         else:
             attack_success_rate = 0
             overall_time_to_compromise = 0
+            mean_time_to_compromise = 0
+
         
         
 
@@ -309,7 +318,7 @@ class MTDAITraining:
         state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, attack_success_rate, roa, shortest_path_variability, risk, current_attack_value])
  
 
-        time_series_array = np.array([mtd_freq, overall_time_to_compromise, time_since_last_mtd])
+        time_series_array = np.array([mtd_freq, mean_time_to_compromise, time_since_last_mtd])
         # print("State Array",state_array)
         # print("Time Series Array", time_series_array)
         return state_array, time_series_array

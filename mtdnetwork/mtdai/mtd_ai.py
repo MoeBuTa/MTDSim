@@ -147,7 +147,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
 
     # Include time series features in the dynamic weights
     time_series_weights = {
-        "mtd_freq": 20 * context_multiplier,
+        "mtd_freq": 75 * context_multiplier,
         "overall_mttc_avg": 75 * context_multiplier,
         "time_since_last_mtd": -75 * context_multiplier
     }
