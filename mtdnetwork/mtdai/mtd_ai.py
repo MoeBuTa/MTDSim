@@ -138,8 +138,8 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
         "host_compromise_ratio": -75 * context_multiplier,
         "exposed_endpoints": -75 * context_multiplier,
         "attack_path_exposure": -75 * context_multiplier,
-        "overall_asr_avg": 75 * context_multiplier,
-        "roa": 75 * context_multiplier,
+        "overall_asr_avg": -75 * context_multiplier,
+        "roa": -75 * context_multiplier,
         "shortest_path_variability": 75 * context_multiplier,
         "risk": -75 * context_multiplier,
         "attack_type": 0

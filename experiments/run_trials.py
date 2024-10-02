@@ -20,7 +20,7 @@ mtd_interval = [200]
 network_size = [150]
 total_nodes = 150
 new_network = True
-trial = 500
+trial = 1500
 result_head_path = '/Users/williamho/Documents/GitHub/MTDSim'
 
 # Define strategies
@@ -33,10 +33,12 @@ mtd_strategies_dict = {
 
 # Metrics and models
 
-static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
-time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
-metrics = ["all_features"] + static_features + time_features
-
+# static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
+static_features = []
+# time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+time_features = ["overall_mttc_avg"]
+# metrics = ["all_features"] + static_features + time_features
+metrics =  static_features + time_features
 # Define the function to run each experiment
 def run_experiment_in_process(model, metric, process_name):
     strategy_name = model.split('_')[-1]

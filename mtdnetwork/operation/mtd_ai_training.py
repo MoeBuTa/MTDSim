@@ -90,10 +90,6 @@ class MTDAITraining:
                 action = choose_action(state, time_series, self.main_network, len(self.custom_strategies) + 1, self.epsilon)
                 
 
-        
-
-                
-
             if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
                 self.network.set_last_mtd_triggered_time(self.env.now)
 
