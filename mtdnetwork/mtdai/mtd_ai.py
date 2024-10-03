@@ -102,6 +102,7 @@ def normalize_array(arr, min_val=None, max_val=None):
 
 
 def calculate_reward(current_state, current_time_series, next_state, next_time_series, static_features, time_features, memory):
+    # print(static_features + time_features)
     reward = 0
 
     # Check if memory has data for normalization
@@ -136,7 +137,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
     context_multiplier = 1  # Adjust this dynamically based on system context
     dynamic_weights = {
         "host_compromise_ratio": -75 * context_multiplier,
-        "exposed_endpoints": -75 * context_multiplier,
+        "total_number_of_ports": -75 * context_multiplier,
         "attack_path_exposure": -75 * context_multiplier,
         "overall_asr_avg": -75 * context_multiplier,
         "roa": -75 * context_multiplier,
@@ -160,7 +161,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
     for index, time_series_feature in enumerate(time_features):
         delta = (norm_next_time_series[index] - norm_current_time_series[index])
         reward += delta * time_series_weights.get(time_series_feature, 0)
-  
+ 
     return reward
 
 

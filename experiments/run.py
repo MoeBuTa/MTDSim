@@ -46,9 +46,7 @@ mtd_strategies = [
     # UserShuffle
 ]
 
-# static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
-# time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
-# features = {"static": static_features, "time": time_features}
+
 
 def save_evaluation_result(file_name, evaluations):
     current_directory = os.getcwd()
@@ -148,7 +146,7 @@ def construct_experiment_result(name, mtd_interval, item, network_size):
         'time_to_compromise': item['time_to_compromise'],
         'host_compromise_ratio': item['host_compromise_ratio'],
         'network_size': network_size,
-        'exposed_endpoints': item["exposed_endpoints"],
+        'total_number_of_ports': item["total_number_of_ports"],
         'attack_path_exposure': item["attack_path_exposure"],
         'ROA': item['roa'],
         'risk': item['risk'],

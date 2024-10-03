@@ -127,7 +127,7 @@ class Experiment:
     def scale_metrics(self, metrics_dict, normalization_dict):
         # Define which metrics should be maximized and which should be minimized
         metrics_to_maximize = {"MEF", 'time_to_compromise'}  
-        metrics_to_minimize = {'host_compromise_ratio', 'attack_path_exposure', 'ASR', 'ROA', 'exposed_endpoints', "risk"}  
+        metrics_to_minimize = {'host_compromise_ratio', 'attack_path_exposure', 'ASR', 'ROA', 'total_number_of_ports', "risk"}  
 
         scaled_metrics = {}
 

@@ -12,7 +12,7 @@ class SecurityMetricStatistics:
 
         self._metric_record.append({
             'host_compromise_ratio': safe_get(state_array, 0),
-            'exposed_endpoints': safe_get(state_array, 1),
+            'total_number_of_ports': safe_get(state_array, 1),
             'attack_path_exposure': safe_get(state_array, 2),
             'overall_asr_avg': safe_get(state_array, 3),
             'roa': safe_get(state_array, 4),

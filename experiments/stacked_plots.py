@@ -92,12 +92,16 @@ class StackedBarChart(Experiment):
 
         return weighted_df
 
-    def plot_n_schemes(self, title='Comparison of Schemes with Weighted Metrics', font_size = 8):
+    def plot_n_schemes(self, title='Comparison of Schemes with Weighted Metrics', font_size=8, name='default', 
+                    show_numbers=True, number_font_size=12, legend_font_size=8):
         """
         Plots a stacked bar chart comparing schemes based on weighted metrics.
         
         Parameters:
         - title (str): Title of the plot.
+        - show_numbers (bool): Whether to show numerical values on the bars.
+        - number_font_size (int): Font size of the numerical values on the bars.
+        - legend_font_size (int): Font size of the legend.
         """
         if self.weighted_data is None:
             raise ValueError("Weighted data has not been computed. Please run process_weighted_metrics first.")
@@ -120,13 +124,29 @@ class StackedBarChart(Experiment):
         # Plot stacked bar chart where schemes are on the x-axis, and metrics are stacked bars
         for i, metric in enumerate(metrics):
             if metric not in ['sum', 'zscore', 'minmax']:  # Exclude the summary metrics
-                ax.bar(weighted_df_sorted.index, weighted_df_sorted[metric], label=metric, color=colors[i % len(colors)], bottom=bottom)
-                bottom += weighted_df_sorted[metric]  # Update bottom to stack bars
+                bars = ax.bar(weighted_df_sorted.index, weighted_df_sorted[metric], 
+                            label=metric, color=colors[i % len(colors)], bottom=bottom)
+                bottom += weighted_df_sorted[metric].to_numpy()  # Update bottom to stack bars
+
+                # Add numerical values inside each segment of the bars if show_numbers is True
+                if show_numbers:
+                    for j, bar in enumerate(bars):
+                        yval = bar.get_height()
+                        # Position the text at the center of the bar segment
+                        ax.text(bar.get_x() + bar.get_width() / 2, bottom[j] - yval / 2,  
+                                f'{yval:.2f}', ha='center', va='center', 
+                                fontsize=number_font_size, color='white')
+
+        # Add the final value on top of the bars
+        if show_numbers:
+            for idx, total in enumerate(bottom):
+                ax.text(idx, total, f'{total:.2f}', ha='center', va='bottom', 
+                        fontsize=number_font_size, color='black')
 
         # Add labels and title
         ax.set_ylabel('Stacked Metric Value')
         ax.set_title(title)
-        ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05))
+        ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05), fontsize=legend_font_size)
 
         # Rotate x-axis labels for better readability
         plt.xticks(rotation=45, ha='right', fontsize=font_size)
@@ -135,8 +155,9 @@ class StackedBarChart(Experiment):
         ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
 
         # Save the plot as a PNG file
-        plt.savefig(f"{self.__class__.__name__}_plot.png")
+        plt.savefig(f"{name}_plot.png")
         plt.show()
+
 
 
     def normalized_chart(self, normalization='minmax'):

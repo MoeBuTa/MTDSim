@@ -290,8 +290,11 @@ class MTDAIOperation:
     
     def get_state_and_time_series(self):
 
-        exposed_endpoints = len(self.network.get_exposed_endpoints()) # Correct(Checked)
+        # exposed_endpoints = len(self.network.get_exposed_endpoints()) # Correct(Checked)
+        total_number_of_ports = 0
+        for host_id in self.network.nodes:
 
+            total_number_of_ports += len(self.network.graph.nodes[host_id]["host"].get_ports())
         attack_path_exposure = self.network.attack_path_exposure() # Correct(Checked)
 
         shortest_paths = self.network.scorer.shortest_path_record 
@@ -367,7 +370,7 @@ class MTDAIOperation:
 
             
  
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, attack_success_rate, roa, shortest_path_variability, risk, current_attack_value])
+        state_array = np.array([host_compromise_ratio, total_number_of_ports, attack_path_exposure, attack_success_rate, roa, shortest_path_variability, risk, current_attack_value])
  
 
         time_series_array = np.array([mtd_freq, mean_time_to_compromise, time_since_last_mtd])

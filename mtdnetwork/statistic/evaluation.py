@@ -126,7 +126,7 @@ class Evaluation:
                            'attack_success_rate': attack_success_rate,
                            'host_compromise_ratio': host_comp_ratio,
                            'mtd_execution_frequency': mtd_execution_frequency,
-                           "exposed_endpoints": state_array[1],
+                           "total_number_of_ports": state_array[1],
                            "attack_path_exposure": state_array[2],
                            "roa": state_array[4],
                            "shortest_path_variability": state_array[5],
@@ -151,7 +151,11 @@ class Evaluation:
         compromised_num = self.compromised_num()
         host_compromise_ratio = compromised_num/len(self._network.get_hosts()) \
 
-        exposed_endpoints = len(self._network.get_exposed_endpoints())
+  
+        total_number_of_ports = 0
+        for host_id in self._network.nodes:
+
+            total_number_of_ports += len(self._network.graph.nodes[host_id]["host"].get_ports())
 
         attack_path_exposure = self._network.attack_path_exposure()
 
@@ -184,7 +188,7 @@ class Evaluation:
         time_since_last_mtd = 1
         mtd_freq = self.mtd_execution_frequency()
 
-        state_array = [host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
+        state_array = [host_compromise_ratio, total_number_of_ports, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
  
 
         time_series_array = [mtd_freq, overall_mttc_avg, time_since_last_mtd]

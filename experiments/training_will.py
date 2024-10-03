@@ -32,7 +32,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
 # Define your environment and agent settings
-static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure", "overall_asr_avg", "roa", "shortest_path_variability", "risk", "attack_type"]
+static_features = ["host_compromise_ratio", "total_number_of_ports", "attack_path_exposure", "overall_asr_avg", "roa", "shortest_path_variability", "risk", "attack_type"]
 time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
 # Define your parameters
@@ -64,12 +64,79 @@ custom_strategies = [
     # UserShuffle
 ]
 
-for time_feature in time_features:
-    features = {"static": [], "time": [time_feature]}
-    # for mtd_strategies in custom_strategies:
-    action_size = len(custom_strategies) + 1
-    file_name = time_feature
-    print(file_name)
-    # Train using all features and only deploy single MTD
-    execute_ai_training(custom_strategies=custom_strategies, features = features, start_time=start_time, finish_time=finish_time, mtd_interval=mtd_interval, state_size=len(static_features), time_series_size=len(time_features), action_size=action_size, gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, batch_size=batch_size, train_start=train_start, scheme=scheme, total_nodes=total_nodes, new_network=new_network, episodes=episodes, file_name=file_name )
 
+
+# Define your parameters
+gamma = 0.95  # discount rate
+epsilon = 1.0  # exploration rate
+epsilon_min = 0.01
+epsilon_decay = 0.995
+batch_size = 32
+train_start = 1000
+episodes = 100
+
+# Simulator Settings
+start_time = 0
+finish_time = 5000
+mtd_interval = 200
+scheme = 'mtd_ai'
+total_nodes = 100
+new_network = True
+
+# Custom strategies
+custom_strategies = [
+    CompleteTopologyShuffle,
+    IPShuffle,
+    OSDiversity,
+    ServiceDiversity
+]
+
+# Parallel training function
+def parallel_training(custom_strategy):
+    # Define the specific features for training
+    features = {"static": static_features, "time": time_features}
+
+    
+    # Action size is based on the number of strategies (1 strategy + no MTD option)
+    action_size = 2
+    
+    # Create a unique filename for each strategy
+    file_name = f"all_features_{custom_strategy.__name__}"
+    
+    # Execute the training function for the given strategy
+    execute_ai_training(
+        custom_strategies=[custom_strategy],  # Single strategy at a time
+        features=features,
+        start_time=start_time,
+        finish_time=finish_time,
+        mtd_interval=mtd_interval,
+        state_size=8,
+        time_series_size=3,
+        action_size=action_size,
+        gamma=gamma,
+        epsilon=epsilon,
+        epsilon_min=epsilon_min,
+        epsilon_decay=epsilon_decay,
+        batch_size=batch_size,
+        train_start=train_start,
+        scheme=scheme,
+        total_nodes=total_nodes,
+        new_network=new_network,
+        episodes=episodes,
+        file_name=file_name
+    )
+    print(f"Finished training with {custom_strategy.__name__}")
+
+# Pool of workers
+if __name__ == '__main__':
+    # Create a pool to parallelize the tasks
+    pool = Pool()
+
+    # Start parallel execution for each MTD strategy
+    pool.map(parallel_training, custom_strategies)
+
+    # Close and join the pool
+    pool.close()
+    pool.join()
+
+    print("Parallel training complete!")
