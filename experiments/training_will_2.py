@@ -32,10 +32,10 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
 # # Define your environment and agent settings
-# static_features = ["host_compromise_ratio",  "attack_path_exposure", "overall_asr_avg", "roa", "shortest_path_variability", "risk", "attack_type"]
+static_features = ["host_compromise_ratio", "total_number_of_ports", "attack_path_exposure", "overall_asr_avg", "roa", "shortest_path_variability", "risk", "attack_type"]
 
-static_features = ["risk"]
-# time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+# static_features = ["risk"]
+time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
 time_features = []
 # Define your parameters
@@ -93,7 +93,7 @@ def parallel_training(custom_strategy):
     action_size = 2
     
     # Create a unique filename for each strategy
-    file_name = f"risk_{custom_strategy.__name__}"
+    file_name = f"all_features_{custom_strategy.__name__}"
     
     # Execute the training function for the given strategy
     execute_ai_training(

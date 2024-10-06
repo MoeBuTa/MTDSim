@@ -93,21 +93,21 @@ def replay(memory, main_network, target_network, batch_size, gamma, epsilon, eps
 
 
 
-# def normalize_array(arr, min_val=None, max_val=None):
-#     if min_val is None:
-#         min_val = np.min(arr)
-#     if max_val is None:
-#         max_val = np.max(arr)
-#     return (arr - min_val) / (max_val - min_val) if max_val > min_val else arr
-def normalize_array(arr):
-    mean_val = np.mean(arr)
-    std_val = np.std(arr)
+def normalize_array(arr, min_val=None, max_val=None):
+    if min_val is None:
+        min_val = np.min(arr)
+    if max_val is None:
+        max_val = np.max(arr)
+    return (arr - min_val) / (max_val - min_val) if max_val > min_val else arr
+# def normalize_array(arr):
+#     mean_val = np.mean(arr)
+#     std_val = np.std(arr)
     
-    # Avoid division by zero
-    if std_val == 0:
-        return np.zeros_like(arr)  # or return arr, depending on your preference
+#     # Avoid division by zero
+#     if std_val == 0:
+#         return np.zeros_like(arr)  # or return arr, depending on your preference
     
-    return (arr - mean_val) / std_val
+#     return (arr - mean_val) / std_val
 
 
 
@@ -197,7 +197,7 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
 
     # print("\nNormalized Next Time Series:")
     # print(norm_next_time_series)
-    print(reward)
+    # print(reward)
     return reward
 
 
