@@ -106,6 +106,7 @@ class Experiment:
         df['group'] = df.index // checkpoints
         # Group by the new column and calculate median
         df = df.groupby('group').median().reset_index(drop=True)
+ 
         # Drop the 'group' column if you don't need it in the result
         df = df.drop(columns='group', errors='ignore')
         return df
@@ -113,6 +114,7 @@ class Experiment:
     def get_result_stats(self, checkpoint_medians,stats_type = 'median'):
         if stats_type == 'median':
             return checkpoint_medians.median()
+     
         return checkpoint_medians.std()
     
     def raw_result_stats_pipeline(self, scheme,run_trial = False, stats_type = 'median', checkpoints = 5):
@@ -143,6 +145,7 @@ class Experiment:
                     elif key in metrics_to_minimize:
                         # Inverse the ratio for metrics to be minimized
                         scaled_metrics[key] = 1 / (value / norm_value)
+             
                         # scaled_metrics[key] = value / norm_value
                     else:
                         # Handle cases where the metric is not in either category

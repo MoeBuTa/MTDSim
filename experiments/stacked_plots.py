@@ -92,6 +92,71 @@ class StackedBarChart(Experiment):
 
         return weighted_df
 
+    # def plot_n_schemes(self, title='Comparison of Schemes with Weighted Metrics', font_size=8, name='default', 
+    #                 show_numbers=True, number_font_size=12, legend_font_size=8):
+    #     """
+    #     Plots a stacked bar chart comparing schemes based on weighted metrics.
+        
+    #     Parameters:
+    #     - title (str): Title of the plot.
+    #     - show_numbers (bool): Whether to show numerical values on the bars.
+    #     - number_font_size (int): Font size of the numerical values on the bars.
+    #     - legend_font_size (int): Font size of the legend.
+    #     """
+    #     if self.weighted_data is None:
+    #         raise ValueError("Weighted data has not been computed. Please run process_weighted_metrics first.")
+        
+    #     weighted_df = self.weighted_data
+
+    #     # Sort DataFrame by 'sum'
+    #     weighted_df_sorted = weighted_df.sort_values(by='sum', ascending=True)
+
+    #     # Set up the figure and axis for the bar chart
+    #     fig, ax = plt.subplots(figsize=(16, 12))
+
+    #     # Colors for each metric
+    #     colors = plt.cm.tab20.colors
+
+    #     # Initialize the bottom position for each metric as 0
+    #     bottom = np.zeros(len(weighted_df_sorted))
+    #     metrics = weighted_df.columns  # Include all columns except 'sum', 'zscore', 'minmax'
+
+    #     # Plot stacked bar chart where schemes are on the x-axis, and metrics are stacked bars
+    #     for i, metric in enumerate(metrics):
+    #         if metric not in ['sum', 'zscore', 'minmax']:  # Exclude the summary metrics
+    #             bars = ax.bar(weighted_df_sorted.index, weighted_df_sorted[metric], 
+    #                         label=metric, color=colors[i % len(colors)], bottom=bottom)
+    #             bottom += weighted_df_sorted[metric].to_numpy()  # Update bottom to stack bars
+
+    #             # Add numerical values inside each segment of the bars if show_numbers is True
+    #             if show_numbers:
+    #                 for j, bar in enumerate(bars):
+    #                     yval = bar.get_height()
+    #                     # Position the text at the center of the bar segment
+    #                     ax.text(bar.get_x() + bar.get_width() / 2, bottom[j] - yval / 2,  
+    #                             f'{yval:.2f}', ha='center', va='center', 
+    #                             fontsize=number_font_size, color='white')
+
+    #     # Add the final value on top of the bars
+    #     if show_numbers:
+    #         for idx, total in enumerate(bottom):
+    #             ax.text(idx, total, f'{total:.2f}', ha='center', va='bottom', 
+    #                     fontsize=number_font_size, color='black')
+
+    #     # Add labels and title
+    #     ax.set_ylabel('Stacked Metric Value')
+    #     ax.set_title(title)
+    #     ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05), fontsize=legend_font_size)
+
+    #     # Rotate x-axis labels for better readability
+    #     plt.xticks(rotation=45, ha='right', fontsize=font_size)
+
+    #     # Set y-axis to have intervals of 0.5
+    #     ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
+
+    #     # Save the plot as a PNG file
+    #     plt.savefig(f"{name}_plot.png")
+    #     plt.show()
     def plot_n_schemes(self, title='Comparison of Schemes with Weighted Metrics', font_size=8, name='default', 
                     show_numbers=True, number_font_size=12, legend_font_size=8):
         """
@@ -107,6 +172,15 @@ class StackedBarChart(Experiment):
             raise ValueError("Weighted data has not been computed. Please run process_weighted_metrics first.")
         
         weighted_df = self.weighted_data
+
+        # Calculate standard deviation for each metric and the overall 'sum'
+        metric_std_devs = weighted_df.drop(columns=['sum', 'zscore', 'minmax']).std()
+        sum_std_dev = weighted_df['sum'].std()
+
+        # Print the standard deviation for each metric and overall 'sum'
+        print("Standard deviation for each metric:")
+        print(metric_std_devs)
+        print(f"\nOverall 'sum' standard deviation: {sum_std_dev:.2f}\n")
 
         # Sort DataFrame by 'sum'
         weighted_df_sorted = weighted_df.sort_values(by='sum', ascending=True)
@@ -149,7 +223,7 @@ class StackedBarChart(Experiment):
         ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.05), fontsize=legend_font_size)
 
         # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45, ha='right', fontsize=font_size)
+        plt.xticks(rotation=30, ha='right', fontsize=font_size)
 
         # Set y-axis to have intervals of 0.5
         ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
@@ -157,6 +231,7 @@ class StackedBarChart(Experiment):
         # Save the plot as a PNG file
         plt.savefig(f"{name}_plot.png")
         plt.show()
+
 
 
 
@@ -491,7 +566,7 @@ class StackedBarChart(Experiment):
             mtd_colors[feature] = base_colors.get(color_key, '#d3d3d3')  # Default to light gray for unmatched
 
         # Set up the figure and axis for the bar chart
-        fig, ax = plt.subplots(figsize=(14, 10))  # Increase the figure size
+        fig, ax = plt.subplots(figsize=(16, 10))  # Increase the figure size
 
         # Plot bars with colors based on MTD technique
         color_list = [mtd_colors.get(feature, '#d3d3d3') for feature in result.index]
@@ -503,10 +578,10 @@ class StackedBarChart(Experiment):
         ax.legend(handles, labels, title='MTD Technique', bbox_to_anchor=(1.05, 1), loc='upper left')
 
         # Rotate x-axis labels
-        plt.xticks(rotation=45, ha='right', fontsize=8)
-
+        plt.xticks(rotation=30, ha='right', fontsize=8)
+        plt.tight_layout()
         # Save the plot as a PNG file
-        plt.savefig(f"{self.model}_{self.trial}_mtd_techniques.png")
+        plt.savefig(f"MTD_techniques.png")
         plt.show()
 
 
