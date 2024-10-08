@@ -69,11 +69,23 @@ class Experiment:
         self.network_size = network_size
         self.result_head_path = result_head_path
         self.static_degrade_factor = static_degrade_factor
+        static_features = ["host_compromise_ratio",  "attack_path_exposure", "overall_asr_avg", "roa", "risk"]
+        time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd", "shortest_path_variability", "ip_variability", "attack_type"]
+        if model_metric == "all_features":
+            
+            self.features =  {"static": static_features, "time": time_features}
+        elif model_metric == "hybrid":
+            self.features =  {"static": ["host_compromise_ratio",  "attack_path_exposure", "overall_asr_avg", "roa", "risk"], "time": ["mtd_freq", "overall_mttc_avg"]}
+        else:
+            if model_metric in static_features:
+                self.features = {"static": [model_metric], "time": []}
+            elif model_metric in time_features:
+                self.features = {"static": [], "time": [model_metric]}
 
 
     def run_trials_ai_multi(self, folder):
         for i in range(self.trial):
-            mtd = mtd_ai_simulation(f"{folder}/{self.model}", self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
+            mtd = mtd_ai_simulation(self.features,f"{folder}/{self.model}", self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
                                                             mtd_interval=self.mtd_interval,network_size=self.network_size ,custom_strategies=self.mtd_strategies, static_degrade_factor = self.static_degrade_factor)  
 
 
@@ -86,7 +98,7 @@ class Experiment:
                                                          mtd_interval=self.mtd_interval,network_size=self.network_size) 
             elif scheme == self.model:
       
-                mtd = mtd_ai_simulation(self.model, self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
+                mtd = mtd_ai_simulation(self.features,self.model, self.model_path, self.start_time, self.finish_time, self.total_nodes, new_network = self.new_network, 
                                                             mtd_interval=self.mtd_interval,network_size=self.network_size ,custom_strategies=self.mtd_strategies, static_degrade_factor = self.static_degrade_factor)  
 
             else:
@@ -105,7 +117,7 @@ class Experiment:
         df = self.get_result(self.result_head_path, model).drop('Name', axis = 1)
         df['group'] = df.index // checkpoints
         # Group by the new column and calculate median
-        df = df.groupby('group').median().reset_index(drop=True)
+        df = df.groupby('group').mean().reset_index(drop=True)
  
         # Drop the 'group' column if you don't need it in the result
         df = df.drop(columns='group', errors='ignore')

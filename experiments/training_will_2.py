@@ -32,12 +32,15 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
 # # Define your environment and agent settings
-static_features = ["host_compromise_ratio", "total_number_of_ports", "attack_path_exposure", "overall_asr_avg", "roa", "shortest_path_variability", "risk", "attack_type"]
+static_features = ["host_compromise_ratio",  "attack_path_exposure", "overall_asr_avg", "roa", "risk"]
 
-# static_features = ["risk"]
-time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
-time_features = []
+
+
+time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd", "shortest_path_variability", "ip_variability", "attack_type"]
+
+
+
 # Define your parameters
 gamma = 0.95  # discount rate
 epsilon = 1.0  # exploration rate
@@ -102,8 +105,8 @@ def parallel_training(custom_strategy):
         start_time=start_time,
         finish_time=finish_time,
         mtd_interval=mtd_interval,
-        state_size=8,
-        time_series_size=3,
+        state_size=5,
+        time_series_size=6,
         action_size=action_size,
         gamma=gamma,
         epsilon=epsilon,
@@ -115,7 +118,7 @@ def parallel_training(custom_strategy):
         total_nodes=total_nodes,
         new_network=new_network,
         episodes=episodes,
-        file_name=file_name
+        file_name=file_name,
     )
     print(f"Finished training with {custom_strategy.__name__}")
 

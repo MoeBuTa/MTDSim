@@ -137,6 +137,7 @@ class Scorer:
         self.user_account_leaks = Statistics("User Account Has Been Leaked By Compromise")
         self.attack_path_exposure = []
         self.shortest_path_record = []
+        self.current_hosts_ip = None
 
         # Gather statistics on the types of vulnerabilities that were exploited
         # eg. RoA score, impact and complexity
@@ -214,6 +215,9 @@ class Scorer:
 
     def add_shortest_path(self, score):
         self.shortest_path_record.append(score)
+
+    def update_current_hosts_ip(self, current_hosts_ip):
+        self.current_hosts_ip = current_hosts_ip
 
 
     def set_initial_statistics(self, network):

@@ -20,3 +20,6 @@ class IPShuffle(MTD):
             host_ip = host.Host.get_random_address(existing_addresses=ip_addresses)
             ip_addresses.append(host_ip)
             host_instance.ip = host_ip
+
+        #update the new ip addresses
+        self.network.update_current_hosts_ip(ip_addresses)

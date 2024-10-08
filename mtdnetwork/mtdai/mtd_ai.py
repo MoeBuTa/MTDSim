@@ -111,7 +111,7 @@ def normalize_array(arr, min_val=None, max_val=None):
 
 
 
-def calculate_reward(current_state, current_time_series, next_state, next_time_series, static_features, time_features, memory):
+def calculate_reward( current_state, current_time_series, next_state, next_time_series, static_features, time_features, memory):
  
     reward = 0
 
@@ -160,21 +160,22 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
     # Dynamic weights based on context
     context_multiplier = 1  # Adjust this dynamically based on system context
     dynamic_weights = {
-        "host_compromise_ratio": -75 * context_multiplier,
-        "total_number_of_ports": -75 * context_multiplier,
+        "host_compromise_ratio": 0,
         "attack_path_exposure": -75 * context_multiplier,
         "overall_asr_avg": -75 * context_multiplier,
         "roa": -75 * context_multiplier,
-        "shortest_path_variability": 75 * context_multiplier,
         "risk": -75 * context_multiplier,
-        "attack_type": 0
+        
     }
 
     # Include time series features in the dynamic weights
     time_series_weights = {
-        "mtd_freq": 75 * context_multiplier,
+        "mtd_freq": 0,
         "overall_mttc_avg": 75 * context_multiplier,
-        "time_since_last_mtd": -75 * context_multiplier
+        "time_since_last_mtd": 0,
+        "shortest_path_variability": 75 * context_multiplier,
+        "ip_variability": 75 * context_multiplier,
+        "attack_type": 0
     }
 
     # Calculate reward using normalized or raw values

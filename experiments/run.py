@@ -187,7 +187,7 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None', mtd_int
         print(mtd_name)
     return evaluations
 
-def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100], custom_strategies = None, static_degrade_factor = 2000):
+def mtd_ai_simulation(features, file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100], custom_strategies = None, static_degrade_factor = 2000):
     """
     Simulations for single ai mtd
     """
@@ -198,6 +198,7 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
     for mtd_interval in mtd_interval:
         for network_size in network_size:
              evaluation = execute_ai_model(
+                 features = features,
                 start_time=start_time,
                 finish_time=finish_time,
                 mtd_interval=mtd_interval,
@@ -490,7 +491,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
 def mse(y_true, y_pred):
     return MeanSquaredError()(y_true, y_pred)
 
-def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def  execute_ai_model(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        epsilon=1.0, attacker_sensitivity=1, model_path=None, static_degrade_factor = 2000):
@@ -567,7 +568,7 @@ def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inter
 
     # start mtd
     if scheme != 'None':
-        mtd_operation = MTDAIOperation(security_metrics_record, env=env, end_event=end_event, network=time_network, scheme=scheme,
+        mtd_operation = MTDAIOperation(features, security_metrics_record, env=env, end_event=end_event, network=time_network, scheme=scheme,
                                     attack_operation=attack_operation, proceed_time=0,
                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                     main_network=main_network, epsilon=epsilon, attacker_sensitivity=attacker_sensitivity, static_degrade_factor = static_degrade_factor)
