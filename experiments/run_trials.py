@@ -16,7 +16,8 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 epsilon = 1.0
 start_time = 0
 finish_time = 15000
-mtd_interval = [200]
+# mtd_interval = [200]
+mtd_interval = [50]
 network_size = [150]
 total_nodes = 150
 new_network = True
@@ -33,12 +34,14 @@ mtd_strategies_dict = {
 
 # Metrics and models
 
-static_features = ["host_compromise_ratio",  "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
+static_features = ["host_compromise_ratio",  "attack_path_exposure",  "overall_asr_avg", "roa",  "risk"]
+
+other_features = ["all_features","hybrid","mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
 time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
-metrics = ["all_features"] 
-# metrics = static_features + time_features
+
+metrics = other_features
 
 # Define the function to run each experiment
 def run_experiment_in_process(model, metric, process_name):

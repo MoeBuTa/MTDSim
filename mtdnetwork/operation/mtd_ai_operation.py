@@ -373,7 +373,7 @@ class MTDAIOperation:
             # Calculate Mean Time to Compromise
             if compromised_num > 0:
                 mean_time_to_compromise = (overall_time_to_compromise / len(sub_record[sub_record[
-                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])])) /10
+                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])])) 
             else:
                 mean_time_to_compromise = 0
         else:
@@ -403,10 +403,7 @@ class MTDAIOperation:
             "attack_path_exposure": attack_path_exposure,
             "overall_asr_avg": attack_success_rate,
             "roa": roa,
-            "risk": risk,
-
-            
-            
+            "risk": risk
         }
 
    

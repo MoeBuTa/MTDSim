@@ -107,7 +107,7 @@ class Experiment:
     
     def get_result(self, path,model):
         if model not in self.other_schemes:
-            path = f'{path}/experiments/experimental_data/results/final_trials/{self.model_metric}/{model}.csv'
+            path = f'{path}/experiments/experimental_data/results/final_trials/mtd_interval_{self.mtd_interval}/{self.model_metric}_{self.mtd_interval}/{model}.csv'
         else:
             path = f'{path}/experiments/experimental_data/results/other_schemes/{model}.csv'
         df = pd.read_csv(path)
@@ -161,7 +161,7 @@ class Experiment:
                         # scaled_metrics[key] = value / norm_value
                     else:
                         # Handle cases where the metric is not in either category
-                        scaled_metrics[key] = value / norm_value
+                        scaled_metrics[key] = value
                 else:
                     # Handle the case where norm_value is zero
                     scaled_metrics[key] = 1  # Or any other placeholder value as needed
