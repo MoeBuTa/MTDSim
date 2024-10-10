@@ -17,8 +17,8 @@ epsilon = 1.0
 start_time = 0
 finish_time = 15000
 # mtd_interval = [200]
-mtd_interval = [60]
-network_size = [150]
+mtd_interval = [50]
+network_size = [100]
 total_nodes = 150
 new_network = True
 trial = 1500
@@ -37,10 +37,10 @@ mtd_strategies_dict = {
 static_features = ["host_compromise_ratio", "attack_path_exposure",  "overall_asr_avg", "roa",  "risk"]
 
 other_features = ["all_features","hybrid","mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+
 time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
-
-metrics = other_features
+metrics = static_features
 
 # Define the function to run each experiment
 def run_experiment_in_process(model, metric, process_name):

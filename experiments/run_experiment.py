@@ -140,7 +140,7 @@ class Experiment:
         
     def scale_metrics(self, metrics_dict, normalization_dict):
         # Define which metrics should be maximized and which should be minimized
-        metrics_to_maximize = {"MEF", 'time_to_compromise'}  
+        metrics_to_maximize = {'time_to_compromise'}  
         metrics_to_minimize = {'host_compromise_ratio', 'attack_path_exposure', 'ASR', 'ROA', 'total_number_of_ports', "risk"}  
 
         scaled_metrics = {}
@@ -162,12 +162,16 @@ class Experiment:
                     else:
                         # Handle cases where the metric is not in either category
                         scaled_metrics[key] = value
+              
                 else:
                     # Handle the case where norm_value is zero
                     scaled_metrics[key] = 1  # Or any other placeholder value as needed
+            
             else:
                 # Handle cases where normalization value is not defined
                 scaled_metrics[key] = value  # Or handle differently as needed
+            if key == "MEF":
+                scaled_metrics[key] = value
         return scaled_metrics
 
     def scaled_pipeline(self, scheme,run_trial = False, stats_type = 'median'):
