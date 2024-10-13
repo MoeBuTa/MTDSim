@@ -18,7 +18,7 @@ start_time = 0
 finish_time = 15000
 # mtd_interval = [200]
 mtd_interval = [50]
-network_size = [100]
+network_size = [200]
 total_nodes = 150
 new_network = True
 trial = 1500
@@ -34,13 +34,13 @@ mtd_strategies_dict = {
 
 # Metrics and models
 
-static_features = ["host_compromise_ratio", "attack_path_exposure",  "overall_asr_avg", "roa",  "risk"]
+static_features = [  "overall_asr_avg", "roa",  "risk"]
 
-other_features = ["all_features","hybrid","mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+other_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
-time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
-metrics = static_features
+
+metrics = other_features
 
 # Define the function to run each experiment
 def run_experiment_in_process(model, metric, process_name):
@@ -85,10 +85,11 @@ if __name__ == '__main__':
         
         # Assign process names dynamically
         process_names = ["process_1", "process_2", "process_3", "process_4"]
-        
+        # process_names = ["process_2"]
         # Create multiprocessing pool
         with multiprocessing.Pool(processes=5) as pool:
             # Prepare arguments for each model
             args = [(model, metric, process_names[i]) for i, model in enumerate(models)]
             # Run models in parallel
             pool.starmap(run_experiment_in_process, args)
+

@@ -107,7 +107,10 @@ class Experiment:
     
     def get_result(self, path,model):
         if model not in self.other_schemes:
-            path = f'{path}/experiments/experimental_data/results/final_trials/mtd_interval_{self.mtd_interval}/{self.model_metric}_{self.mtd_interval}/{model}.csv'
+            if (self.mtd_interval == 50 and self.network_size == 150) or self.mtd_interval != 50:
+                path = f'{path}/experiments/experimental_data/results/final_trials/mtd_interval_{self.mtd_interval}/{self.model_metric}_{self.mtd_interval}/{model}.csv'
+            else:
+                path = f'{path}/experiments/experimental_data/results/final_trials/network_size_{self.network_size}/{self.model_metric}_{self.network_size}/{model}.csv'
         else:
             path = f'{path}/experiments/experimental_data/results/other_schemes/{model}.csv'
         df = pd.read_csv(path)
