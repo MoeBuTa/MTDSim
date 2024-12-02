@@ -34,9 +34,9 @@ mtd_strategies_dict = {
 
 # Metrics and models
 
-static_features = [  "overall_asr_avg", "roa",  "risk"]
+static_features = [ "attack_path_exposure",  "overall_asr_avg", "roa",  "risk"]
 
-other_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
+other_features = ["hybrid","mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
 
 
 
