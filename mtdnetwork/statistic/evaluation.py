@@ -104,28 +104,30 @@ class Evaluation:
                 break
             sub_record = record[record['cumulative_compromised_hosts'] <= comp_num]
             time_to_compromise = sub_record[sub_record[
-                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum()
+                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum() / len(sub_record[sub_record[
+                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'])
             attempt_hosts = sub_record[sub_record['current_host_uuid'] != -1]['current_host_uuid'].unique()
             attack_actions = sub_record[sub_record['name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]
             attack_event_num = 0
             for host in attempt_hosts:
                 attack_event_num += len(attack_actions[(attack_actions['current_host_uuid'] == host) &
                                                        (attack_actions['name'] == 'SCAN_PORT')])
+            # attack_success_rate = record['cumulative_compromised_hosts'].iloc[-1] / attack_event_num
             attack_success_rate = comp_num / attack_event_num
-
+           
             mtd_execution_frequency = self.mtd_execution_frequency()
 
             state_array, time_series_array = self.get_metrics()
-            # print(state_array, time_series_array) #debug
+        
 
-            total_asr, total_time_to_compromise, total_compromises = 0, 0, 0
-
-
+            # print(self.compromised_num(record=sub_record), len(self._network.get_hosts()))
+            host_comp_ratio = self.compromised_num(record=sub_record)/comp_num
+  
             result.append({'time_to_compromise': time_to_compromise,
                            'attack_success_rate': attack_success_rate,
-                           'host_compromise_ratio': comp_ratio,
+                           'host_compromise_ratio': host_comp_ratio,
                            'mtd_execution_frequency': mtd_execution_frequency,
-                           "exposed_endpoints": state_array[1],
+                           "total_number_of_ports": state_array[1],
                            "attack_path_exposure": state_array[2],
                            "roa": state_array[4],
                            "shortest_path_variability": state_array[5],
@@ -150,7 +152,11 @@ class Evaluation:
         compromised_num = self.compromised_num()
         host_compromise_ratio = compromised_num/len(self._network.get_hosts()) \
 
-        exposed_endpoints = len(self._network.get_exposed_endpoints())
+  
+        total_number_of_ports = 0
+        for host_id in self._network.nodes:
+
+            total_number_of_ports += len(self._network.graph.nodes[host_id]["host"].get_ports())
 
         attack_path_exposure = self._network.attack_path_exposure()
 
@@ -183,7 +189,7 @@ class Evaluation:
         time_since_last_mtd = 1
         mtd_freq = self.mtd_execution_frequency()
 
-        state_array = [host_compromise_ratio, exposed_endpoints, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
+        state_array = [host_compromise_ratio, total_number_of_ports, attack_path_exposure, overall_asr_avg, roa, shortest_path_variability, risk]
  
 
         time_series_array = [mtd_freq, overall_mttc_avg, time_since_last_mtd]

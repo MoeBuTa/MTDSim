@@ -618,6 +618,13 @@ class Network:
        
         self.scorer.add_shortest_path(shortest_path)
 
+    def update_current_hosts_ip(self, current_hosts_ip):
+        """
+            track the current hosts'ip address
+        """
+       
+        self.scorer.update_current_hosts_ip(current_hosts_ip)
+
 
 
     def attack_path_exposure(self):

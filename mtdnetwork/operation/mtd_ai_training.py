@@ -7,13 +7,13 @@ import numpy as np
 from mtdnetwork.mtdai.mtd_ai import update_target_model, choose_action, replay, calculate_reward
 import pandas as pd
 import random
-
+from mtdnetwork.component.host import Host
 
 class MTDAITraining:
 
     def __init__(self,security_metric_record, features,env, end_event, network, attack_operation, scheme, adversary, proceed_time=0,
                  mtd_trigger_interval=None, custom_strategies=None, main_network=None, target_network=None, memory=None,
-                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None, attacker_sensitivity = 1):
+                 gamma=None, epsilon=None, epsilon_min=None, epsilon_decay=None, train_start=None, batch_size=None, attacker_sensitivity = 1, static_degrade_factor = 2000):
         """
         :param env: the parameter to facilitate simPY env framework
         :param network: the simulation network
@@ -33,12 +33,14 @@ class MTDAITraining:
 
         self._mtd_scheme = MTDScheme(network=network, scheme=scheme, mtd_trigger_interval=mtd_trigger_interval,
                                      custom_strategies=custom_strategies)
+        self.custom_strategies = custom_strategies
+     
         self._proceed_time = proceed_time
 
         self.application_layer_resource = simpy.Resource(self.env, 1)
         self.network_layer_resource = simpy.Resource(self.env, 1)
         self.reserve_resource = simpy.Resource(self.env, 1)
-
+        self.features = features
         self.main_network = main_network
         self.target_network = target_network
         self.memory = memory
@@ -48,13 +50,15 @@ class MTDAITraining:
         self.epsilon_decay = epsilon_decay
         self.train_start = train_start
         self.batch_size = batch_size
-        self.features = features
+
         self.security_metric_record = security_metric_record
         self.attacker_sensitivity = attacker_sensitivity
-
+        self.static_degrade_factor = static_degrade_factor
         self.attack_dict = {"SCAN_HOST": 1, "ENUM_HOST": 2, "SCAN_PORT": 3, "EXPLOIT_VULN": 4, "SCAN_NEIGHBOR": 5, "BRUTE_FORCE": 6}
 
         self.evaluation = Evaluation(self.network, self.adversary, self.security_metric_record)        
+
+
 
     def proceed_mtd(self):
         if self.network.get_unfinished_mtd():
@@ -84,6 +88,11 @@ class MTDAITraining:
             while (self.env.now - self.network.get_last_mtd_triggered_time()) > 2000 and action == 0:
                 action =  choose_action(state, time_series, self.main_network, 5, self.epsilon)
 
+            # Static network degradation factor (if exceed static factor force to deploy MTD)
+            if (self.env.now - self.network.get_last_mtd_triggered_time()) > self.static_degrade_factor: 
+                action = random.randint(1, len(self.custom_strategies) + 1)
+            else: 
+                action = choose_action( state, time_series, self.main_network, len(self.custom_strategies) + 1, self.epsilon)
                 
 
             if action > 0 or self.network.get_last_mtd_triggered_time() == 0:
@@ -229,9 +238,31 @@ class MTDAITraining:
     
     def get_state_and_time_series(self):
 
-        exposed_endpoints = len(self.network.get_exposed_endpoints()) # Correct(Checked)
+        previous_ips = self.network.scorer.current_hosts_ip
+        unique_hosts = []
+        for host_id in self.network.nodes:
+            host_ip_address = self.network.graph.nodes[host_id]["host"].ip
+            unique_hosts.append(host_ip_address)
+      
+        # print("\m\m")
+       
+        if previous_ips:
+        
+            ip_variability = 0
+            longer = unique_hosts if len(unique_hosts) > len(previous_ips) else previous_ips
+            shorter = unique_hosts if len(unique_hosts) < len(previous_ips) else previous_ips
+            for i in range(len(longer)):
+                if ((i + 1) > len(shorter)) or (longer[i] != shorter[i]):
+                    ip_variability += 1
+            
+            ip_variability /= len(unique_hosts)
 
-        attack_path_exposure = self.network.attack_path_exposure() # Correct(Checked)
+        else:
+            ip_variability = 0
+
+ 
+        
+        attack_path_exposure = self.network.attack_path_exposure() 
 
         shortest_paths = self.network.scorer.shortest_path_record 
         # Extract the lengths of all paths
@@ -240,30 +271,32 @@ class MTDAITraining:
         sorted_lengths = sorted(path_lengths)
         # Calculate variability between the two shortest paths
         if len(sorted_lengths) > 1:
-            shortest_path_variability = (sorted_lengths[1] - sorted_lengths[0]) / sorted_lengths[0] # Should be corrected(Checked)
+            shortest_path_variability = abs(sorted_lengths[1] - sorted_lengths[0]) / sorted_lengths[0] 
         else:
             shortest_path_variability = 0
 
 
         # shortest_distance = self.network.get_path_from_exposed(self.network.target_node, self.network.graph)[1]
         # print(shortest_distance)
-
+        comp_check_interval = 60
         record = self.adversary.get_attack_stats().get_record()
         if 'compromise_host_uuid' in record.columns:
-            compromised_hosts = record[record['compromise_host_uuid'] != 'None']['compromise_host_uuid'].unique()
+            compromised_hosts = record[record['compromise_host_uuid'] != 'None'].loc[record['start_time'] > (self.env.now - comp_check_interval)]['compromise_host_uuid'].unique()
+            
             compromised_num = len(compromised_hosts)
+            print(compromised_num)
         else:
             compromised_num = 0    
-        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) # Correct(Checked)
+        host_compromise_ratio = compromised_num/len(self.network.get_hosts()) 
 
-        time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time # Correct(Checked)
+        time_since_last_mtd = self.env.now - self.network.last_mtd_triggered_time 
 
         mtd_record = self.network.get_mtd_stats().get_record()
 
         if len(mtd_record) == 0:
             mtd_freq = 0
         else:
-            mtd_freq = len(mtd_record) / (mtd_record.iloc[-1]['finish_time'] - mtd_record.iloc[0]['start_time']) # Correct(Checked)
+            mtd_freq = len(mtd_record) / (mtd_record.iloc[-1]['finish_time'] - mtd_record.iloc[0]['start_time']) 
    
 
         attack_stats = self.adversary.get_network().get_scorer().get_statistics()
@@ -279,13 +312,23 @@ class MTDAITraining:
             attack_event_num = 0
             for host in attempt_hosts:
                 attack_event_num += len(attack_actions[(attack_actions['current_host_uuid'] == host) &
-                                                        (attack_actions['name'] == 'SCAN_PORT')])
+                                                    (attack_actions['name'] == 'SCAN_PORT')])
             overall_time_to_compromise = sub_record[sub_record[
-            'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum() # Corrected(Checked)
-            attack_success_rate = compromised_num / attack_event_num    # Corrected(Checked)
+                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])]['duration'].sum()  
+
+            attack_success_rate = compromised_num / attack_event_num  
+
+            # Calculate Mean Time to Compromise
+            if compromised_num > 0:
+                mean_time_to_compromise = (overall_time_to_compromise / len(sub_record[sub_record[
+                'name'].isin(['SCAN_PORT', 'EXPLOIT_VULN', 'BRUTE_FORCE'])])) /10
+            else:
+                mean_time_to_compromise = 0
         else:
             attack_success_rate = 0
             overall_time_to_compromise = 0
+            mean_time_to_compromise = 0
+
         
         
 
@@ -298,11 +341,42 @@ class MTDAITraining:
 
             
  
-        state_array = np.array([host_compromise_ratio, exposed_endpoints, attack_path_exposure, attack_success_rate, roa, shortest_path_variability, risk, current_attack_value])
- 
+        # Create the state and time series arrays
+        # state_array = np.array([host_compromise_ratio,  attack_path_exposure,
+        #                 attack_success_rate, roa, risk, current_attack_value])
+        # time_series_array = np.array([mtd_freq, mean_time_to_compromise])
+        # Define the state_filter dictionary
+        state_filter = {
+            "host_compromise_ratio": host_compromise_ratio,
+            "attack_path_exposure": attack_path_exposure,
+            "overall_asr_avg": attack_success_rate,
+            "roa": roa,
+            "risk": risk,
 
-        time_series_array = np.array([mtd_freq, overall_time_to_compromise, time_since_last_mtd])
-        # print("State Array",state_array)
-        # print("Time Series Array", time_series_array)
+            
+            
+        }
+
+   
+
+        # Create the time series filter
+        time_series_filter = {
+            "mtd_freq": mtd_freq,
+            "overall_mttc_avg": mean_time_to_compromise,
+            "time_since_last_mtd": time_since_last_mtd,
+            "shortest_path_variability": shortest_path_variability,
+            "ip_variability": ip_variability,
+            "attack_type": current_attack_value,
+        }
+    
+        # Create the state array based on state_filter keys
+        state_array = np.array([value if key in self.features["static"] else 0 for key, value in state_filter.items()])
+
+        time_series_array = np.array([value if key in self.features["time"] else 0 for key, value in time_series_filter.items()])
+
+        # Output the filtered arrays for verification
+        # print("Filtered State Array:", state_array)
+        # print("Filtered Time Series Array:", time_series_array)
+       
         return state_array, time_series_array
     

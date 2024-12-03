@@ -6,7 +6,7 @@ from tensorflow.keras.losses import MeanSquaredError
 import numpy as np
 import random
 from collections import deque
-
+import pandas as pd
 # Define the neural network architecture
 def create_network(state_size, action_size, time_series_size):
     # Static feature extraction module
@@ -99,57 +99,83 @@ def normalize_array(arr, min_val=None, max_val=None):
     if max_val is None:
         max_val = np.max(arr)
     return (arr - min_val) / (max_val - min_val) if max_val > min_val else arr
+# def normalize_array(arr):
+#     mean_val = np.mean(arr)
+#     std_val = np.std(arr)
+    
+#     # Avoid division by zero
+#     if std_val == 0:
+#         return np.zeros_like(arr)  # or return arr, depending on your preference
+    
+#     return (arr - mean_val) / std_val
 
 
-def calculate_reward(current_state, current_time_series, next_state, next_time_series, static_features, time_features, memory):
+
+def calculate_reward( current_state, current_time_series, next_state, next_time_series, static_features, time_features, memory):
+ 
     reward = 0
 
     # Check if memory has data for normalization
-    if len(memory) > 0:
-        # Extract min and max values for normalization from memory
-        memory_states = [item[0] for item in memory]
-        memory_time_series = [item[5] for item in memory]
-        
-        # Flatten lists of arrays to compute overall min and max
-        all_states = np.concatenate(memory_states, axis=0)
-        all_time_series = np.concatenate(memory_time_series, axis=0)
 
-        # Determine min and max for normalization
-        min_state, max_state = np.min(all_states), np.max(all_states)
-        min_time_series, max_time_series = np.min(all_time_series), np.max(all_time_series)
+    if len(memory) > 0:
+        memory_states = np.stack([item[0] for item in memory])
+        memory_time_series = np.stack([item[5] for item in memory])
+        
+        # Create DataFrames
+        memory_states_df = pd.DataFrame(memory_states)
+        memory_time_series_df = pd.DataFrame(memory_time_series)
+
+        # Convert to pandas Series before concatenating
+        memory_states_normalized = pd.concat([memory_states_df, pd.Series(current_state).to_frame().T], ignore_index=True)
+        memory_time_series_normalized = pd.concat([memory_time_series_df, pd.Series(current_time_series).to_frame().T], ignore_index=True)
+        memory_next_states_normalized = pd.concat([memory_states_df, pd.Series(next_state).to_frame().T], ignore_index=True)
+        memory_next_time_series_normalized = pd.concat([memory_time_series_df, pd.Series(next_time_series).to_frame().T], ignore_index=True)
+
+
+
+        # Print the normalized DataFrames
+        # print("Normalized Memory States:\n", memory_states_normalized)
+        # print("\nNormalized Memory Time Series:\n", memory_time_series_normalized)
+        # print("\nMemory Next States Normalized:\n", memory_next_states_normalized)
+        # print("\nMemory Next Time Series Normalized:\n", memory_next_time_series_normalized)
+
 
         # Normalize current and next states
-        norm_current_state = normalize_array(current_state, min_state, max_state)
-        norm_next_state = normalize_array(next_state, min_state, max_state)
+        norm_current_state = memory_states_normalized.apply(lambda x: normalize_array(x), axis=0).iloc[-1]
+        norm_next_state = memory_next_states_normalized.apply(lambda x: normalize_array(x), axis=0).iloc[-1]
 
         # Normalize current and next time series
-        norm_current_time_series = normalize_array(current_time_series, min_time_series, max_time_series)
-        norm_next_time_series = normalize_array(next_time_series, min_time_series, max_time_series)
+        norm_current_time_series = memory_time_series_normalized.apply(lambda x: normalize_array(x), axis=0).iloc[-1]
+        norm_next_time_series = memory_next_time_series_normalized.apply(lambda x: normalize_array(x), axis=0).iloc[-1]
+
+    
     else:
         # Use raw values if memory is empty
         norm_current_state = current_state
         norm_next_state = next_state
         norm_current_time_series = current_time_series
         norm_next_time_series = next_time_series
+    # print(norm_current_state, norm_next_state,norm_current_time_series, norm_next_time_series )
     # print(norm_current_state,norm_current_time_series)
     # Dynamic weights based on context
     context_multiplier = 1  # Adjust this dynamically based on system context
     dynamic_weights = {
-        "host_compromise_ratio": -75 * context_multiplier,
-        "exposed_endpoints": -75 * context_multiplier,
+        "host_compromise_ratio": 0,
         "attack_path_exposure": -75 * context_multiplier,
-        "overall_asr_avg": 75 * context_multiplier,
-        "roa": 75 * context_multiplier,
-        "shortest_path_variability": 75 * context_multiplier,
+        "overall_asr_avg": -75 * context_multiplier,
+        "roa": -75 * context_multiplier,
         "risk": -75 * context_multiplier,
-        "attack_type": 0
+        
     }
 
     # Include time series features in the dynamic weights
     time_series_weights = {
-        "mtd_freq": 20 * context_multiplier,
+        "mtd_freq": 0,
         "overall_mttc_avg": 75 * context_multiplier,
-        "time_since_last_mtd": -75 * context_multiplier
+        "time_since_last_mtd": 0,
+        "shortest_path_variability": 75 * context_multiplier,
+        "ip_variability": 75 * context_multiplier,
+        "attack_type": 0
     }
 
     # Calculate reward using normalized or raw values
@@ -160,7 +186,20 @@ def calculate_reward(current_state, current_time_series, next_state, next_time_s
     for index, time_series_feature in enumerate(time_features):
         delta = (norm_next_time_series[index] - norm_current_time_series[index])
         reward += delta * time_series_weights.get(time_series_feature, 0)
-  
+    # Print normalized values
+    # print("\nNormalized Current State:")
+    # print(norm_current_state)
+
+    # print("\nNormalized Next State:")
+    # print(norm_next_state)
+
+    # print("\nNormalized Current Time Series:")
+    # print(norm_current_time_series)
+
+    # print("\nNormalized Next Time Series:")
+    # print(norm_next_time_series)
+    # print(reward)
     return reward
+
 
 

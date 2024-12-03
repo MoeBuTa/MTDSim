@@ -33,6 +33,7 @@ class Vulnerability:
         self.has_dependent_vulns = random.random() < constants.VULN_PROB_DEPENDS_ON_OTHER_VULNS
         self.dependent_vuln_id = random.choice(
             [x for x in range(0, 101, int(100 * constants.VULN_PROB_DEPENDS_ON_OTHER_VULNS))])
+         
         self.dependent_vulns = []
 
         self.id = str(uuid.uuid4())
@@ -42,6 +43,8 @@ class Vulnerability:
                 self.has_os_dependency = True
                 self.vuln_os_list = random.sample(os_list, k=random.randint(1, len(os_list) - 1))
                 # self.vuln_os_list = random.sample(os_list, k=random.randint(1, 2))
+    
+
 
     def is_exploited(self):
         return self.exploited

@@ -47,9 +47,7 @@ mtd_strategies = [
     # UserShuffle
 ]
 
-# static_features = ["host_compromise_ratio", "exposed_endpoints", "attack_path_exposure",  "overall_asr_avg", "roa", "shortest_path_variability", "risk"]
-# time_features = ["mtd_freq", "overall_mttc_avg", "time_since_last_mtd"]
-# features = {"static": static_features, "time": time_features}
+
 
 def save_evaluation_result(file_name, evaluations):
     current_directory = os.getcwd()
@@ -150,7 +148,7 @@ def construct_experiment_result(name, mtd_interval, item, network_size):
         'time_to_compromise': item['time_to_compromise'],
         'host_compromise_ratio': item['host_compromise_ratio'],
         'network_size': network_size,
-        'exposed_endpoints': item["exposed_endpoints"],
+        'total_number_of_ports': item["total_number_of_ports"],
         'attack_path_exposure': item["attack_path_exposure"],
         'ROA': item['roa'],
         'risk': item['risk'],
@@ -178,10 +176,11 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None', mtd_int
             for network_size in network_size:
                 evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
                                                 custom_strategies=mtd, total_nodes=network_size)
-                if checkpoint != 'None':
-                    evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(checkpoint)
-                else:
-                    evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
+                # if checkpoint != 'None':
+                #     evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint(checkpoint)
+                # else:
+                #     evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
+                evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.05, 0.1, 0.15, 0.2, 0.25])
                 for item in evaluation_results:
                     result = construct_experiment_result(mtd_name, mtd_interval, item, network_size)
                     evaluations.append(result)
@@ -190,7 +189,7 @@ def single_mtd_simulation(file_name, mtd_strategies, checkpoint= 'None', mtd_int
         print(mtd_name)
     return evaluations
 
-def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100], attacker_sensitivity=1):
+def mtd_ai_simulation(features, file_name,  model_path, start_time, finish_time, total_nodes, new_network, mtd_interval = [100, 200], network_size = [25, 50, 75, 100], custom_strategies = None, static_degrade_factor = 2000, attacker_sensitivity=1):
     """
     Simulations for single ai mtd
     """
@@ -200,6 +199,7 @@ def mtd_ai_simulation(file_name,  model_path, start_time, finish_time, total_nod
     for mtd_interval in mtd_interval:
         for network_size in network_size:
              evaluation = execute_ai_model(
+                 features = features,
                 start_time=start_time,
                 finish_time=finish_time,
                 mtd_interval=mtd_interval,
@@ -280,8 +280,8 @@ def specific_multiple_mtd_simulation(file_name, combination, scheme, mtd_interva
         for network_size in network_size:
             evaluation = execute_simulation(scheme=scheme, mtd_interval=mtd_interval,
                                             custom_strategies=combination, total_nodes=network_size)
+            # evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint()
             evaluation_results = evaluation.evaluation_result_by_compromise_checkpoint([0.05, 0.1, 0.15, 0.2, 0.25])
-            print(evaluation.security_metrics_record._metric_record)
             for item in evaluation_results:
                 result = construct_experiment_result(scheme, mtd_interval, item, network_size)
                 evaluations.append(result)
@@ -381,7 +381,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
                        state_size=3, action_size=5, time_series_size=3, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, batch_size=32, train_start=1000, episodes=1000,
-                       file_name=None):
+                       file_name=None, static_degrade_factor = 2000):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -414,6 +414,10 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
     main_network = create_network(state_size, action_size, time_series_size)
     target_network = create_network(state_size, action_size, time_series_size)
     target_network.set_weights(main_network.get_weights())
+
+    print("Static_factor", static_degrade_factor)
+    print("MTD Scheme", custom_strategies)
+    print("Action size(include zero which is no deployment)", action_size)
 
     memory = deque(maxlen=2000)
     security_metric_record = SecurityMetricStatistics()
@@ -459,7 +463,7 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
                                         mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
                                         main_network=main_network, target_network=target_network, memory=memory, 
                                         gamma=gamma, epsilon=epsilon, epsilon_min=epsilon_min, epsilon_decay=epsilon_decay, 
-                                        batch_size=batch_size, train_start=train_start)
+                                        batch_size=batch_size, train_start=train_start, static_degrade_factor = static_degrade_factor)
             mtd_operation.proceed_mtd()
             security_metric_record = mtd_operation.security_metric_record
         # save snapshot by time
@@ -488,10 +492,10 @@ def  execute_ai_training(features, start_time=0, finish_time=None, scheme='mtd_a
 def mse(y_true, y_pred):
     return MeanSquaredError()(y_true, y_pred)
 
-def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
+def  execute_ai_model(features, start_time=0, finish_time=None, scheme='mtd_ai', mtd_interval=None, custom_strategies=None,
                        checkpoints=None, total_nodes=50, total_endpoints=5, total_subnets=8, total_layers=4,
                        target_layer=4, total_database=2, terminate_compromise_ratio=0.8, new_network=False,
-                       epsilon=1.0, attacker_sensitivity=1, model_path=None):
+                       epsilon=1.0, attacker_sensitivity=1, model_path=None, static_degrade_factor = 2000):
     """
     :param start_time: the time to start the simulation, need to load timestamp-based snapshots if set start_time > 0
     :param finish_time: the time to finish the simulation. Set to None will run the simulation until
@@ -533,6 +537,10 @@ def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inter
     time_network = None
     adversary = None
 
+    print("Static_factor", static_degrade_factor)
+    print("MTD Scheme", custom_strategies)
+    print("Action size(include zero which is no deployment)", len(custom_strategies) + 1)
+
     if start_time > 0:
         try:
             time_network, adversary = snapshot_checkpoint.load_snapshots_by_time(start_time)
@@ -561,10 +569,10 @@ def  execute_ai_model(start_time=0, finish_time=None, scheme='mtd_ai', mtd_inter
 
     # start mtd
     if scheme != 'None':
-        mtd_operation = MTDAIOperation(security_metrics_record, env=env, end_event=end_event, network=time_network, scheme=scheme,
+        mtd_operation = MTDAIOperation(features, security_metrics_record, env=env, end_event=end_event, network=time_network, scheme=scheme,
                                     attack_operation=attack_operation, proceed_time=0,
                                     mtd_trigger_interval=mtd_interval, custom_strategies=custom_strategies, adversary=adversary,
-                                    main_network=main_network, epsilon=epsilon, attacker_sensitivity=attacker_sensitivity)
+                                    main_network=main_network, epsilon=epsilon, attacker_sensitivity=attacker_sensitivity, static_degrade_factor = static_degrade_factor)
         mtd_operation.proceed_mtd()
         security_metrics_record = mtd_operation.security_metrics_record
 
